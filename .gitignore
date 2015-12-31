@@ -1,0 +1,4 @@
+/.vs/PedestrianDetection/v14/*.suo
+*.log
+*.tlog
+/*.sdf
