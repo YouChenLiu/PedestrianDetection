@@ -21,18 +21,18 @@ void myLBP::Init(void) {
 
     if (m_SamplingPoints.at(0).empty() == true) {
         SetSamplingPoints();
-        for (int iLength = 8; iLength <= myLBP::MAX_BIT_LENGTH; iLength += 8) {
-            int iUniformMapIndex = iLength / 8 - 1;
-            myLBP::m_avbUniformMap.at(iUniformMapIndex).resize(static_cast<int>(pow(2, iLength)));
-            for (int j = 0; j < static_cast<int>(m_avbUniformMap.at(iUniformMapIndex).size()); ++j) {
-                myLBP::m_avbUniformMap.at(iUniformMapIndex).at(j) = ((IsUniform(j, iLength) == true) ? true : false);
+        for (unsigned int iLength = 8; iLength <= myLBP::MAX_BIT_LENGTH; iLength += 8) {
+            auto iUniformMapIndex = iLength / 8 - 1;
+            myLBP::m_avbUniformMap.at(iUniformMapIndex).reserve(1U << iLength);
+            for (unsigned int j = 0; j < m_avbUniformMap.at(iUniformMapIndex).size(); ++j) {
+                myLBP::m_avbUniformMap.at(iUniformMapIndex).at(j) = IsUniform(j, iLength);
             }
         }
     }
 }
 
 void myLBP::SetSamplingPoints(void) {
-    using namespace cv;
+    using cv::Point2i;
     std::array<Point2i, 8> Location8_1 = {
         Point2i(-1, -1), Point2i(0, -1), Point2i(+1, -1), Point2i(+1, +0),
         Point2i(+1, +1), Point2i(0, +1), Point2i(-1, +1), Point2i(-1, +0),
@@ -65,8 +65,8 @@ void myLBP::SetAttributes(int iPattern) {
 }
 
 void myLBP::Describe(cv::Point2i Position, std::vector<float>& viFeature) const {
-    int iUniformMapIndex = m_iLength / 8 - 1;
-    std::vector<float> viTempBins(static_cast<int>(m_avbUniformMap.at(iUniformMapIndex).size()), 0.0f);
+    auto iUniformMapIndex = m_iLength / 8 - 1;
+    std::vector<float> viTempBins(m_avbUniformMap.at(iUniformMapIndex).size(), 0.0F);
 
     for (int y = Position.y; y < Position.y + m_BlockSize.height; ++y) {
         for (int x = Position.x; x < Position.x + m_BlockSize.width; ++x) {
@@ -75,8 +75,8 @@ void myLBP::Describe(cv::Point2i Position, std::vector<float>& viFeature) const 
     }
 
     viFeature.clear();
-    float iNonuniformBin = 0;
-    for (int i = 0; i < static_cast<int>(myLBP::m_avbUniformMap.at(iUniformMapIndex).size()); ++i) {
+    float iNonuniformBin = 0.0F;
+    for (std::size_t i = 0; i < myLBP::m_avbUniformMap.at(iUniformMapIndex).size(); ++i) {
         if (m_bIsUniform == true) {
             if (myLBP::m_avbUniformMap.at(iUniformMapIndex).at(i) == true) {
                 viFeature.push_back(viTempBins.at(i));
@@ -97,7 +97,7 @@ unsigned int myLBP::GetBinNumber(cv::Point2i Position) const {
     unsigned int iBinNumber = 0;
 
     const auto cCenterIntensity = m_mImage.at<unsigned char>(Position);
-    const auto& SampleingPoints = m_SamplingPoints.at(static_cast<int>(m_iPattern) % myLBP::NUMBER_OF_PATTERNS);
+    const auto& SampleingPoints = m_SamplingPoints.at(m_iPattern % myLBP::NUMBER_OF_PATTERNS);
     for (auto pt : SampleingPoints) {
         auto CurrentPosition = Position + pt;
         if (CurrentPosition.x < 0 || CurrentPosition.y < 0 || CurrentPosition.x >= (m_mImage.cols - 1) || CurrentPosition.y >= (m_mImage.rows)) {
@@ -110,14 +110,14 @@ unsigned int myLBP::GetBinNumber(cv::Point2i Position) const {
     return iBinNumber;
 }
 
-bool myLBP::IsUniform(unsigned int iBinNumber, int iLength) {
+bool myLBP::IsUniform(unsigned int iBinNumber, unsigned int iLength) {
     bool bResult = true;
 
     int iChangeTime = 0;
     unsigned int iMaskBit = 0x00000001;
     unsigned int iCheckBit = iBinNumber & iMaskBit;
 
-    for (int i = 0; i < iLength - 1; ++i) {
+    for (unsigned int i = 0; i < iLength - 1; ++i) {
         iMaskBit <<= 1;
         iCheckBit <<= 1;
         unsigned int iComparedValue = (iMaskBit & iBinNumber);

@@ -1,12 +1,13 @@
 #ifndef _MY_LBP_H_
 #define _MY_LBP_H_
 
-#include <iostream>
 #include <array>
+#include <vector>
 #include <opencv2/core.hpp>
 #include "../myExtractorBase.h"
 
 #ifdef _DEBUG
+#	include <iostream>
 #   include <iomanip>
 #endif
 
@@ -22,17 +23,17 @@ public:
         static const int LBP_16_2_UNIFORM   = 5;
     };
     
-    static const int NUMBER_OF_PATTERNS = 3;    // the number of patterns, not include uniform pattern
-    static const int MAX_TRANSITION_TIME = 2;   // the LBP feature wiil be nonuniform if times oftransition (0 -> 1 or 1 -> 0) over it.
-    static const int MAX_BIT_LENGTH = 16;       // upper bound of LBP feature length
-
+    static const unsigned int NUMBER_OF_PATTERNS = 3;    // the number of patterns, not include uniform pattern
+    static const unsigned int MAX_TRANSITION_TIME = 2;   // the LBP feature wiil be nonuniform if times oftransition (0 -> 1 or 1 -> 0) over it.
+    static const unsigned int MAX_BIT_LENGTH = 16;       // upper bound of LBP feature length
+	
 private:
     cv::Mat m_mImage;
-    int m_iPattern;
+    unsigned int m_iPattern;
     cv::Size2i m_BlockSize;
     bool m_bIsUniform;
-    int m_iRadius;
-    int m_iLength;
+    unsigned int m_iRadius;
+    unsigned int m_iLength;
     static std::array<std::vector<bool>, myLBP::MAX_BIT_LENGTH / 8> m_avbUniformMap;
     static std::array<std::vector<cv::Point2i>, myLBP::NUMBER_OF_PATTERNS> m_SamplingPoints;
 
@@ -49,9 +50,9 @@ public:
 private:
     void Init();
     void SetAttributes(int iPattern);
-    unsigned int GetBinNumber(cv::Point2i Position) const;
+	unsigned int GetBinNumber(cv::Point2i Position) const;
     static void SetSamplingPoints(void);
-    static bool IsUniform(unsigned int iBinNumber, int iLength);
+    static bool IsUniform(unsigned int iBinNumber, unsigned int iLength);
 };
 
 #endif
