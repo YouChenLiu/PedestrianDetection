@@ -2,7 +2,6 @@
 #define _MY_HOG_H_
 
 #include <iostream>
-#include <array>
 #include <vector>
 #include <opencv2/core.hpp>
 #include "../DIPKernel/DIPKernel.h"
