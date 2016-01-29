@@ -15,6 +15,6 @@ Wellcome to report any problem or advisis.
 
 --------------------------------------------------------------------------------------
 You-Chen Liu  
-Advanced Muti-media Lab  
+Advanced Multimedia Lab.  
 National Kaohsiung First University of Science and Technology (First Tech)  
 No.1, University Rd., Yanchao Dist., Kaohsiung City 824, Taiwan (R.O.C.)
