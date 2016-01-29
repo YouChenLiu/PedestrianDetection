@@ -2,11 +2,11 @@
 #define _MY_FEATURE_EXTRACTOR_H_
 
 #include <iostream>
-#include <iomanip>
 #include "myHOG/myHOG.h"
 #include "myLBP/myLBP.h"
 
 #ifndef NDEBUG
+#   include <iomanip>
 #   include <fstream>
 #endif
 
