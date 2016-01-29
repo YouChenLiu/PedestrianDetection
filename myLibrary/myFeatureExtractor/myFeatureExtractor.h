@@ -2,6 +2,7 @@
 #define _MY_FEATURE_EXTRACTOR_H_
 
 #include <iostream>
+#include <memory>
 #include "myHOG/myHOG.h"
 #include "myLBP/myLBP.h"
 
@@ -16,7 +17,7 @@ public:
 private:
     cv::Size2i m_BlockSize;
     cv::Mat m_mImage;
-    std::vector<myExtractorBase*> m_vpoUsedExtractor;
+    std::vector<std::unique_ptr<myExtractorBase>> m_vpoUsedExtractor;
 
 public:
     myFeatureExtractor(cv::Mat& mImage, cv::Size2i BlockSize = cv::Size2i(20, 20));

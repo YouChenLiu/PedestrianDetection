@@ -12,11 +12,6 @@ myFeatureExtractor::myFeatureExtractor(cv::Mat& mImage, cv::Size2i BlockSize) {
     m_BlockSize = BlockSize;
 }
 
-myFeatureExtractor::~myFeatureExtractor(void) {
-    for (auto p : m_vpoUsedExtractor) {
-        delete p;
-    }
-}
 
 void myFeatureExtractor::Init(void) {
     m_BlockSize = cv::Size2i(0, 0);
@@ -27,11 +22,11 @@ void myFeatureExtractor::Describe(cv::Point2i Position, std::vector<float>& vfFe
     using namespace std;
     vfFeature.clear();
     
-    for (const auto pExtractor : m_vpoUsedExtractor) {
+    for (const auto& pExtractor : m_vpoUsedExtractor) {
         std::vector<float> vfTemp;
-        if (auto extractor = dynamic_cast<myHOG*>(pExtractor)) {
+        if (auto extractor = dynamic_cast<myHOG*>(pExtractor.get())) {
             extractor->Describe(Position, vfTemp);
-        } else if (auto extractor = dynamic_cast<myLBP*>(pExtractor)) {
+        } else if (auto extractor = dynamic_cast<myLBP*>(pExtractor.get())) {
             extractor->Describe(Position, vfTemp);
         }
         for (auto f : vfTemp) {
@@ -58,15 +53,18 @@ void myFeatureExtractor::Describe(cv::Point2i Position, std::vector<float>& vfFe
 }
 
 void myFeatureExtractor::EnableFeature(int iFeature) {
+    std::unique_ptr<myExtractorBase> pExtractor = nullptr;
     switch (iFeature / 10) {
     case 0: // LBP feature 0 <= iFeature <= 5
-        m_vpoUsedExtractor.push_back(new myLBP(m_mImage, iFeature, m_BlockSize));
+        pExtractor = std::make_unique<myLBP>(m_mImage, iFeature, m_BlockSize);
         break;
     case 1: // HOG feature 10 <= iFeature <= 14
-        m_vpoUsedExtractor.push_back(new myHOG(m_mImage, iFeature, m_BlockSize));
+        pExtractor = std::make_unique<myHOG>(m_mImage, iFeature, m_BlockSize);
         break;
     default:
         std::cout << "Not valid feature" << std::endl;
         break;
     }
+
+    m_vpoUsedExtractor.push_back(std::move(pExtractor));
 }
