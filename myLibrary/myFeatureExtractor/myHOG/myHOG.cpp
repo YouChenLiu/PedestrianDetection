@@ -1,9 +1,14 @@
 #include "myHOG.h"
 
+const float myHOG::m_fUnimportantValue = 1e-6F;
+static const std::array<DIPKernel, 2> m_aoHogMask = {
+    DIPKernel(DIPKernel::Types::SIMPLE_X), DIPKernel(DIPKernel::Types::SIMPLE_Y)
+};
+
 myHOG::myHOG(const cv::Mat& mImage, int iType, cv::Size2i blockSize, int iInterval) {
     Init();
-    m_mHorizontalGradientImage = mImage * DIPKernel(DIPKernel::Types::SIMPLE_X);
-    m_mVerticalGradientImage = mImage * DIPKernel(DIPKernel::Types::SIMPLE_Y);
+    m_mHorizontalGradientImage = mImage * m_aoHogMask.at(0);
+    m_mVerticalGradientImage = mImage * m_aoHogMask.at(1);
     m_BlockSize = blockSize;
     m_iInterval = iInterval;
     m_iType = iType;
