@@ -23,7 +23,7 @@ void myLBP::Init(void) {
         SetSamplingPoints();
         for (unsigned int iLength = 8; iLength <= myLBP::MAX_BIT_LENGTH; iLength += 8) {
             auto iUniformMapIndex = iLength / 8 - 1;
-            myLBP::m_avbUniformMap.at(iUniformMapIndex).reserve(1U << iLength);
+            myLBP::m_avbUniformMap.at(iUniformMapIndex).resize(1U << iLength);
             for (unsigned int j = 0; j < m_avbUniformMap.at(iUniformMapIndex).size(); ++j) {
                 myLBP::m_avbUniformMap.at(iUniformMapIndex).at(j) = IsUniform(j, iLength);
             }
