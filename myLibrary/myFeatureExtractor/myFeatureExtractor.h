@@ -20,8 +20,8 @@ private:
     std::vector<std::unique_ptr<myExtractorBase>> m_vpoUsedExtractor;
 
 public:
-    myFeatureExtractor(cv::Mat& mImage, cv::Size2i BlockSize = cv::Size2i(20, 20));
-    myFeatureExtractor(IplImage* pImage, CvSize BlockSize = cvSize(20, 20));
+    myFeatureExtractor(const cv::Mat& mImage, cv::Size2i BlockSize = cv::Size2i(8, 8));
+    myFeatureExtractor(IplImage* pImage, CvSize BlockSize = cvSize(8, 8));
     ~myFeatureExtractor(void);
 
     void Describe(cv::Point2i Position, std::vector<float>& vfFeature) const;
