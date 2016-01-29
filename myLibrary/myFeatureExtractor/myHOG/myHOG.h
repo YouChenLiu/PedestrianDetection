@@ -29,7 +29,7 @@ private:
 
 public:
     myHOG(const cv::Mat& mImage, int iType, cv::Size2i blockSize = cv::Size2i(8, 8), int iInterval = 20);
-    ~myHOG(void);
+    virtual ~myHOG(void) override;
 
     void Describe(cv::Point2i Position, std::vector<float>& vfHogFeature) const override;
 
