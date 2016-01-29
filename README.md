@@ -1,5 +1,7 @@
 # PedestrianDetection
 This repository is the VS2015 version of my another project Pedestrian Detection.  
+I merge some common feature of my research in this.  
+I am glad if this solution can help somebody who researches same topic.  
 The old one will save but not maintan. 
 If you like the old one, you will like this one too.
 
