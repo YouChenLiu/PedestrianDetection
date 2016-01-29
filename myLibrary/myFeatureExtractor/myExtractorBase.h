@@ -11,6 +11,7 @@ class myExtractorBase {
         };
 
         virtual void Describe(cv::Point2i, std::vector<float>&) const = 0;
+        virtual ~myExtractorBase(void) {}
 };
 
 #endif
