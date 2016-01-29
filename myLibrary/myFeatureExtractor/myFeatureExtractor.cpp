@@ -6,12 +6,13 @@ myFeatureExtractor::myFeatureExtractor(IplImage* pImage, CvSize BlockSize) {
     m_BlockSize = cv::Size2i(BlockSize.width, BlockSize.height);
 }
 
-myFeatureExtractor::myFeatureExtractor(cv::Mat& mImage, cv::Size2i BlockSize) {
+myFeatureExtractor::myFeatureExtractor(const cv::Mat& mImage, cv::Size2i BlockSize) {
     Init();
     m_mImage = mImage;
     m_BlockSize = BlockSize;
 }
 
+myFeatureExtractor::~myFeatureExtractor(void) {}
 
 void myFeatureExtractor::Init(void) {
     m_BlockSize = cv::Size2i(0, 0);
