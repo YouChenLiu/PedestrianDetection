@@ -16,6 +16,8 @@ void mySVM::Train(void) {
         mLabel.at<int>(y, 0) = m_viLabel.at(y);
     }
 
+    // clear labels in vector for reducing memory
+    m_viLabel.clear();
     // number of samples
     auto iNumOfSamples = static_cast<int>(m_vvfFeature.size());
 
@@ -31,7 +33,12 @@ void mySVM::Train(void) {
         for (int x = 0; x < iFeatureLength; x++) {
             mSample.at<float>(y, x) = m_vvfFeature.at(y).at(x);
         }
+        // clear the copyed feature for reducing memory
+        m_vvfFeature.at(y).clear();
     }
+
+    // clear feature table for reducing memory
+    m_vvfFeature.clear();
 
     // create SVM for learning model
     m_poClassifier = cv::ml::SVM::create();
