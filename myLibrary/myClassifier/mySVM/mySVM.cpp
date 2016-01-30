@@ -1,5 +1,18 @@
 #include "mySVM.h"
 
+// initialize the static value
+// the value for soft margin
+const double mySVM::SVM_CONSTRAINT_VALUE = 1.0;
+
+// the system is converge when diffrence less than it
+const double mySVM::EPSILON = 1e-6;
+
+// opencv criteria object
+const cv::TermCriteria mySVM::CRITERIA = cv::TermCriteria(
+    mySVM::CRITERIA_TYPE,
+    mySVM::ITERATION_COUNT,
+    mySVM::EPSILON);
+
 mySVM::mySVM() {}
 
 mySVM::~mySVM() {}
@@ -18,6 +31,7 @@ void mySVM::Train(void) {
 
     // clear labels in vector for reducing memory
     m_viLabel.clear();
+
     // number of samples
     auto iNumOfSamples = static_cast<int>(m_vvfFeature.size());
 
@@ -31,8 +45,10 @@ void mySVM::Train(void) {
     // representation the samples with opencv Mat
     for (int y = 0; y < iNumOfLabels; y++) {
         for (int x = 0; x < iFeatureLength; x++) {
+            // copy the features from vector to opencv matrix
             mSample.at<float>(y, x) = m_vvfFeature.at(y).at(x);
         }
+
         // clear the copyed feature for reducing memory
         m_vvfFeature.at(y).clear();
     }
@@ -52,3 +68,20 @@ void mySVM::Train(void) {
     // start training classifier
     m_poClassifier->train(mSample, cv::ml::ROW_SAMPLE, mLabel);
 }
+
+float mySVM::Predict(const std::vector<float>& vfSample) const {
+    auto iFeatureLength = static_cast<int>(vfSample.size());
+    cv::Mat mSample = cv::Mat::zeros(cv::Size2i(iFeatureLength, 1), CV_32FC1);
+    for (int x = 0; x < iFeatureLength; x++) {
+        mSample.at<float>(0, x) = vfSample.at(x);
+    }
+    return Predict(mSample);
+}
+
+void mySVM::Save(const std::string & sDstPath) const {
+    if (!m_poClassifier.empty()) {
+        m_poClassifier->save(sDstPath);
+    }
+}
+
+void mySVM::Init(void) {}
