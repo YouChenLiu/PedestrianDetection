@@ -10,6 +10,7 @@ public:
     mySupervisedClassifier();
     virtual ~mySupervisedClassifier();
 
+    // add a sample and its label to feature table
     virtual void AddSample(int iLable, const std::vector<float>& vfFeature);
 
 protected:
