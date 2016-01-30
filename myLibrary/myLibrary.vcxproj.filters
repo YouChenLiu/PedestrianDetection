@@ -66,6 +66,9 @@
     <ClInclude Include="myClassifier\mySVM\mySVM.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="myClassifier\myAdaBoost\myAdaBoost.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="myImageSequence\myImageSequence.cpp">
@@ -102,6 +105,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="myClassifier\mySVM\mySVM.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="myClassifier\myAdaBoost\myAdaBoost.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
