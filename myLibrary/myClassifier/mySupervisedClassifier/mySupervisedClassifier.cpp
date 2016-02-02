@@ -5,6 +5,8 @@ mySupervisedClassifier::mySupervisedClassifier() {}
 mySupervisedClassifier::~mySupervisedClassifier() {}
 
 void mySupervisedClassifier::AddSample(int iLable, const std::vector<float>& vfFeature) {
-    m_vvfFeature.push_back(vfFeature);
+    AddFeature(vfFeature);
     m_viLabel.push_back(iLable);
 }
+
+void mySupervisedClassifier::LoadFeature(const std::string & sFeatureFile) {}
