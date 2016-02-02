@@ -110,6 +110,9 @@
     <ClCompile Include="myClassifier\myAdaBoost\myAdaBoost.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="myClassifier\myClassifierBase.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="ClassDiagram.cd" />

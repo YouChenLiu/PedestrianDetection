@@ -98,6 +98,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="myClassifier\myAdaBoost\myAdaBoost.cpp" />
+    <ClCompile Include="myClassifier\myClassifierBase.cpp" />
     <ClCompile Include="myClassifier\mySupervisedClassifier\mySupervisedClassifier.cpp" />
     <ClCompile Include="myClassifier\mySVM\mySVM.cpp" />
     <ClCompile Include="myFeatureExtractor\DIPKernel\DIPKernel.cpp" />
