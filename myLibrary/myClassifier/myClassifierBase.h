@@ -2,12 +2,11 @@
 #define _MY_CLASSIFIER_BASE_H_
 
 #include "../common.h"
-#include <opencv2/ml.hpp>
 
 class myClassifierBase {
 public:
     myClassifierBase(void) {};
-    ~myClassifierBase(void) {};
+    virtual ~myClassifierBase(void) {};
 
     // training the classifier by contaning samples
     virtual void Train(void) = 0;
@@ -19,12 +18,27 @@ public:
     // save the trained classifier to an xml file
     virtual void Save(const std::string& sDstPath) const = 0;
 
-    // create classifier from xml file
-    virtual void Load(const std::string& sFilePath) = 0;
+    // save features in table to csv file
+    virtual void SaveFeature(std::string& sDstPath);
+
+    // create classifier from model xml file
+    virtual void Load(const std::string& sModelFile) = 0;
+
+    // create classifier from feature xml file
+    virtual void LoadFeature(const std::string& sFeatureFile);
 
 protected:
     // the array for saving features
     std::vector<std::vector<float>> m_vvfFeature;
+
+protected:
+    // add a line of features to table
+    virtual void AddFeature(const std::vector<float>& vfNewFeature) {
+        m_vvfFeature.push_back(vfNewFeature);
+    }
+
+    // add a line features saved in string which uses common for seperating
+    void AddFeature(const std::string& sLineOfFeature);
 
 };
 
