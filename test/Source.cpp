@@ -5,8 +5,10 @@ int main(void) {
     mySVM oSVM;
     oSVM.AddSample(1, std::vector<float>(10, 1.0f));
     oSVM.AddSample(-1, std::vector<float>(10, -1.0f));
+    
+    oSVM.SaveFeature("test.txt");
     oSVM.Train();
-
+    oSVM.LoadFeature("test.txt");
     auto result = oSVM.Predict(std::vector<float>(10, -1.0f));
     oSVM.Save("test.xml");
     oSVM.Load("test.xml");
