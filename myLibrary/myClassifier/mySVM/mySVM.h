@@ -3,7 +3,7 @@
 
 #include "../mySupervisedClassifier/mySupervisedClassifier.h"
 
-class mySVM : public mySupervisedClassifier {
+class mySVM final : public mySupervisedClassifier {
 public:
     mySVM();
     mySVM(const std::string& sFilePath) {
@@ -16,7 +16,7 @@ public:
 
     // predict response for the provided sample encapsulated in opencv matrix
     float Predict(const cv::Mat& mSample) const override {
-        return m_poClassifier->predict(mSample);
+        return m_poClassifier.empty() ? 0.0f : m_poClassifier->predict(mSample);
     };
 
     // predict response for the provided sample encapsulated in std::vector

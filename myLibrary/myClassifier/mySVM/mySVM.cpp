@@ -11,7 +11,8 @@ const double mySVM::EPSILON = 1e-6;
 const cv::TermCriteria mySVM::CRITERIA = cv::TermCriteria(
     mySVM::CRITERIA_TYPE,
     mySVM::ITERATION_COUNT,
-    mySVM::EPSILON);
+    mySVM::EPSILON
+);
 
 mySVM::mySVM() {}
 
@@ -39,8 +40,8 @@ void mySVM::Train(void) {
     auto iFeatureLength = static_cast<int>(m_vvfFeature.at(0).size());
 
     // matrix for saving features
-    cv::Mat mSample = cv::Mat::zeros(
-        cv::Size2i(iFeatureLength, iNumOfSamples), CV_32FC1);
+    cv::Mat mSample = cv::Mat::zeros(cv::Size2i(iFeatureLength, iNumOfSamples),
+                                     CV_32FC1);
 
     // representation the samples with opencv Mat
     for (int y = 0; y < iNumOfLabels; y++) {
@@ -70,11 +71,18 @@ void mySVM::Train(void) {
 }
 
 float mySVM::Predict(const std::vector<float>& vfSample) const {
+    // get the feature length of sample
     auto iFeatureLength = static_cast<int>(vfSample.size());
+
+    // create matrix for saving feature
     cv::Mat mSample = cv::Mat::zeros(cv::Size2i(iFeatureLength, 1), CV_32FC1);
+
+    // copy feature data to matrix
     for (int x = 0; x < iFeatureLength; x++) {
         mSample.at<float>(0, x) = vfSample.at(x);
     }
+
+    // return the result by calling another method
     return Predict(mSample);
 }
 
