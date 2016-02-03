@@ -39,7 +39,7 @@ private:
 
 public:
     myLBP(const cv::Mat& mImage, int Pattern, cv::Size2i blockSize = cv::Size2i(8, 8));
-    ~myLBP(void);
+    virtual ~myLBP(void) override;
 
     void Describe(cv::Point2i Position, std::vector<float>& vfFeature) const override;
 

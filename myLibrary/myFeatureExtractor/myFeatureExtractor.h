@@ -2,11 +2,12 @@
 #define _MY_FEATURE_EXTRACTOR_H_
 
 #include <iostream>
-#include <iomanip>
+#include <memory>
 #include "myHOG/myHOG.h"
 #include "myLBP/myLBP.h"
 
 #ifndef NDEBUG
+#   include <iomanip>
 #   include <fstream>
 #endif
 
@@ -16,11 +17,11 @@ public:
 private:
     cv::Size2i m_BlockSize;
     cv::Mat m_mImage;
-    std::vector<myExtractorBase*> m_vpoUsedExtractor;
+    std::vector<std::unique_ptr<myExtractorBase>> m_vpoUsedExtractor;
 
 public:
-    myFeatureExtractor(cv::Mat& mImage, cv::Size2i BlockSize = cv::Size2i(20, 20));
-    myFeatureExtractor(IplImage* pImage, CvSize BlockSize = cvSize(20, 20));
+    myFeatureExtractor(const cv::Mat& mImage, cv::Size2i BlockSize = cv::Size2i(8, 8));
+    myFeatureExtractor(IplImage* pImage, CvSize BlockSize = cvSize(8, 8));
     ~myFeatureExtractor(void);
 
     void Describe(cv::Point2i Position, std::vector<float>& vfFeature) const;
