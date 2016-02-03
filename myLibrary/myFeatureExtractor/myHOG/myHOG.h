@@ -2,7 +2,6 @@
 #define _MY_HOG_H_
 
 #include <iostream>
-#include <array>
 #include <vector>
 #include <opencv2/core.hpp>
 #include "../DIPKernel/DIPKernel.h"
@@ -19,18 +18,19 @@ public:
         static const int HOG_WITH_L2_SQRT = 14;
     };
 
+    static const float m_fUnimportantValue;
+    static const int m_iMagnifyingFactor = 100;
+
 private:
     cv::Mat m_mHorizontalGradientImage;
     cv::Mat m_mVerticalGradientImage;
     int m_iInterval;
     cv::Size2i m_BlockSize;
     int m_iType;
-    const float m_fUnimportantValue = 1e-6f;
-    const int m_iMagnifyingFactor = 100;
 
 public:
     myHOG(const cv::Mat& mImage, int iType, cv::Size2i blockSize = cv::Size2i(8, 8), int iInterval = 20);
-    ~myHOG(void);
+    virtual ~myHOG(void) override;
 
     void Describe(cv::Point2i Position, std::vector<float>& vfHogFeature) const override;
 

@@ -1,9 +1,14 @@
 #include "myHOG.h"
 
+const float myHOG::m_fUnimportantValue = 1e-6f;
+static const std::array<DIPKernel, 2> m_aoHogMask = {
+    DIPKernel(DIPKernel::Types::SIMPLE_X), DIPKernel(DIPKernel::Types::SIMPLE_Y)
+};
+
 myHOG::myHOG(const cv::Mat& mImage, int iType, cv::Size2i blockSize, int iInterval) {
     Init();
-    m_mHorizontalGradientImage = mImage * DIPKernel(DIPKernel::Types::SIMPLE_X);
-    m_mVerticalGradientImage = mImage * DIPKernel(DIPKernel::Types::SIMPLE_Y);
+    m_mHorizontalGradientImage = mImage * m_aoHogMask.at(0);
+    m_mVerticalGradientImage = mImage * m_aoHogMask.at(1);
     m_BlockSize = blockSize;
     m_iInterval = iInterval;
     m_iType = iType;
@@ -83,17 +88,17 @@ void myHOG::DescribeCell(const cv::Point2i Position, std::vector<float>& vfHogFe
             float fOrientation = atan2f(mVerticalRoi.at<short>(y, x), mHorizontalRoi.at<short>(y, x)) * 180.0f / static_cast<float>(CV_PI);
             float fMagnitude = sqrtf(static_cast<float>(mVerticalRoi.at<short>(y, x) * mVerticalRoi.at<short>(y, x) + 
                                                         mHorizontalRoi.at<short>(y, x) * mHorizontalRoi.at<short>(y, x)));
-            if (fOrientation < 0) {
-                fOrientation += 180;
-            } else if (fOrientation > 180) {
-                fOrientation -= 180;
+            if (fOrientation < 0.0f) {
+                fOrientation += 180.0f;
+            } else if (fOrientation > 180.0f) {
+                fOrientation -= 180.0f;
             }
             
             auto target = static_cast<size_t>(fOrientation / m_iInterval);
             if (target == vfBins.size()) {
                 target = vfBins.size() - 1;
             }
-            vfBins[target] += fMagnitude;
+            vfBins.at(target) += fMagnitude;
         }
     }
 
