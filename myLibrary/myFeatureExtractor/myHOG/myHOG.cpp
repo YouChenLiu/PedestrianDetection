@@ -1,6 +1,6 @@
 #include "myHOG.h"
 
-const float myHOG::m_fUnimportantValue = 1e-6F;
+const float myHOG::m_fUnimportantValue = 1e-6f;
 static const std::array<DIPKernel, 2> m_aoHogMask = {
     DIPKernel(DIPKernel::Types::SIMPLE_X), DIPKernel(DIPKernel::Types::SIMPLE_Y)
 };
@@ -23,7 +23,7 @@ void myHOG::Init(void) {
 }
 
 void myHOG::Normalize(std::vector<float>& vfFeature) const {
-    float fNormFactor = 0.0F;
+    float fNormFactor = 0.0f;
     switch (m_iType) {
     case myHOG::Feature::HOG_WITH_L1_NORM:
         fNormFactor = m_fUnimportantValue;
@@ -78,20 +78,20 @@ void myHOG::Describe(cv::Point2i Position, std::vector<float>& vfHogFeature) con
 }
 
 void myHOG::DescribeCell(const cv::Point2i Position, std::vector<float>& vfHogFeature) const {
-    std::vector<float> vfBins(180 / m_iInterval, 0.0F);
+    std::vector<float> vfBins(180 / m_iInterval, 0.0f);
     cv::Size2i CellSize = cv::Size2i(m_BlockSize.width / 2, m_BlockSize.height / 2);
     cv::Mat mHorizontalRoi = cv::Mat(m_mHorizontalGradientImage, cv::Rect(Position, CellSize));
     cv::Mat mVerticalRoi = cv::Mat(m_mVerticalGradientImage, cv::Rect(Position, CellSize));
     
     for (int y = 0; y < CellSize.height; ++y) {
         for (int x = 0; x < CellSize.width; ++x) {
-            float fOrientation = atan2f(mVerticalRoi.at<short>(y, x), mHorizontalRoi.at<short>(y, x)) * 180.0F / static_cast<float>(CV_PI);
+            float fOrientation = atan2f(mVerticalRoi.at<short>(y, x), mHorizontalRoi.at<short>(y, x)) * 180.0f / static_cast<float>(CV_PI);
             float fMagnitude = sqrtf(static_cast<float>(mVerticalRoi.at<short>(y, x) * mVerticalRoi.at<short>(y, x) + 
                                                         mHorizontalRoi.at<short>(y, x) * mHorizontalRoi.at<short>(y, x)));
-            if (fOrientation < 0.0F) {
-                fOrientation += 180.0F;
-            } else if (fOrientation > 180.0F) {
-                fOrientation -= 180.0F;
+            if (fOrientation < 0.0f) {
+                fOrientation += 180.0f;
+            } else if (fOrientation > 180.0f) {
+                fOrientation -= 180.0f;
             }
             
             auto target = static_cast<size_t>(fOrientation / m_iInterval);
