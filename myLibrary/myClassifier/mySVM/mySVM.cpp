@@ -1,9 +1,5 @@
 #include "mySVM.h"
 
-// initialize the static value
-// the value for soft margin
-const double mySVM::SVM_CONSTRAINT_VALUE = 1.0;
-
 // the system is converge when diffrence less than it
 const double mySVM::EPSILON = 1e-6;
 
@@ -15,6 +11,29 @@ const cv::TermCriteria mySVM::CRITERIA = cv::TermCriteria(
 );
 
 mySVM::mySVM() {
+    Init();
+    SetOptimalParam(myOptimalParam());
+    SetFunctionParam(myFunctionParam());
+}
+
+mySVM::mySVM(myFunctionParam FParam, myOptimalParam OParam) {
+    Init();
+    SetOptimalParam(OParam);
+    SetFunctionParam(FParam);
+}
+
+mySVM::~mySVM() {}
+
+bool mySVM::TrainAuto(int kFold, ParamGrid Cgrid, ParamGrid gammaGrid,
+                      ParamGrid pGrid, ParamGrid nuGrid, ParamGrid coeffGrid,
+                      ParamGrid degreeGrid, bool balanced) {
+    MakeTrainingData();
+    auto pSVM = m_poClassifier.dynamicCast<cv::ml::SVM>();
+    return pSVM->trainAuto(m_poTrainingData, kFold, Cgrid, gammaGrid, pGrid,
+                           nuGrid, coeffGrid, degreeGrid, balanced);
+}
+
+void mySVM::Init(void) {
     // create SVM
     auto pSVM = cv::ml::SVM::create();
     m_poClassifier = pSVM;
@@ -22,15 +41,19 @@ mySVM::mySVM() {
     // setting the SVM attribute
     pSVM->setType(mySVM::SVM_Type);
     pSVM->setKernel(mySVM::SVM_KERNEL_Type);
-    pSVM->setC(mySVM::SVM_CONSTRAINT_VALUE);
     pSVM->setTermCriteria(mySVM::CRITERIA);
 }
 
-mySVM::~mySVM() {}
+void mySVM::SetOptimalParam(myOptimalParam Param) {
+    auto pSVM = m_poClassifier.dynamicCast<cv::ml::SVM>();
+    pSVM->setC(Param.C);
+    pSVM->setNu(Param.Nu);
+    pSVM->setP(Param.P);
+}
 
-void mySVM::Train(void) {
-    MakeTrainingData();
-    
-    // start training classifier
-    m_poClassifier.dynamicCast<cv::ml::SVM>()->train(m_poTrainingData);
+void mySVM::SetFunctionParam(myFunctionParam Param) {
+    auto pSVM = m_poClassifier.dynamicCast<cv::ml::SVM>();
+    pSVM->setDegree(Param.Degree);
+    pSVM->setGamma(Param.Gamma);
+    pSVM->setCoef0(Param.Coef0);
 }
