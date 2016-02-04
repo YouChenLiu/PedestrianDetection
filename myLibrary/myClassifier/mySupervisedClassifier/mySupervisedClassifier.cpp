@@ -65,6 +65,51 @@ void mySupervisedClassifier::LoadFeature(const std::string& sFeatureFile) {
     File.close();
 }
 
+void mySupervisedClassifier::MakeTrainingData(void) {
+    // number of labels
+    auto iNumOfLabels = static_cast<int>(m_viLabel.size());
+
+    // matrix for saving labels
+    cv::Mat mLabel = cv::Mat::zeros(cv::Size2i(1, iNumOfLabels), CV_32SC1);
+
+    // representation the labels with opencv Mat
+    for (int y = 0; y < static_cast<int>(m_viLabel.size()); ++y) {
+        mLabel.at<int>(y, 0) = m_viLabel.at(y);
+    }
+
+    // clear labels in vector for reducing memory
+    m_viLabel.clear();
+
+    // number of samples
+    auto iNumOfSamples = static_cast<int>(m_vvfFeature.size());
+
+    // the feature length
+    auto iFeatureLength = static_cast<int>(m_vvfFeature.at(0).size());
+
+    // matrix for saving features
+    cv::Mat mSample = cv::Mat::zeros(cv::Size2i(iFeatureLength, iNumOfSamples),
+                                     CV_32FC1);
+
+    // representation the samples with opencv Mat
+    for (int y = 0; y < iNumOfLabels; y++) {
+        for (int x = 0; x < iFeatureLength; x++) {
+            // copy the features from vector to opencv matrix
+            mSample.at<float>(y, x) = m_vvfFeature.at(y).at(x);
+        }
+
+        // clear the copyed feature for reducing memory
+        m_vvfFeature.at(y).clear();
+    }
+
+    // clear feature table for reducing memory
+    m_vvfFeature.clear();
+
+    using namespace cv::ml;
+    m_poTrainingData = TrainData::create(mSample,
+                                         SampleTypes::ROW_SAMPLE,
+                                         mLabel);
+}
+
 void mySupervisedClassifier::AddSample(int iLable,
                                        const std::string& sLoneOfString) {
     AddLabel(iLable);

@@ -24,6 +24,12 @@ protected:
     // the array for saving answer labels
     std::vector<int> m_viLabel;
 
+    // use openCV smart pointer to point classifier
+    cv::Ptr<cv::ml::StatModel> m_poClassifier;
+
+    // use openCV smart pointer to point training data
+    cv::Ptr<cv::ml::TrainData> m_poTrainingData;
+
 protected:
     // add a label to array
     void AddLabel(int iLabel) { m_viLabel.push_back(iLabel); }
@@ -32,6 +38,8 @@ protected:
     void SaveLabel(std::ofstream& DstFile, int iLabel) const {
         DstFile << iLabel << ": ";
     }
+
+    void MakeTrainingData(void);
 
 private:
 

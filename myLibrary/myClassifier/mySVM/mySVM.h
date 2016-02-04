@@ -16,8 +16,8 @@ public:
 
     // predict response for the provided sample encapsulated in opencv matrix
     float Predict(const cv::Mat& mSample) const override {
-        return m_poClassifier.empty() ? 0.0f : m_poClassifier->predict(mSample);
-    };
+        return m_poClassifier->empty() ? NAN : m_poClassifier->predict(mSample);
+    }
 
     // predict response for the provided sample encapsulated in std::vector
     float Predict(const std::vector<float>& vfSample) const override;
@@ -31,8 +31,7 @@ public:
     }
 
 private:
-    // use the openCV smart pointer to point SVM object
-    cv::Ptr<cv::ml::SVM> m_poClassifier;
+
 
     // --------------set SVM attributes-----------------
 
