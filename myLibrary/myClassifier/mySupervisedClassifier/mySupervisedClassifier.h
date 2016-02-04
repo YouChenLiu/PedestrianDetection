@@ -60,6 +60,8 @@ protected:
         DstFile << iLabel << ": ";
     }
 
+    // tranform labels and features to opencv matrix
+    // and create opencv training data for training classifier
     void MakeTrainingData(void);
 
 private:
