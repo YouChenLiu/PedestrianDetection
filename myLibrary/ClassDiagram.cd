@@ -1,0 +1,102 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="myClassifierBase">
+    <Position X="8" Y="2" Width="2.75" />
+    <TypeIdentifier>
+      <HashCode>AAAgAAAAAAAAAAAAAAAAAAAAAAIAAAAAAAIAAAAAgAg=</HashCode>
+      <FileName>myClassifier\myClassifierBase.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="DIPKernel" Collapsed="true">
+    <Position X="16" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAIAEACAAAAACAAAAAAAAACAABAgAAAAAiAAAAAgA=</HashCode>
+      <FileName>myFeatureExtractor\DIPKernel\DIPKernel.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="myExtractorBase" Collapsed="true">
+    <Position X="16.75" Y="4" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAgAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>myFeatureExtractor\myExtractorBase.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="myFeatureExtractor" Collapsed="true">
+    <Position X="19.5" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAABAAEAAAQAgAgAAAAAEAABAAAAAAAAAAACAAABAAA=</HashCode>
+      <FileName>myFeatureExtractor\myFeatureExtractor.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="myHOG" Collapsed="true">
+    <Position X="15.5" Y="5.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AACAAABAAQAAFCgAEAAAEAAAAAAAAAAAAAACAACBAAA=</HashCode>
+      <FileName>myFeatureExtractor\myHOG\myHOG.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="myLBP" Collapsed="true">
+    <Position X="17.75" Y="5.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>gACAAAEAAAAAIAgAAAEAEAAABAAAAgEEEAACQAAQAYU=</HashCode>
+      <FileName>myFeatureExtractor\myLBP\myLBP.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="myImageSequence" Collapsed="true">
+    <Position X="21.25" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>ACIAACAAAGAAAQACAACAAgAAAAQACAEBIAACCAAAICA=</HashCode>
+      <FileName>myImageSequence\myImageSequence.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="myModelCollector" Collapsed="true">
+    <Position X="16" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAQBAAAAAgAAAEAAABAAAAAAAAAiCAAAABA=</HashCode>
+      <FileName>myModelCollector\myModelCollector.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="myModelCollectorBase" Collapsed="true">
+    <Position X="17.75" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>myModelCollector\myModelCollectorBase.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="myResultDumper" Collapsed="true">
+    <Position X="19.5" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>JAAAAIAAAAAAAAgBBAIAAAAAAAgAAAAgAQQCQABAAAQ=</HashCode>
+      <FileName>myResultDumper\myResultDumper.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="myResultVerifier" Collapsed="true">
+    <Position X="21.25" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAIAAAQAgIAAAAABAAABIAAUACBAIAIAACSgACABA=</HashCode>
+      <FileName>myResultVerifier\myResultVerifier.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="myXMLLabel" Collapsed="true">
+    <Position X="16" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAIIABAQAAACAAgAAAAAAAAAAAAAAAQAAA=</HashCode>
+      <FileName>myXMLLabel\myXMLLabel.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="mySupervisedClassifier">
+    <Position X="8" Y="4.75" Width="2.75" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAABAAAKAAAAAAAAAAIAAAAAAAAAAA=</HashCode>
+      <FileName>myClassifier\mySupervisedClassifier\mySupervisedClassifier.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="mySVM">
+    <Position X="8" Y="7.75" Width="2.75" />
+    <TypeIdentifier>
+      <HashCode>AEAgAAgAACABAAAAAAAABAAIgAAAIABAEAACEAAAEAg=</HashCode>
+      <FileName>myClassifier\mySVM\mySVM.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Font Name="Microsoft JhengHei UI" Size="9" />
+</ClassDiagram>

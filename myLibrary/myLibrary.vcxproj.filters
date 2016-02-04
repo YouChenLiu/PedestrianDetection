@@ -48,6 +48,27 @@
     <ClInclude Include="tinyxml2\tinyxml2.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="common.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="myModelCollector\myModelCollectorBase.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="myModelCollector\myModelCollector.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="myClassifier\myClassifierBase.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="myClassifier\mySupervisedClassifier\mySupervisedClassifier.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="myClassifier\mySVM\mySVM.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="myClassifier\myAdaBoost\myAdaBoost.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="myImageSequence\myImageSequence.cpp">
@@ -77,5 +98,23 @@
     <ClCompile Include="myXMLLabel\myXMLLabel.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="myModelCollector\myModelCollector.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="myClassifier\mySupervisedClassifier\mySupervisedClassifier.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="myClassifier\mySVM\mySVM.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="myClassifier\myAdaBoost\myAdaBoost.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="myClassifier\myClassifierBase.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="ClassDiagram.cd" />
   </ItemGroup>
 </Project>
