@@ -65,6 +65,28 @@ void mySupervisedClassifier::LoadFeature(const std::string& sFeatureFile) {
     File.close();
 }
 
+void mySupervisedClassifier::Train(void) {
+    MakeTrainingData();
+
+    m_poClassifier->train(m_poTrainingData);
+}
+
+float mySupervisedClassifier::Predict(const std::vector<float>& vfSample) const {
+    // get the feature length of sample
+    auto iFeatureLength = static_cast<int>(vfSample.size());
+
+    // create matrix for saving feature
+    cv::Mat mSample = cv::Mat::zeros(cv::Size2i(iFeatureLength, 1), CV_32FC1);
+
+    // copy feature data to matrix
+    for (int x = 0; x < iFeatureLength; x++) {
+        mSample.at<float>(0, x) = vfSample.at(x);
+    }
+
+    // return the result by calling another method
+    return Predict(mSample);
+}
+
 void mySupervisedClassifier::MakeTrainingData(void) {
     // number of labels
     auto iNumOfLabels = static_cast<int>(m_viLabel.size());

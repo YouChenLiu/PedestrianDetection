@@ -20,6 +20,27 @@ public:
     // load feature file from xml file
     void LoadFeature(const std::string& sFeatureFile) override;
 
+    // get the classidier pointer
+    const cv::Ptr<cv::ml::StatModel> GetClassifier(void) const {
+        return m_poClassifier;
+    }
+
+    // train the supervised classifier
+    virtual void Train(void) override;
+
+    // predict response for the provided sample encapsulated in opencv matrix
+    float Predict(const cv::Mat& mSample) const override {
+        return m_poClassifier->empty() ? NAN : m_poClassifier->predict(mSample);
+    }
+
+    // predict response for the provided sample encapsulated in std::vector
+    float Predict(const std::vector<float>& vfSample) const override;
+
+    // save trained SVM to xml file
+    void Save(const std::string& sDstPath) const override{
+        m_poClassifier->save(sDstPath);
+    }
+
 protected:
     // the array for saving answer labels
     std::vector<int> m_viLabel;
