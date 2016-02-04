@@ -3,12 +3,16 @@
 
 #include "../mySupervisedClassifier/mySupervisedClassifier.h"
 
+// myAdaBoost is a warped class
+// let's use opencv boosting more convenience
 class myAdaBoost final : public mySupervisedClassifier {
 public:
-    myAdaBoost(unsigned int iWeakCount = 100);
+    // create adaboost with specify weak classifier count
+    myAdaBoost(unsigned int iWeakCount);
 
     virtual ~myAdaBoost(void);
 
+    // create adaboost from xml file
     void Load(const std::string& sFilePath) override {
         m_poClassifier = cv::ml::StatModel::load<cv::ml::Boost>(sFilePath);
     }
