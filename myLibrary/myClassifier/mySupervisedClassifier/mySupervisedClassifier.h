@@ -4,10 +4,24 @@
 #include "../myClassifierBase.h"
 #include <opencv2/ml.hpp>
 
+// it a base class for supervised learing classifier
+// it uses machine learning module in opencv reduce the work
+// you can inherit it and design your classifier without worring about
+//  the features and labels
 class mySupervisedClassifier : public myClassifierBase {
-public:
+public:     // public attribute
 
-public:
+protected:  // protected attribute
+    // the array for saving answer labels
+    std::vector<int> m_viLabel;
+
+    // use openCV smart pointer to point classifier
+    cv::Ptr<cv::ml::StatModel> m_poClassifier;
+
+    // use openCV smart pointer to point training data
+    cv::Ptr<cv::ml::TrainData> m_poTrainingData;
+
+public:     // public method
     mySupervisedClassifier();
     virtual ~mySupervisedClassifier();
 
@@ -15,10 +29,10 @@ public:
     virtual void AddSample(int iLable, const std::vector<float>& vfFeature);
 
     // save labels and features in array to csv file
-    virtual void SaveFeature(const std::string& sDstPath) const override;
+    virtual void SaveFeatures(const std::string& sDstPath) override;
 
     // load feature file from xml file
-    void LoadFeature(const std::string& sFeatureFile) override;
+    void LoadFeatures(const std::string& sFeatureFile) override;
 
     // get the classidier pointer
     const cv::Ptr<cv::ml::StatModel> GetClassifier(void) const {
@@ -41,32 +55,16 @@ public:
         m_poClassifier->save(sDstPath);
     }
 
-protected:
-    // the array for saving answer labels
-    std::vector<int> m_viLabel;
 
-    // use openCV smart pointer to point classifier
-    cv::Ptr<cv::ml::StatModel> m_poClassifier;
-
-    // use openCV smart pointer to point training data
-    cv::Ptr<cv::ml::TrainData> m_poTrainingData;
-
-protected:
+protected:  // protected method
     // add a label to array
     void AddLabel(int iLabel) { m_viLabel.push_back(iLabel); }
-
-    // write label to DstFile
-    void SaveLabel(std::ofstream& DstFile, int iLabel) const {
-        DstFile << iLabel << ": ";
-    }
 
     // tranform labels and features to opencv matrix
     // and create opencv training data for training classifier
     void MakeTrainingData(void);
 
-private:
-
-private:
+private:    // private method
     // add a feature string with its label to label and feature array
     void AddSample(int iLable, const std::string& sLoneOfString);
 };

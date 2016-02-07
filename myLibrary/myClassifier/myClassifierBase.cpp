@@ -1,22 +1,22 @@
 #include "myClassifierBase.h"
 
-void myClassifierBase::SaveFeature(const std::string& sDstPath) const {
-    // open destiantion text file
-    std::ofstream File(sDstPath);
-
+void myClassifierBase::SaveFeatures(const std::string& sDstPath) {
     // read a line of feature array
     for (auto& vf : m_vvfFeature) {
         std::string s;
         WriteFeatureToString(vf, s);
+        
+        std::stringstream ss(s);
+        ss << std::endl;
 
         // write out the data
-        SaveFeature(File, s);
+        WriteData(ss.str());
     }
 
-    File.close();
+    WriteOutFile(sDstPath);
 }
 
-void myClassifierBase::LoadFeature(const std::string& sFeatureFile) {
+void myClassifierBase::LoadFeatures(const std::string& sFeatureFile) {
     // open file
     std::ifstream File(sFeatureFile);
 
@@ -66,4 +66,11 @@ void myClassifierBase::WriteFeatureToString(const std::vector<float>& vfFeature,
     // transfer the buffer data to text string and clip the last common
     s = ss.str();
     s.resize(s.length() - 1);
+}
+
+void myClassifierBase::WriteOutFile(const std::string & sDstPath) {
+    std::ofstream File(sDstPath);
+    File << FileBuffer.str();
+    File.close();
+    FileBuffer.clear();
 }

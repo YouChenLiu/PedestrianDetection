@@ -5,8 +5,25 @@
 #include <fstream>
 #include <sstream>
 
+// it's a base class for cklassifier
+// it contain a vector of vector of float for saving features and
+//  some methods for accessing it such as load and save feature
+// it also contain some methods for calssifier like train and predict
+// if you want to design your classifer, you should inherit two derived class
+//  superviesed and unsupervised class
+// do not modify this class or modify it carefully, please
 class myClassifierBase {
-public:
+public:     // public attribute
+
+protected:  // protected attribute
+    // the array for saving features
+    std::vector<std::vector<float>> m_vvfFeature;
+
+private:    // private attribute
+    // stream for caching write out data
+    std::stringstream FileBuffer;
+
+public:     // public method
     myClassifierBase(void) {};
     virtual ~myClassifierBase(void) {};
 
@@ -21,19 +38,15 @@ public:
     virtual void Save(const std::string& sDstPath) const = 0;
 
     // save features in table to csv file
-    virtual void SaveFeature(const std::string& sDstPath) const;
+    virtual void SaveFeatures(const std::string& sDstPath);
 
     // create classifier from model xml file
     virtual void Load(const std::string& sModelFile) = 0;
 
     // create classifier from feature xml file
-    virtual void LoadFeature(const std::string& sFeatureFile);
+    virtual void LoadFeatures(const std::string& sFeatureFile);
 
-protected:
-    // the array for saving features
-    std::vector<std::vector<float>> m_vvfFeature;
-
-protected:
+protected:  // protected method
     // add a sample to array
     void AddFeature(const std::vector<float>& vfNewFeature) {
         m_vvfFeature.push_back(vfNewFeature);
@@ -42,15 +55,19 @@ protected:
     // add a line features saved in string which uses common for seperating
     void AddFeature(const std::string& sLineOfFeature);
 
-    // write feature string to DstFile
-    void SaveFeature(std::ofstream& DstFile,
-                     const std::string& sLineOfFeature) const {
-        DstFile << sLineOfFeature << std::endl;
+    // write data to cache
+    void WriteData(const std::string& sData) {
+        FileBuffer << sData;
     }
 
     // tranform feature vector to string
     void WriteFeatureToString(const std::vector<float>& vfFeature,
                               std::string& s) const;
+
+    // write out the caching data to text file
+    void WriteOutFile(const std::string& sDstPath);
+
+private:    // private method
 
 };
 

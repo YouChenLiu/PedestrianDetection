@@ -1,4 +1,6 @@
 #include "mySupervisedClassifier.h"
+#include <fstream>
+#include <sstream>
 
 mySupervisedClassifier::mySupervisedClassifier() {}
 
@@ -10,17 +12,17 @@ void mySupervisedClassifier::AddSample(int iLable,
     AddLabel(iLable);
 }
 
-void mySupervisedClassifier::SaveFeature(const std::string & sDstPath) const {
-    // create file for writing
-    std::ofstream File(sDstPath);
-
-    // set flag let system print positive symbol
-    File.setf(std::ios::showpos);
-
+void mySupervisedClassifier::SaveFeatures(const std::string & sDstPath) {
     // write out label and feature table together
     for (size_t i = 0; i < m_viLabel.size(); i++) {
-        // write out label
-        SaveLabel(File, m_viLabel.at(i));
+        // use stringstream as buffer
+        std::stringstream ss;
+
+        // set flag let system print positive symbol
+        ss.setf(std::ios::showpos);
+        
+        // write out label and seperate symbol
+        ss << m_viLabel.at(i) << ": ";
 
         // string for represneting feature
         std::string s;
@@ -28,12 +30,18 @@ void mySupervisedClassifier::SaveFeature(const std::string & sDstPath) const {
         // tranform feature to string
         WriteFeatureToString(m_vvfFeature.at(i), s);
 
-        // write out feature string
-        myClassifierBase::SaveFeature(File, s);
+        // append the feature
+        ss << s << std::endl;
+
+        // write data stream
+        WriteData(ss.str());
     }
+
+    // write out the cache to file
+    WriteOutFile(sDstPath);
 }
 
-void mySupervisedClassifier::LoadFeature(const std::string& sFeatureFile) {
+void mySupervisedClassifier::LoadFeatures(const std::string& sFeatureFile) {
     // open feature file
     std::ifstream File(sFeatureFile);
 
