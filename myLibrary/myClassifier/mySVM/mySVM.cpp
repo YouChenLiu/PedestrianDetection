@@ -3,13 +3,6 @@
 // the system is converge when diffrence less than it
 const double mySVM::EPSILON = 1e-6;
 
-// opencv criteria object
-const cv::TermCriteria mySVM::CRITERIA = cv::TermCriteria(
-    mySVM::CRITERIA_TYPE,
-    mySVM::ITERATION_COUNT,
-    mySVM::EPSILON
-);
-
 mySVM::mySVM() {
     Init();
     SetOptimalParam(myOptimalParam());
@@ -41,7 +34,11 @@ void mySVM::Init(void) {
     // setting the SVM attribute
     pSVM->setType(mySVM::SVM_Type);
     pSVM->setKernel(mySVM::SVM_KERNEL_Type);
-    pSVM->setTermCriteria(mySVM::CRITERIA);
+    pSVM->setTermCriteria(
+        cv::TermCriteria(mySVM::CRITERIA_TYPE,
+                         mySVM::ITERATION_COUNT,
+                         mySVM::EPSILON)
+    );
 }
 
 void mySVM::SetOptimalParam(myOptimalParam Param) {
