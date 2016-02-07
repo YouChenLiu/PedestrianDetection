@@ -59,6 +59,32 @@ public:
         }
     };
 
+private:
+    // ------------------------set SVM attributes---------------------------
+
+    // SVM type will determine how to do classification
+    // the value can be C_SVC, NU_SVC,  etc..
+    static const int SVM_Type = cv::ml::SVM::C_SVC;
+
+    // SVM kernel type will determine the classification method
+    // the value can be LINEAR, POLY, RBF, etc..
+    static const int SVM_KERNEL_Type = cv::ml::SVM::LINEAR;
+
+    // this attribute determine what's situation can stop training
+    // COUNT : stop training when reach the max count
+    // MAX_ITER : stop training wehn reach max count or converge
+    // EPS : stop training when it's converge
+    static const int CRITERIA_TYPE = cv::TermCriteria::MAX_ITER;
+
+    // the maximum training cycle count
+    static const int ITERATION_COUNT = 10000;
+
+    // the system is converge when diffrence less than it
+    // initialize in cpp file
+    static const double EPSILON;
+
+    // ------------------------end SVM attributes---------------------------
+
 public:
     // create a svm with default parameter
     mySVM(void);
@@ -89,36 +115,6 @@ public:
         ParamGrid   coeffGrid   = SVM::getDefaultGrid(SVM::COEF),
         ParamGrid   degreeGrid  = SVM::getDefaultGrid(SVM::DEGREE),
         bool        balanced    = false);
-
-private:
-    // ------------------------set SVM attributes---------------------------
-
-    // SVM type will determine how to do classification
-    // the value can be C_SVC, NU_SVC,  etc..
-    static const int SVM_Type = cv::ml::SVM::C_SVC;
-
-    // SVM kernel type will determine the classification method
-    // the value can be LINEAR, POLY, RBF, etc..
-    static const int SVM_KERNEL_Type = cv::ml::SVM::LINEAR;
-
-    // this attribute determine what's situation can stop training
-    // COUNT : stop training when reach the max count
-    // MAX_ITER : stop training wehn reach max count or converge
-    // EPS : stop training when it's converge
-    static const int CRITERIA_TYPE = cv::TermCriteria::MAX_ITER;
-
-    // the maximum training cycle count
-    static const int ITERATION_COUNT = 10000;
-
-    // the system is converge when diffrence less than it
-    // initialize in cpp file
-    static const double EPSILON;
-
-    // opencv criteria object
-    // initialize in cpp file
-    static const cv::TermCriteria CRITERIA;
-
-    // ------------------------end SVM attributes---------------------------
 
 private:
     // initialization method
