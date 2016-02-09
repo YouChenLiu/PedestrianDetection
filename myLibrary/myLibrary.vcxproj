@@ -84,6 +84,7 @@
     <ClInclude Include="myClassifier\mySupervisedClassifier\mySupervisedClassifier.h" />
     <ClInclude Include="myClassifier\mySVM\mySVM.h" />
     <ClInclude Include="myFeatureExtractor\DIPKernel\DIPKernel.h" />
+    <ClInclude Include="myFeatureExtractor\myBlockBasedExtractor\myBlockBasedExtractor.h" />
     <ClInclude Include="myFeatureExtractor\myExtractorBase.h" />
     <ClInclude Include="myFeatureExtractor\myFeatureExtractor.h" />
     <ClInclude Include="myFeatureExtractor\myHOG\myHOG.h" />
@@ -91,6 +92,8 @@
     <ClInclude Include="myImageSequence\myImageSequence.h" />
     <ClInclude Include="myModelCollector\myModelCollector.h" />
     <ClInclude Include="myModelCollector\myModelCollectorBase.h" />
+    <ClInclude Include="myModelIndexer\myLBPIndexer\myLBPIndexer.h" />
+    <ClInclude Include="myModelIndexer\myModelIndexerBase.h" />
     <ClInclude Include="myResultDumper\myResultDumper.h" />
     <ClInclude Include="myResultVerifier\myResultVerifier.h" />
     <ClInclude Include="myXMLLabel\myXMLLabel.h" />
@@ -102,11 +105,14 @@
     <ClCompile Include="myClassifier\mySupervisedClassifier\mySupervisedClassifier.cpp" />
     <ClCompile Include="myClassifier\mySVM\mySVM.cpp" />
     <ClCompile Include="myFeatureExtractor\DIPKernel\DIPKernel.cpp" />
+    <ClCompile Include="myFeatureExtractor\myBlockBasedExtractor\myBlockBasedExtractor.cpp" />
+    <ClCompile Include="myFeatureExtractor\myExtractorBase.cpp" />
     <ClCompile Include="myFeatureExtractor\myFeatureExtractor.cpp" />
     <ClCompile Include="myFeatureExtractor\myHOG\myHOG.cpp" />
     <ClCompile Include="myFeatureExtractor\myLBP\myLBP.cpp" />
     <ClCompile Include="myImageSequence\myImageSequence.cpp" />
     <ClCompile Include="myModelCollector\myModelCollector.cpp" />
+    <ClCompile Include="myModelIndexer\myLBPIndexer\myLBPIndexer.cpp" />
     <ClCompile Include="myResultDumper\myResultDumper.cpp" />
     <ClCompile Include="myResultVerifier\myResultVerifier.cpp" />
     <ClCompile Include="myXMLLabel\myXMLLabel.cpp" />
