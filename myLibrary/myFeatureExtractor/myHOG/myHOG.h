@@ -1,13 +1,11 @@
 #ifndef _MY_HOG_H_
 #define _MY_HOG_H_
 
-#include <iostream>
-#include <vector>
-#include <opencv2/core.hpp>
+#include "../../common.h"
 #include "../DIPKernel/DIPKernel.h"
-#include "../myExtractorBase.h"
+#include "../myBlockBasedExtractor/myBlockBasedExtractor.h"
 
-class myHOG : public myExtractorBase {
+class myHOG : public myBlockBasedExtractor {
 public:
     class Feature : protected myFeatureBase {
     public:
@@ -25,12 +23,11 @@ private:
     cv::Mat m_mHorizontalGradientImage;
     cv::Mat m_mVerticalGradientImage;
     int m_iInterval;
-    cv::Size2i m_BlockSize;
     int m_iType;
 
 public:
     myHOG(const cv::Mat& mImage, int iType, cv::Size2i blockSize = cv::Size2i(8, 8), int iInterval = 20);
-    virtual ~myHOG(void) override;
+    virtual ~myHOG(void);
 
     void Describe(cv::Point2i Position, std::vector<float>& vfHogFeature) const override;
 
