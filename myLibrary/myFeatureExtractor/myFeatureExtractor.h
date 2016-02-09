@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include <memory>
+#include "../myFeatureExtractor/myExtractorBase.h"
 #include "myHOG/myHOG.h"
 #include "myLBP/myLBP.h"
 
@@ -11,7 +12,7 @@
 #   include <fstream>
 #endif
 
-class myFeatureExtractor {
+class myFeatureExtractor : public myExtractorBase {
 public:
     class Features : public myHOG::Feature, public myLBP::Feature {};
 private:
