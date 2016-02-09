@@ -1,18 +1,15 @@
 #ifndef _MY_LBP_H_
 #define _MY_LBP_H_
 
-#include <array>
-#include <vector>
-#include <opencv2/core.hpp>
-#include "../myExtractorBase.h"
+#include "../myBlockBasedExtractor/myBlockBasedExtractor.h"
 
-#ifdef _DEBUG
+#ifndef NDEBUG
 #	include <iostream>
 #   include <iomanip>
 #endif
 
-class myLBP : public myExtractorBase {
-public:
+class myLBP : public myBlockBasedExtractor {
+public:     // public attribute
     class Feature : protected myFeatureBase {
     public:
         static const int LBP_8_1            = 0;
@@ -27,32 +24,38 @@ public:
     static const unsigned int MAX_TRANSITION_TIME = 2;   // the LBP feature wiil be nonuniform if times oftransition (0 -> 1 or 1 -> 0) over it.
     static const unsigned int MAX_BIT_LENGTH = 16;       // upper bound of LBP feature length
 	
-private:
-    cv::Mat m_mImage;
-    unsigned int m_iPattern;
-    cv::Size2i m_BlockSize;
-    bool m_bIsUniform;
+protected:  // protected attrribute
     unsigned int m_iRadius;
     unsigned int m_iLength;
+
+private:    // private attribute
+    unsigned int m_iPattern;
+    bool m_bIsUniform;
     static std::array<std::vector<bool>, myLBP::MAX_BIT_LENGTH / 8> m_avbUniformMap;
     static std::array<std::vector<cv::Point2i>, myLBP::NUMBER_OF_PATTERNS> m_SamplingPoints;
 
-public:
-    myLBP(const cv::Mat& mImage, int Pattern, cv::Size2i blockSize = cv::Size2i(8, 8));
-    virtual ~myLBP(void) override;
+public:     // public method
+    myLBP(void);
+    myLBP(const cv::Mat& mImage, int Pattern,
+          cv::Size2i blockSize = cv::Size2i(8, 8));
+    virtual ~myLBP(void);
 
-    void Describe(cv::Point2i Position, std::vector<float>& vfFeature) const override;
+    virtual void Describe(cv::Point2i Position,
+                          std::vector<float>& vfFeature) const override;
 
-#ifdef _DEBUG
+#ifndef NDEBUG
     void PrintUniformMap(int iLength) const;
 #endif
 
-private:
+protected:  // protected method
+    unsigned int GetBinNumber(cv::Point2i Position) const;
+    unsigned int GetBinNumber(const cv::Mat& mImg) const;
+    static bool IsUniform(unsigned int iBinNumber, unsigned int iLength);
+private:    // private method
     void Init();
     void SetAttributes(int iPattern);
-	unsigned int GetBinNumber(cv::Point2i Position) const;
     static void SetSamplingPoints(void);
-    static bool IsUniform(unsigned int iBinNumber, unsigned int iLength);
+    
 };
 
 #endif
