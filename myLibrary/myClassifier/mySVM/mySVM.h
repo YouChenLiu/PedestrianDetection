@@ -14,7 +14,7 @@ public:
     class myOptimalParam {
     public:
         // For SVM::C_SVC, SVM::EPS_SVR or SVM::NU_SVR
-        // default value is 0.0
+        // default value is 1.0
         double C;
 
         // For SVM::NU_SVC, SVM::ONE_CLASS or SVM::NU_SVR
@@ -27,7 +27,7 @@ public:
 
     public:
         myOptimalParam(void) {
-            C = Nu = P = 0.0;
+            C = 1.0; Nu = P = 0.0;
         }
         myOptimalParam(double c, double nu, double p) {
             C = c; Nu = nu; P = p;
