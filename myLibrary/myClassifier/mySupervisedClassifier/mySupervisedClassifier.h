@@ -51,10 +51,7 @@ public:     // public method
     float Predict(const std::vector<float>& vfSample) const override;
 
     // save trained SVM to xml file
-    void Save(const std::string& sDstPath) const override{
-        m_poClassifier->save(sDstPath);
-    }
-
+    bool Save(const std::string& sDstPath) const override;
 
 protected:  // protected method
     // add a label to array

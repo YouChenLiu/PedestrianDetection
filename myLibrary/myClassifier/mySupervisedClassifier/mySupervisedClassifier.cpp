@@ -95,6 +95,15 @@ float mySupervisedClassifier::Predict(const std::vector<float>& vfSample) const 
     return Predict(mSample);
 }
 
+bool mySupervisedClassifier::Save(const std::string & sDstPath) const {
+    if (!m_poClassifier->empty()) {
+        m_poClassifier->save(sDstPath);
+        return true;
+    } else {
+        return false;
+    }
+}
+
 void mySupervisedClassifier::MakeTrainingData(void) {
     // number of labels
     auto iNumOfLabels = static_cast<int>(m_viLabel.size());
