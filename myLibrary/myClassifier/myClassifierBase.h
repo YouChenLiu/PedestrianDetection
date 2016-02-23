@@ -35,7 +35,7 @@ public:     // public method
     virtual float Predict(const std::vector<float>& vfSample) const = 0;
 
     // save the trained classifier to an xml file
-    virtual void Save(const std::string& sDstPath) const = 0;
+    virtual bool Save(const std::string& sDstPath) const = 0;
 
     // save features in table to csv file
     virtual void SaveFeatures(const std::string& sDstPath);
