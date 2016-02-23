@@ -4,28 +4,29 @@
 #include "../myModelIndexerBase.h"
 #include "../../myFeatureExtractor/myLBP/myLBP.h"
 
-class myLBPIndexer final : public myModelIndexerBase, public myLBP {
+class myLBPIndexer final : public myModelIndexerBase, protected myLBP {
 public:     // public attribute
 
 protected:  // protected attribute
 
 private:    // private attribute
+    static std::array<unsigned int, 256> m_aiUniformIndex;
 
 public:     // public method
-    myLBPIndexer(void);
-    myLBPIndexer(const cv::Mat& mImage);
+    myLBPIndexer(cv::Size2i BlockSize = cv::Size2i(8, 8));
     virtual ~myLBPIndexer(void);
 
+    // return the maximun number of bins
     unsigned int GetNumOfBins(void) const override { return 59u; }
 
-    unsigned int GetBinNumber(const cv::Point2i Position) const override;
+    // calculate the bin number with specific position
+    unsigned int GetBinNumber(const cv::Mat& mImage,
+                              const cv::Point2i Position) const override;
 
-    
 protected:  // protected method
 
 private:    // private method
-    void Describe(cv::Point2i Position,
-                  std::vector<float>& vfFeature) const override {}
+    
 
     void Init(void);
 };
