@@ -2,14 +2,11 @@
 #define _MY_MODEL_COLLECTOR_BASE_H_
 
 #include "../common.h"
-#include <memory>
-#include "../myModelIndexer/myModelIndexerBase.h"
 
 class myModelCollectorBase {
 public:     // public attribute
 
 protected:  // protected attribute
-    std::unique_ptr<myModelIndexerBase> m_poIndexer;
 
 private:    // private attribute
 
