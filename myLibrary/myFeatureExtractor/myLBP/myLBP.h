@@ -25,14 +25,14 @@ public:     // public attribute
     static const unsigned int MAX_BIT_LENGTH = 16;       // upper bound of LBP feature length
 	
 protected:  // protected attrribute
+    static std::array<std::vector<cv::Point2i>, myLBP::NUMBER_OF_PATTERNS> m_SamplingPoints;
     unsigned int m_iRadius;
     unsigned int m_iLength;
+    unsigned int m_iPattern;
 
 private:    // private attribute
-    unsigned int m_iPattern;
     bool m_bIsUniform;
     static std::array<std::vector<bool>, myLBP::MAX_BIT_LENGTH / 8> m_avbUniformMap;
-    static std::array<std::vector<cv::Point2i>, myLBP::NUMBER_OF_PATTERNS> m_SamplingPoints;
 
 public:     // public method
     myLBP(void);
@@ -48,8 +48,9 @@ public:     // public method
 #endif
 
 protected:  // protected method
-    unsigned int GetBinNumber(cv::Point2i Position) const;
-    unsigned int GetBinNumber(const cv::Mat& mImg) const;
+    virtual unsigned int GetBinNumber(cv::Point2i Position) const;
+    virtual unsigned int GetBinNumber(const cv::Mat& mImg) const;
+    static bool IsUniform(int iPattern, unsigned int iBinNumber);
     static bool IsUniform(unsigned int iBinNumber, unsigned int iLength);
 private:    // private method
     void Init();

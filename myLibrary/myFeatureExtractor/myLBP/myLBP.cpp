@@ -51,8 +51,10 @@ void myLBP::SetSamplingPoints(void) {
     }
 
     std::array<Point2i, 16> Location16_2 = {
-        Point2i(-2, -2), Point2i(-1, -2), Point2i(+0, -2), Point2i(+1, -2), Point2i(+2, -2), Point2i(+2, -1), Point2i(+2, +0), Point2i(+2, +1),
-        Point2i(+2, +2), Point2i(+1, +2), Point2i(+0, +2), Point2i(-1, +2), Point2i(-2, +2), Point2i(-2, +1), Point2i(-2, +0), Point2i(-2, -1)
+        Point2i(-2, -2), Point2i(-1, -2), Point2i(+0, -2), Point2i(+1, -2),
+        Point2i(+2, -2), Point2i(+2, -1), Point2i(+2, +0), Point2i(+2, +1),
+        Point2i(+2, +2), Point2i(+1, +2), Point2i(+0, +2), Point2i(-1, +2),
+        Point2i(-2, +2), Point2i(-2, +1), Point2i(-2, +0), Point2i(-2, -1)
     };
     for (auto pt : Location16_2) {
         m_SamplingPoints.at(Feature::LBP_16_2).push_back(pt);
@@ -101,7 +103,7 @@ void myLBP::Describe(cv::Point2i Position, std::vector<float>& viFeature) const 
 unsigned int myLBP::GetBinNumber(cv::Point2i Position) const {
     cv::Point2i ptRadius(m_iRadius, m_iRadius);
     cv::Point2i ptLeftTop(Position - ptRadius);
-    cv::Point2i ptBottomRight(Position + ptRadius);
+    cv::Point2i ptBottomRight(Position + ptRadius + cv::Point2i(1, 1));
     if (ptLeftTop.x < 0 || ptBottomRight.x >= m_mImage.cols ||
         ptLeftTop.y < 0 || ptBottomRight.y >= m_mImage.rows) {
         return UINT_MAX;
@@ -114,16 +116,21 @@ unsigned int myLBP::GetBinNumber(const cv::Mat& mImg) const {
     unsigned int iBinNumber = 0;
     
     const cv::Point2i ptCenter(m_iRadius, m_iRadius);
-    const auto cCenterIntensity = m_mImage.at<unsigned char>(ptCenter);
+    const auto cCenterIntensity = mImg.at<unsigned char>(ptCenter);
     const auto& SampleingPoints =
         m_SamplingPoints.at(m_iPattern % myLBP::NUMBER_OF_PATTERNS);
     for (const auto pt : SampleingPoints) {
-        auto cCurrentIntensity = m_mImage.at<unsigned char>(pt);
+        auto cCurrentIntensity = mImg.at<unsigned char>(ptCenter + pt);
         iBinNumber = (iBinNumber << 1) |
-            (cCurrentIntensity <= cCenterIntensity) ? 0x00 : 0x01;
+            ((cCurrentIntensity <= cCenterIntensity) ? 0x00 : 0x01);
     }
 
     return iBinNumber;
+}
+
+bool myLBP::IsUniform(int iPatten, unsigned int iBinNumber) {
+    auto iIndex = iPatten == Feature::LBP_16_2_UNIFORM ? 1 : 0;
+    return m_avbUniformMap.at(iIndex).at(iBinNumber);
 }
 
 bool myLBP::IsUniform(unsigned int iBinNumber, unsigned int iLength) {
@@ -150,7 +157,7 @@ bool myLBP::IsUniform(unsigned int iBinNumber, unsigned int iLength) {
     return bResult;
 }
 
-#ifdef _DEBUG
+#ifndef NDEBUG
 void myLBP::PrintUniformMap(int iLength) const {
     int i = 0;
     int sum = 0;
