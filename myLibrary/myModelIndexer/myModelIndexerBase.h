@@ -16,7 +16,8 @@ public:     // public methid
 
     virtual unsigned int GetNumOfBins(void) const = 0;
 
-    virtual unsigned int GetBinNumber(const cv::Point2i Position) const = 0;
+    virtual unsigned int GetBinNumber(const cv::Mat& mImage, 
+                                      const cv::Point2i Position) const = 0;
 
 protected:  // protected method
 
