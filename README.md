@@ -12,6 +12,9 @@ You can use the modules of this repository every where if you need.
 The comments of all will slowly compelete.
 Wellcome to report any problem or advisis.
 
+<b>NEW</b>
+Here has website for description the myLibrary classes.
+http://u0351801.myftp.org/class/annotated.html
 
 --------------------------------------------------------------------------------------
 You-Chen Liu  
