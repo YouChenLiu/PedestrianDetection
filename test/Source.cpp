@@ -25,17 +25,24 @@ int main(void) {
     */
 
     std::array<myModelCollector, 5> aoCollector;
-
+    std::ofstream ModelList("models.txt");
+    std::ofstream FeatureList("features.txt");
+    myImageSequence m;
+    m.SetAttribute(myImageSequence::Attribute::EXTENSION, "bmp");
     const std::string sRoot = "Models";
     int i = 0;
+    /*
     for (auto& o : aoCollector) {
         o.Resize(5);
         o.AddSample(i, +1, std::vector<float>(10, +1.0f));
         o.AddSample(i, -1, std::vector<float>(10, -1.0f));
-        o.TrainModels();
-        o.SaveModels(sRoot);
+        //o.TrainModels();
+        //ModelList << o.SaveModels("Models") << std::endl;
+        //FeatureList << o.SaveFeatures("Features") << std::endl;
         i++;
     }
+    */
+    aoCollector.at(0).LoadFeatures("Features/0000/features.txt");
     
     return 0;
 }
