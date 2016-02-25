@@ -4,66 +4,89 @@
 #include "../myClassifierBase.h"
 #include <opencv2/ml.hpp>
 
-// it a base class for supervised learing classifier
-// it uses machine learning module in opencv reduce the work
-// you can inherit it and design your classifier without worring about
-//  the features and labels
+/** 
+ * @brief Base class for supervised classifier.
+ *
+ * It's a base class for supervised learing classifier.
+ * It uses machine learning module in opencv reduce the work.
+ * You can inherit it and design your classifier without worring about
+ * the features and labels.
+ */
 class mySupervisedClassifier : public myClassifierBase {
 public:     // public attribute
 
 protected:  // protected attribute
-    // the array for saving answer labels
+    /// The array for saving answer labels.
     std::vector<int> m_viLabel;
 
-    // use openCV smart pointer to point classifier
+    /// The openCV smart pointer to point classifier.
     cv::Ptr<cv::ml::StatModel> m_poClassifier;
 
-    // use openCV smart pointer to point training data
+    /// The openCV smart pointer to point training data.
     cv::Ptr<cv::ml::TrainData> m_poTrainingData;
 
 public:     // public method
+    /**
+     * @brief Default constructor
+     */
     mySupervisedClassifier();
     virtual ~mySupervisedClassifier();
 
-    // add a sample with its label to feature and label array
-    virtual void AddSample(int iLable, const std::vector<float>& vfFeature);
+    /**
+     * @brief Add a sample with its label to feature and label array.
+     *
+     * @param iLabel The label describes feature belongs to which class.
+     * @param vfFeature The feature wanted to add to table.
+     */
+    virtual void AddSample(int iLabel, const std::vector<float>& vfFeature);
 
-    // save labels and features in array to csv file
     virtual void SaveFeatures(const std::string& sDstPath) override;
 
-    // load feature file from xml file
     void LoadFeatures(const std::string& sFeatureFile) override;
 
-    // get the classidier pointer
+    /**
+     * @brief Get the classidier pointer.
+     *
+     * @return A OpenCV smart pointer to classifier.
+     */
     const cv::Ptr<cv::ml::StatModel> GetClassifier(void) const {
         return m_poClassifier;
     }
 
-    // train the supervised classifier
     virtual void Train(void) override;
-
-    // predict response for the provided sample encapsulated in opencv matrix
+    
     float Predict(const cv::Mat& mSample) const override {
         return m_poClassifier->empty() ? NAN : m_poClassifier->predict(mSample);
     }
 
-    // predict response for the provided sample encapsulated in std::vector
     float Predict(const std::vector<float>& vfSample) const override;
 
-    // save trained SVM to xml file
     bool Save(const std::string& sDstPath) const override;
 
 protected:  // protected method
-    // add a label to array
+    /**
+     * @brief Add a label to array.
+     *
+     * @param iLabel The label want to add to table.
+     */
     void AddLabel(int iLabel) { m_viLabel.push_back(iLabel); }
 
-    // tranform labels and features to opencv matrix
-    // and create opencv training data for training classifier
+    /**
+     * @brief Transorm data to OpenCV TrainData
+     *
+     * Tranform labels and features to opencv matrix
+     * and create opencv training data for training classifier.
+     */
     void MakeTrainingData(void);
 
 private:    // private method
-    // add a feature string with its label to label and feature array
-    void AddSample(int iLable, const std::string& sLoneOfString);
+    /**
+     * @brief Add a feature string with its label to label and feature array.
+     *
+     * @param iLabel The iLabel represents the feature meaning.
+     * @param sLineOfString The feature saving in a string.
+     */
+    void AddSample(int iLabel, const std::string& sLineOfString);
 };
 
 #endif // !_MY_SUPERVISED_CLASSIFIER_H_

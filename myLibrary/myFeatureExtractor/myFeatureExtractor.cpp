@@ -1,15 +1,20 @@
 #include "myFeatureExtractor.h"
 
-myFeatureExtractor::myFeatureExtractor(IplImage* pImage, CvSize BlockSize) {
+#ifndef NDEBUG
+#   include <iomanip>
+#   include <fstream>
+#endif
+
+myFeatureExtractor::myFeatureExtractor(IplImage* pImage, CvSize BlockSize) :
+    myBlockBasedExtractor(cv::cvarrToMat(pImage, true),
+                          cv::Size2i(BlockSize.width, BlockSize.height)){
     Init();
-    m_mImage = cv::cvarrToMat(pImage, true);
-    m_BlockSize = cv::Size2i(BlockSize.width, BlockSize.height);
 }
 
-myFeatureExtractor::myFeatureExtractor(const cv::Mat& mImage, cv::Size2i BlockSize) {
+myFeatureExtractor::myFeatureExtractor(
+    const cv::Mat& mImage, cv::Size2i BlockSize) :
+    myBlockBasedExtractor(mImage,BlockSize) {
     Init();
-    m_mImage = mImage;
-    m_BlockSize = BlockSize;
 }
 
 myFeatureExtractor::~myFeatureExtractor(void) {}
@@ -19,7 +24,8 @@ void myFeatureExtractor::Init(void) {
     m_mImage = cv::Mat();
 }
 
-void myFeatureExtractor::Describe(cv::Point2i Position, std::vector<float>& vfFeature) const {
+void myFeatureExtractor::Describe(cv::Point2i Position,
+                                  std::vector<float>& vfFeature) const {
     using namespace std;
     vfFeature.clear();
     
@@ -40,7 +46,8 @@ void myFeatureExtractor::Describe(cv::Point2i Position, std::vector<float>& vfFe
     static ofstream oFeatureFile("Feature.txt");
     if (oFeatureFile.is_open() == true) {
         oFeatureFile.precision(6);
-        oFeatureFile << setfill('0') << setw(5) << std::right << iFeatureIndex++ << ": ";
+        oFeatureFile << setfill('0') << setw(5) << std::right
+                     << iFeatureIndex++ << ": ";
         oFeatureFile << setfill(' ');
         int i = 0;
         for (auto feature : vfFeature) {

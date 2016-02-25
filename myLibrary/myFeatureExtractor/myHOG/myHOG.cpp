@@ -5,11 +5,11 @@ static const std::array<DIPKernel, 2> m_aoHogMask = {
     DIPKernel(DIPKernel::Types::SIMPLE_X), DIPKernel(DIPKernel::Types::SIMPLE_Y)
 };
 
-myHOG::myHOG(const cv::Mat& mImage, int iType, cv::Size2i blockSize, int iInterval) {
+myHOG::myHOG(const cv::Mat& mImage, int iType, cv::Size2i BlockSize,
+             int iInterval) : myBlockBasedExtractor(mImage, BlockSize) {
     Init();
     m_mHorizontalGradientImage = mImage * m_aoHogMask.at(0);
     m_mVerticalGradientImage = mImage * m_aoHogMask.at(1);
-    m_BlockSize = blockSize;
     m_iInterval = iInterval;
     m_iType = iType;
 }
@@ -19,7 +19,6 @@ myHOG::~myHOG(void) {}
 void myHOG::Init(void) {
     m_mHorizontalGradientImage = m_mVerticalGradientImage = cv::Mat();
     m_iInterval = 0;
-    m_BlockSize = cv::Size2i(0, 0);
 }
 
 void myHOG::Normalize(std::vector<float>& vfFeature) const {

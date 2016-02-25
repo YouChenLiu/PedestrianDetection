@@ -74,8 +74,11 @@ void mySupervisedClassifier::LoadFeatures(const std::string& sFeatureFile) {
 }
 
 void mySupervisedClassifier::Train(void) {
-    MakeTrainingData();
+    if ((m_viLabel.size() & m_vvfFeature.size()) == 0) {
+        return;
+    }
 
+    MakeTrainingData();
     m_poClassifier->train(m_poTrainingData);
 }
 

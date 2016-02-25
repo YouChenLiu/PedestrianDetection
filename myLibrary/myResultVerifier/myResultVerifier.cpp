@@ -1,4 +1,5 @@
 #include "myResultVerifier.h"
+#include "../myXMLLabel/myXMLLabel.h"
 
 myResultVerifier::myResultVerifier(const std::string sDetctionResult, const std::string sGroundTruth) {
     Init();

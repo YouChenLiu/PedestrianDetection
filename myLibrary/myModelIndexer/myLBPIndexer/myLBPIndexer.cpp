@@ -5,7 +5,7 @@ std::array<unsigned int, 256> myLBPIndexer::m_aiUniformIndex;
 myLBPIndexer::myLBPIndexer(cv::Size2i BlockSize) :
     myLBP(cv::Mat(), myLBP::Feature::LBP_8_1_UNIFORM, BlockSize) {
     unsigned int iMapping = 0;
-    for (std::size_t i = 0; i < 256; ++i) {
+    for (unsigned int i = 0; i < 256; ++i) {
         auto bUniform = IsUniform(Feature::LBP_8_1_UNIFORM, i);
         m_aiUniformIndex.at(i) = bUniform ? iMapping++ : 58;
     }

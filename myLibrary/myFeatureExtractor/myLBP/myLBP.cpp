@@ -1,6 +1,10 @@
 #include "myLBP.h"
 #include <climits>
 
+#ifndef NDEBUG
+#   include <iomanip>
+#endif
+
 std::array<std::vector<bool>, myLBP::MAX_BIT_LENGTH / 8> myLBP::m_avbUniformMap = {};
 std::array<std::vector<cv::Point2i>, myLBP::NUMBER_OF_PATTERNS> myLBP::m_SamplingPoints = {};
 

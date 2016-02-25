@@ -1,6 +1,11 @@
 #include "myImageSequence.h"
+#include <opencv2/highgui.hpp>
+#include <iomanip>
 
-myImageSequence::myImageSequence(const std::string& sRootPath, const std::string& sPrefix, const std::string& sExtension, bool bIsColor) {
+myImageSequence::myImageSequence(const std::string& sRootPath,
+                                 const std::string& sPrefix,
+                                 const std::string& sExtension,
+                                 bool bIsColor) {
     Init();
     m_sRootPath = sRootPath;
     m_sPrefix = sPrefix;
@@ -21,23 +26,27 @@ void myImageSequence::Init(void) {
 
 std::string myImageSequence::MakePath(void) {
     ++m_iOffest;
-    return m_sRootPath + m_sPrefix + GetSequenceNumberString() + "." + m_sExtension;
+    return m_sRootPath + m_sPrefix + GetSequenceNumberString() +
+        "." + m_sExtension;
 }
 
 bool myImageSequence::ReadImage(cv::Mat& mImage) {
     std::string sPath = MakePath();
-    mImage = cv::imread(sPath, m_bIsColor ? cv::IMREAD_COLOR : cv::IMREAD_GRAYSCALE);
+    mImage = cv::imread(sPath,
+                        m_bIsColor ? cv::IMREAD_COLOR : cv::IMREAD_GRAYSCALE);
     return mImage.empty() ? false : true;
 }
 
 cv::Mat myImageSequence::ReadImage(void) {
     std::string sPath = MakePath();
-    return cv::imread(sPath, m_bIsColor ? cv::IMREAD_COLOR : cv::IMREAD_GRAYSCALE);
+    return cv::imread(sPath,
+                      m_bIsColor ? cv::IMREAD_COLOR : cv::IMREAD_GRAYSCALE);
 }
 
 bool myImageSequence::operator>>(cv::Mat& mImage) {
     std::string sPath = MakePath();
-    mImage = cv::imread(sPath, m_bIsColor ? cv::IMREAD_COLOR : cv::IMREAD_GRAYSCALE);
+    mImage = cv::imread(sPath,
+                        m_bIsColor ? cv::IMREAD_COLOR : cv::IMREAD_GRAYSCALE);
     return mImage.empty() ? false : true;
 }
 
@@ -51,9 +60,32 @@ bool myImageSequence::operator<<(const cv::Mat& mImage) {
     return cv::imwrite(sPath, mImage);
 }
 
+/**
+ * @brief This method provides the ability for
+ * modifying the parameter when running.
+ *
+ * @param attribute The setting goal.\n
+ * It should be EXTENSION, PREFIX or ROOT_PATH
+ * @param psValue String value.
+ */
 template <>
-void myImageSequence::SetAttribute(const Attribute attrbute, const char* sValue) {
-    switch (attrbute) {
+void myImageSequence::SetAttribute(const Attribute attribute,
+                                   const char* psValue) {
+    SetAttribute(attribute, std::string(psValue));
+}
+
+/**
+ * @brief This method provides the ability for
+ * modifying the parameter when running.
+ *
+ * @param attribute The setting goal.\n
+ * It should be EXTENSION, PREFIX or ROOT_PATH
+ * @param sValue String value.
+ */
+template <>
+void myImageSequence::SetAttribute(const Attribute attribute,
+                                   const std::string& sValue) {
+    switch (attribute) {
     case Attribute::EXTENSION:
         m_sExtension = sValue;
         break;
@@ -64,14 +96,23 @@ void myImageSequence::SetAttribute(const Attribute attrbute, const char* sValue)
         m_sRootPath = sValue;
         break;
     default:
-        std::cout << "ImageSequence::Error occur when setting string attribute" << std::endl;
+        std::cout << "ImageSequence::Error occur when setting string attribute"
+                  << std::endl;
         break;
     }
 }
 
+/**
+ * @brief This method provides the ability for
+ * modifying the parameter when running.
+ *
+ * @param attribute The setting goal.\n
+ * It should be FIRST_NUMBER, PADDING_LENGTH or OFFSET.
+ * @param iValue Integer value.
+ */
 template <>
-void myImageSequence::SetAttribute(const Attribute attrbute, int iValue) {
-    switch (attrbute) {
+void myImageSequence::SetAttribute(const Attribute attribute, int iValue) {
+    switch (attribute) {
     case Attribute::FIRST_NUMBER:
         m_iFirstNumber = iValue;
         break;
@@ -82,31 +123,50 @@ void myImageSequence::SetAttribute(const Attribute attrbute, int iValue) {
         m_iOffest = iValue;
         break;
     default:
-        std::cout << "ImageSequence::Error occur when setting integer attribute" << std::endl;
+        std::cout << "ImageSequence::Error occur when setting integer attribute"
+                  << std::endl;
         break;
     }
 }
 
+/**
+ * @brief This method provides the ability for
+ * modifying the parameter when running.
+ *
+ * @param attribute The setting goal.\n
+ * It should be PADDING_CHARACTER.
+ * @param cValue Character value.
+ */
 template <>
-void myImageSequence::SetAttribute(const Attribute attrbute, char cValue) {
-    switch (attrbute) {
+void myImageSequence::SetAttribute(const Attribute attribute, char cValue) {
+    switch (attribute) {
     case Attribute::PADDING_CHARACTER:
         m_cPaddingCharacter = cValue;
         break;
     default:
-        std::cout << "ImageSequence::Error occur when setting character attribute" << std::endl;
+        std::cout << "ImageSequence::Error occur when setting character attribute"
+                  << std::endl;
         break;
     }
 }
 
+/**
+* @brief This method provides the ability for
+* modifying the parameter when running.
+*
+* @param attribute The setting goal.\n
+* It should be IS_COLOR.
+* @param bValue Boolean value.
+*/
 template <>
-void myImageSequence::SetAttribute(const Attribute attrbute, bool bValue) {
-    switch (attrbute) {
+void myImageSequence::SetAttribute(const Attribute attribute, bool bValue) {
+    switch (attribute) {
     case Attribute::IS_COLOR:
         m_bIsColor = bValue;
         break;
     default:
-        std::cout << "ImageSequence::Error occur when setting boolean attribute" << std::endl;
+        std::cout << "ImageSequence::Error occur when setting boolean attribute"
+                  << std::endl;
         break;
     }
 }
