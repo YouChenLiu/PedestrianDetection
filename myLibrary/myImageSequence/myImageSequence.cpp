@@ -66,20 +66,6 @@ bool myImageSequence::operator<<(const cv::Mat& mImage) {
  *
  * @param attribute The setting goal.\n
  * It should be EXTENSION, PREFIX or ROOT_PATH
- * @param psValue String value.
- */
-template <>
-void myImageSequence::SetAttribute(const Attribute attribute,
-                                   const char* psValue) {
-    SetAttribute(attribute, std::string(psValue));
-}
-
-/**
- * @brief This method provides the ability for
- * modifying the parameter when running.
- *
- * @param attribute The setting goal.\n
- * It should be EXTENSION, PREFIX or ROOT_PATH
  * @param sValue String value.
  */
 template <>
