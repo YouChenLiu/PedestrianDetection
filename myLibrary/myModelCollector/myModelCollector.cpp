@@ -1,5 +1,4 @@
 #include "myModelCollector.h"
-#include "../myClassifier/mySVM/mySVM.h"
 #include <iomanip>
 #include <fstream>
 

@@ -2,9 +2,8 @@
 #define _MY_MODEL_COLLECTOR_H_
 
 #include "myModelCollectorBase.h"
+#include "../myClassifier/mySVM/mySVM.h"
 #include <memory>
-
-class mySVM;
 
 /**
  * @brief Class processes classifiers behavior.
@@ -90,6 +89,26 @@ public:     // public method
      */
     void AddSample(unsigned int iBinNumber, int iLabel,
                    const std::vector<float>& vfFeature);
+
+    /**
+     * @brief Predict by a Model
+     * 
+     * @param iBinNumber Specified model number.
+     * @param mSample A Sample in Mat.
+     */
+    float Predict(unsigned int iBinNumber, cv::Mat& mSample) const {
+        return m_vpoModel.at(iBinNumber)->Predict(mSample);
+    }
+
+    /**
+     * @brief Predict by a Model
+     *
+     * @param iBinNumber Specified model number.
+     * @param vfSample A sample in std::vector.
+     */
+    float Predict(unsigned int iBinNumber, std::vector<float>& vfSample) const {
+        return m_vpoModel.at(iBinNumber)->Predict(vfSample);
+    }
 
 protected:  // protected method
 
