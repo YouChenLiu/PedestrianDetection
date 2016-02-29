@@ -80,6 +80,7 @@ void mySupervisedClassifier::Train(void) {
 
     MakeTrainingData();
     m_poClassifier->train(m_poTrainingData);
+    m_poTrainingData.release();
 }
 
 float mySupervisedClassifier::Predict(const std::vector<float>& vfSample) const {

@@ -24,6 +24,7 @@ bool mySVM::TrainAuto(int kFold, ParamGrid Cgrid, ParamGrid gammaGrid,
     auto pSVM = m_poClassifier.dynamicCast<cv::ml::SVM>();
     return pSVM->trainAuto(m_poTrainingData, kFold, Cgrid, gammaGrid, pGrid,
                            nuGrid, coeffGrid, degreeGrid, balanced);
+    m_poTrainingData.release();
 }
 
 void mySVM::Init(void) {
