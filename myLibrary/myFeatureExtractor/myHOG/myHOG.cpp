@@ -1,4 +1,5 @@
 #include "myHOG.h"
+#include "../DIPKernel/DIPKernel.h"
 
 const float myHOG::m_fUnimportantValue = 1e-6f;
 static const std::array<DIPKernel, 2> m_aoHogMask = {

@@ -1,8 +1,6 @@
 #ifndef _MY_HOG_H_
 #define _MY_HOG_H_
 
-#include "../../common.h"
-#include "../DIPKernel/DIPKernel.h"
 #include "../myBlockBasedExtractor/myBlockBasedExtractor.h"
 
 /**
