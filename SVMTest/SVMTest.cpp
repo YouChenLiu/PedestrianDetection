@@ -1,8 +1,7 @@
-#include <iostream>
 #include "../myLibrary/myImageSequence/myImageSequence.h"
 #include "../myLibrary/myFeatureExtractor/myFeatureExtractor.h"
-#include <opencv2/core.hpp>
-#include <opencv2/ml.hpp>
+#include "../myLibrary/myClassifier/mySVM/mySVM.h"
+#include <opencv2/highgui.hpp>
 
 int main(void) {
     using namespace std;
@@ -13,7 +12,7 @@ int main(void) {
     const bool bLBP = false;
 
     //  read the smv model
-    cv::Ptr<cv::ml::SVM> poSVM = cv::ml::StatModel::load<cv::ml::SVM>("hog_02.xml");
+    mySVM oSVM("hog_02.xml");
     
     // read the positive smaples and calculate the hog feature
     myImageSequence oPositiveReader(sRootPath + "Positive/", "", "bmp", false);
@@ -47,7 +46,7 @@ int main(void) {
             }
         }
 
-        auto result = static_cast<int>(poSVM->predict(mSample));
+        auto result = static_cast<int>(oSVM.Predict(mSample));
         if (result != 1) {
             std::string sPath = "Wrong/" + std::string("pos") + oPositiveReader.GetSequenceNumberString() + std::string(".jpg");
             cv::imwrite(sPath, mPositiveSample);
@@ -86,7 +85,7 @@ int main(void) {
             }
         }
 
-        auto result = static_cast<int>(poSVM->predict(mSample));
+        auto result = static_cast<int>(oSVM.Predict(mSample));
         if (result != -1) {
             std::string sPath = "Wrong/" + std::string("neg") + oNegativeReader.GetSequenceNumberString() + std::string(".jpg");
             cv::imwrite(sPath, mNegativeSample);
