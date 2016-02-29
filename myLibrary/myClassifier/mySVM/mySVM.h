@@ -13,7 +13,7 @@ using cv::ml::SVM;
  * It let's use opencv svm more convenience.
  */
 class mySVM final : public mySupervisedClassifier {
-public:
+public:     //public attribute
     /// encapsulate parameters for svm optimization problem
     class myOptimalParam {
     public: // public arrtibute
@@ -91,7 +91,7 @@ public:
         }
     };
 
-private:
+private:    // private attribute
     // ------------------------set SVM attributes---------------------------
 
     /**
@@ -125,7 +125,7 @@ private:
 
     // ------------------------end SVM attributes---------------------------
 
-public:
+public:     //public method
     /// Create a svm with default parameter
     mySVM(void);
 
@@ -175,7 +175,7 @@ public:
         ParamGrid   degreeGrid  = SVM::getDefaultGrid(SVM::DEGREE),
         bool        balanced    = false);
 
-private:
+private:    // private method
     /// Initialize method
     void Init(void);
 
