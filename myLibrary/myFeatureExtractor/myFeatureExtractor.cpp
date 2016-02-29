@@ -19,10 +19,7 @@ myFeatureExtractor::myFeatureExtractor(
 
 myFeatureExtractor::~myFeatureExtractor(void) {}
 
-void myFeatureExtractor::Init(void) {
-    m_BlockSize = cv::Size2i(0, 0);
-    m_mImage = cv::Mat();
-}
+void myFeatureExtractor::Init(void) {}
 
 void myFeatureExtractor::Describe(cv::Point2i Position,
                                   std::vector<float>& vfFeature) const {
