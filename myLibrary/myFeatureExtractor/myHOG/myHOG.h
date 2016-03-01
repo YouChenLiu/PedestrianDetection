@@ -58,6 +58,8 @@ public:
 
     void Describe(cv::Point2i Position, std::vector<float>& vfHogFeature) const override;
 
+    void SetImage(const cv::Mat& mImage);
+
 private:
     void Init(void);
     void DescribeCell(const cv::Point2i Position, std::vector<float>& vfHogFeature) const;
