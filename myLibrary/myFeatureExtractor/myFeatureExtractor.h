@@ -9,11 +9,13 @@
 /**
  * @brief Class for computing any blockbased feature.
  */
-class myFeatureExtractor : public myBlockBasedExtractor {
+class myFeatureExtractor : protected myBlockBasedExtractor {
 public:
     /// The predefine pattern value.
     class Features : public myHOG::Feature, public myLBP::Feature {};
+
 private:
+    /// The vector of extractors.
     std::vector<std::unique_ptr<myExtractorBase>> m_vpoUsedExtractor;
 
 public:
@@ -36,17 +38,6 @@ public:
 
     void Describe(cv::Point2i Position, std::vector<float>& vfFeature) const;
 
-    /**
-    * @brief Describe the feature at sepecify position.
-    *
-    * @param x A X value of left-top point for description feature.
-    * @param y A Y value of left-top point for description feature.
-    * @param vfFeature The vector will store feature.
-    */
-    void Describe(int x, int y, std::vector<float>& vfFeature) const {
-        Describe(cv::Point2i(x, y), vfFeature);
-    }
-    
     /**
      * @brief Add new extractor for extracting feature.
      *
