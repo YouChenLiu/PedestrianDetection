@@ -1,3 +1,8 @@
+/**
+ * @file myAdaboost.h
+ * @brief AdaBoost class definition
+ */
+
 #ifndef _MY_ADABOOST_H_
 #define _MY_ADABOOST_H_
 

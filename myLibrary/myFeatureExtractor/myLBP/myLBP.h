@@ -1,3 +1,8 @@
+/**
+ * @file myLBP.h
+ * @brief Local Binary Pattern class definition.
+ */
+
 #ifndef _MY_LBP_H_
 #define _MY_LBP_H_
 

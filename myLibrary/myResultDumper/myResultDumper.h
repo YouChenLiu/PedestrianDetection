@@ -1,3 +1,8 @@
+/**
+ * @file myResultDumper.h
+ * @brief Result Dummper class definition.
+ */
+
 #ifndef _MY_RESULT_DUMPER_H_
 #define _MY_RESULT_DUMPER_H_
 

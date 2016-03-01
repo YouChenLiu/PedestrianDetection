@@ -1,3 +1,8 @@
+/**
+ * @file myBlockBasedExtractor.h
+ * @brief Block based extractor definition.
+ */
+
 #ifndef _MY_BLOCK_BASED_EXTRACTOR_H_
 #define _MY_BLOCK_BASED_EXTRACTOR_H_
 

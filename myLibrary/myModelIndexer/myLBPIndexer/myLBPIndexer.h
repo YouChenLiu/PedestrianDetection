@@ -1,3 +1,8 @@
+/**
+ * @file myLBPIndexer.h
+ * @brief LBP Indexer class definition.
+ */
+
 #ifndef _MY_LBP_INDEXER_H_
 #define _MY_LBP_INDEXER_H_
 

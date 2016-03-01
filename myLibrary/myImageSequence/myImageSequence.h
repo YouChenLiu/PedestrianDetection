@@ -1,3 +1,8 @@
+/**
+ * @file myImageSequence.h
+ * @brief Image sequence class definition.
+ */
+
 #ifndef _MY_IMAGE_SEQUENCE_H_
 #define _MY_IMAGE_SEQUENCE_H_
 

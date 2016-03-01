@@ -1,3 +1,8 @@
+/**
+ * @file mySupervisedClassifier.h
+ * @brief Supervised Classifier class definition.
+ */
+
 #ifndef _MY_SUPERVISED_CLASSIFIER_H_
 #define _MY_SUPERVISED_CLASSIFIER_H_
 

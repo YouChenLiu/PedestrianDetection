@@ -1,3 +1,8 @@
+/**
+ * @file myHOG.h
+ * @brief Histogram of Gradient class definition.
+ */
+
 #ifndef _MY_HOG_H_
 #define _MY_HOG_H_
 

@@ -1,3 +1,8 @@
+/**
+ * @file myXMLLabel.h
+ * @brief XML Label class definition.
+ */
+
 #ifndef _MY_XML_LABEL_H_
 #define _MY_XML_LABEL_H_
 

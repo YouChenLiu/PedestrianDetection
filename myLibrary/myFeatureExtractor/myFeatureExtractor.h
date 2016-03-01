@@ -1,3 +1,8 @@
+/**
+ * @file myFeatureExtractor.h
+ * @brief Feature extractor class definition.
+ */
+
 #ifndef _MY_FEATURE_EXTRACTOR_H_
 #define _MY_FEATURE_EXTRACTOR_H_
 

@@ -1,3 +1,8 @@
+/**
+ * @file myExtractorBase.h
+ * @brief Extractor base class definition.
+ */
+
 #ifndef _MY_EXTRACTOR_BASE_H_
 #define _MY_EXTRACTOR_BASE_H_
 
