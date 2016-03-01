@@ -35,6 +35,8 @@ public:     // public method
 
     /**
      * @brief Set the block size for extractor
+     *
+     * @param BlockSize The new block size.
      */
     void SetBlockSize(const cv::Size2i BlockSize) { m_BlockSize = BlockSize; }
 
