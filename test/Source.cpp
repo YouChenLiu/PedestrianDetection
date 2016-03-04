@@ -10,9 +10,13 @@ int main(void) {
     const cv::Size2i BlockSize(8, 8);
     const int iCollectorCount = (((ImgSize.height - 2 * BlockSize.height) / 8) *
                                  ((ImgSize.width - 2 * BlockSize.width) / 8));
-    const std::string sRootPath = "D:/Backup/Thermal/night/";
-    const std::string sSubFolder = "Morning-Noon/";
+    // path for sample images
+    const std::string sRootPath = "D:/Backup/Thermal/noon/";
 
+    // folder name for write out images
+    const std::string sSubFolder = "Morning+Night-Noon/";
+
+    // vector of collectors
     std::vector<myModelCollector> voCollector(iCollectorCount);
     for (auto& o : voCollector) {
         o.Resize(59);
@@ -20,8 +24,11 @@ int main(void) {
 
     myLBPIndexer oIndexr(BlockSize);
 
+    // reading positive image sequence
     myImageSequence oPosReader(sRootPath + "Positive/", "", "bmp", false);
     oPosReader.SetAttribute(myImageSequence::Attribute::PADDING_LENGTH, 6);
+
+    // reading negative images
     myImageSequence oNegReader(sRootPath + "Negative/", "", "bmp", false);
     oNegReader.SetAttribute(myImageSequence::Attribute::PADDING_LENGTH, 6);
     
@@ -30,6 +37,7 @@ int main(void) {
     /*
     std::cout << "Reading Positive Samples" << std::endl;
     while (oPosReader >> mPosImg) {
+        std::cout << "Reading " << oPosReader.GetSequenceNumberString() << "\r";
         myFeatureExtractor oExtractor(mPosImg, BlockSize);
         oExtractor.EnableFeature(myFeatureExtractor::Features::HOG_WITH_L2_NORM);
         oExtractor.EnableFeature(myFeatureExtractor::Features::LBP_8_1_UNIFORM);
@@ -44,10 +52,11 @@ int main(void) {
             }
         }
     }
-    std::cout << oPosReader.GetSequenceNumber() - 1 << "Samples" << std::endl;
+    std::cout << std::endl << oPosReader.GetSequenceNumber()<< " Positive Samples" << std::endl;
 
     std::cout << "Reading Negative Samples" << std::endl;
     while (oNegReader >> mNegImg) {
+        std::cout << "Reading " << oNegReader.GetSequenceNumberString() << "\r";
         myFeatureExtractor oExtractor(mNegImg, BlockSize);
         oExtractor.EnableFeature(myFeatureExtractor::Features::HOG_WITH_L2_NORM);
         oExtractor.EnableFeature(myFeatureExtractor::Features::LBP_8_1_UNIFORM);
@@ -62,22 +71,30 @@ int main(void) {
             }
         }
     }
-    std::cout << oNegReader.GetSequenceNumber() - 1 << "Samples" << std::endl;
+    std::cout <<std::endl << oNegReader.GetSequenceNumber()<< " Negative Samples" << std::endl;
 
     std::ofstream FeatureList("feature.txt");
     FeatureList << voCollector.size() << std::endl;
     for (std::size_t i = 0; i < voCollector.size(); ++i) {
+        std::cout << "Save features in collector : " << i << " / " << iCollectorCount - 1 << "\r";
         FeatureList << voCollector.at(i).SaveFeatures("Features") << std::endl;
     }
+    std::cout << std::endl << "All features are saved" << std::endl;
     
     std::ofstream ModelList("models.txt");
     ModelList << voCollector.size() << std::endl;
     for (std::size_t i = 0; i < voCollector.size(); ++i) {
+        std::cout << "Training model collector : " << i << " / " << iCollectorCount - 1 << "\r";
         voCollector.at(i).TrainModels();
         ModelList << voCollector.at(i).SaveModels("Models") << std::endl;
     }
+    std::cout << std::endl << "All models are trained and saved" << std::endl;
     */
-
+    
+    // testing
+    
+    // reading models
+    std::cout << "Reading saved models" << std::endl;
     std::ifstream ModelList("models.txt");
     int iModelsCount = 0;
     ModelList >> iModelsCount;
@@ -85,12 +102,16 @@ int main(void) {
         std::string sPath;
         ModelList >> sPath;
         voCollector.at(i).LoadModels(sPath);
+        std::cout << "Reading models : " << i << " / " << iModelsCount - 1 << "\r";
     }
 
-    std::cout << "Testing Positive Samples" << std::endl;
+    std::cout << std::endl << "Testing Positive Samples" << std::endl;
+    std::string sInstruction = "mkdir \"" + sSubFolder + "Positive\"";
+    system(sInstruction.c_str());
     myImageSequence oPosWriter(sSubFolder + "Positive/", "", "jpg");
     oPosWriter.SetAttribute(myImageSequence::Attribute::PADDING_LENGTH, 6);
     while (oPosReader >> mPosImg) {
+        std::cout << "Reading " << oPosReader.GetSequenceNumberString() << "\r";
         myFeatureExtractor oExtractor(mPosImg, BlockSize);
         oExtractor.EnableFeature(myFeatureExtractor::Features::HOG_WITH_L2_NORM);
         oExtractor.EnableFeature(myFeatureExtractor::Features::LBP_8_1_UNIFORM);
@@ -112,10 +133,13 @@ int main(void) {
         oPosWriter << mPosResult;
     }
 
-    std::cout << "Testing Negative Samples" << std::endl;
+    std::cout << std::endl << "Testing Negative Samples" << std::endl;
+    sInstruction = "mkdir \"" + sSubFolder + "Negative\"";
+    system(sInstruction.c_str());
     myImageSequence oNegWriter(sSubFolder + "Negative/", "", "jpg");
     oNegWriter.SetAttribute(myImageSequence::Attribute::PADDING_LENGTH, 6);
     while (oNegReader >> mNegImg) {
+        std::cout << "Reading " << oNegReader.GetSequenceNumberString() << "\r";
         myFeatureExtractor oExtractor(mNegImg, BlockSize);
         oExtractor.EnableFeature(myFeatureExtractor::Features::HOG_WITH_L2_NORM);
         oExtractor.EnableFeature(myFeatureExtractor::Features::LBP_8_1_UNIFORM);
@@ -135,5 +159,6 @@ int main(void) {
         mNegImg.copyTo(mNegResult(cv::Rect2i(cv::Point2i(0, 0), cv::Size2i(64, 128))));
         oNegWriter << mNegResult;
     }
+    
     return 0;
 }
