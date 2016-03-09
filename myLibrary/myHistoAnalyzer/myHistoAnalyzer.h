@@ -1,5 +1,5 @@
 /**
- * @file myHistoAnalyer.h
+ * @file myHistoAnalyzer.h
  * @brief myHistoAnalyer definition.
  */
 
@@ -16,7 +16,7 @@
 class myHistoAnalyer {
 public:     // public attribute
     /**
-     * @brief 
+     * @brief Enumeration class define distance computation method.
      */
     enum class Distance {
         BHATTACHARYYA,      //<! Bhattacharyya coefficient

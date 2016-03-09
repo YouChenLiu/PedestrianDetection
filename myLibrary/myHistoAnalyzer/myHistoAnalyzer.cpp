@@ -42,7 +42,7 @@ float myHistoAnalyer::CalculateDistance(const myHistoAnalyer & obj,
         
     }
 
-    return fDistance;
+    return 1.0f - fDistance;
 }
 
 void myHistoAnalyer::Normalize(std::vector<float>& vfHistogram) {

@@ -8,7 +8,7 @@
 
 int main(void) {
     const cv::Size2i ImgSize(64, 128);
-    const cv::Size2i BlockSize(8, 8);
+    const cv::Size2i BlockSize(8, 16);
     const int iCollectorCount = (((ImgSize.height - 2 * BlockSize.height) / 8) *
                                  ((ImgSize.width - 2 * BlockSize.width) / 8));
     const std::string sRootPath = "D:/Backup/Thermal/night/";
@@ -149,8 +149,8 @@ int main(void) {
     // check Hausdroff Distance
 
     std::array<std::string, 3> asTime = { "morning", "noon", "night" };
-    const std::string s1 = "Negative";
-    const std::string s2 = "Negative";
+    const std::string s1 = "Positive";
+    const std::string s2 = "Positive";
 
     for (size_t i = 0; i < asTime.size(); ++i) {
         for (size_t j = 0; j < asTime.size(); ++j) {
@@ -186,17 +186,21 @@ int main(void) {
             }
             std::cout << oReader2.GetSequenceNumber() << " Images" << std::endl;
 
-            float fMin = 99999999.0f;
+            float fHausdroff = 0.0f;
             for (const auto& b1 : vHisto1) {
+                float fMinDistance = 9999.0f;
                 for (const auto& b2 : vHisto2) {
                     auto fDistance = b1.CalculateDistance(b2, myHistoAnalyer::Distance::OVERLAP);
-                    if (fMin > fDistance) {
-                        fMin = fDistance;
+                    if (fMinDistance > fDistance) {
+                        fMinDistance = fDistance;
                     }
+                }
+                if (fHausdroff < fMinDistance) {
+                    fHausdroff = fMinDistance;
                 }
             }
             std::cout << asTime.at(i) << ":" << s1 << " -> " << asTime.at(j) << ":" << s2 << "\t";
-            std::cout << fMin << std::endl;
+            std::cout << fHausdroff << std::endl;
         }
     }
  
