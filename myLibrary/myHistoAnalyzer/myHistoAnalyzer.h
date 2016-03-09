@@ -19,8 +19,8 @@ public:     // public attribute
      * @brief Enumeration class define distance computation method.
      */
     enum class Distance {
-        BHATTACHARYYA,      //<! Bhattacharyya coefficient
-        OVERLAP             //<! Overlapping
+        BHATTACHARYYA,      //!< Bhattacharyya coefficient
+        OVERLAP             //!< Overlapping
     };
 
 protected:  // protected attribute
