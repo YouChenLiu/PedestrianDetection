@@ -3,16 +3,16 @@
  * @brief XML Label class definition.
  */
 
-#ifndef _MY_XML_LABEL_H_
-#define _MY_XML_LABEL_H_
+#ifndef _MY_LABEL_H_
+#define _MY_LABEL_H_
 
-#include <iostream>
+#include "../common.h"
 #include <map>
 
 /**
  * @brief A lookup tabel for XML tags.
  */
-class myXMLLabel {
+class myLabel {
 public:
     /**
      * @brief Pre-defined XML tags.
@@ -50,46 +50,60 @@ public:
         CIRCLE                  //!< Circle
     };
 
+protected:  // protected attribute
+
+private:    // private attribute
     /// Mapping Tags to string.
-    static std::map<myXMLLabel::Tags, std::string> m_sTagStrings;
+    static std::map<Tags, std::string> m_sTagStrings;
 
     /// Mapping Shapes to string.
-    static std::map<myXMLLabel::Shapes, std::string> m_sShapeStrings;
+    static std::map<Shapes, std::string> m_sShapeStrings;
 
     /// Mapping Attributes to string.
-    static std::map<myXMLLabel::Attributes, std::string> m_sAttributeStrings;
+    static std::map<Attributes, std::string> m_sAttributeStrings;
 
 public:
     /**
      * @brief Default constructor.
      */
-    myXMLLabel(void) {}
+    myLabel(void) {}
 
     /**
-     * @brief Get tag string
+     * @brief Prototype for getting label
      *
-     * @param Label Pre-defined Tags
+     * @param Label The pre-define label for Attribute, Shape and Tag
      */
-    static std::string GetTagString(Tags Label) {
-        return m_sTagStrings[Label];
+    template<typename T>
+    static std::string GetLabel(T Label);
+
+    /**
+    * @brief Get tag string
+    *
+    * @param Attribute Pre-defined Attributes
+    */
+    template<>
+    static std::string GetLabel(myLabel::Attributes Attribute) {
+        return m_sAttributeStrings[Attribute];
     }
 
     /**
-     * @brief Get tag string
-     *
-     * @param Shape Pre-defined Shapes
-     */
-    static std::string GetShapeString(Shapes Shape) {
+    * @brief Get tag string
+    *
+    * @param Shape Pre-defined Shapes
+    */
+    template<>
+    static std::string GetLabel(myLabel::Shapes Shape) {
         return m_sShapeStrings[Shape];
     }
 
     /**
      * @brief Get tag string
      *
-     * @param Attribute Pre-defined Attributes
+     * @param Label Pre-defined Tags
      */
-    static std::string GetAttributeString(Attributes Attribute) {
-        return m_sAttributeStrings[Attribute];
+    template<>
+    static std::string GetLabel(myLabel::Tags Tag) {
+        return m_sTagStrings[Tag];
     }
 };
 

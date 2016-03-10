@@ -90,13 +90,13 @@
     <ClInclude Include="myFeatureExtractor\myHOG\myHOG.h" />
     <ClInclude Include="myFeatureExtractor\myLBP\myLBP.h" />
     <ClInclude Include="myImageSequence\myImageSequence.h" />
+    <ClInclude Include="myLabel\myLabel.h" />
     <ClInclude Include="myModelCollector\myModelCollector.h" />
     <ClInclude Include="myModelCollector\myModelCollectorBase.h" />
     <ClInclude Include="myModelIndexer\myLBPIndexer\myLBPIndexer.h" />
     <ClInclude Include="myModelIndexer\myModelIndexerBase.h" />
     <ClInclude Include="myResultDumper\myResultDumper.h" />
     <ClInclude Include="myResultVerifier\myResultVerifier.h" />
-    <ClInclude Include="myXMLLabel\myXMLLabel.h" />
     <ClInclude Include="tinyxml2\tinyxml2.h" />
   </ItemGroup>
   <ItemGroup>
@@ -111,11 +111,11 @@
     <ClCompile Include="myFeatureExtractor\myHOG\myHOG.cpp" />
     <ClCompile Include="myFeatureExtractor\myLBP\myLBP.cpp" />
     <ClCompile Include="myImageSequence\myImageSequence.cpp" />
+    <ClCompile Include="myLabel\myLabel.cpp" />
     <ClCompile Include="myModelCollector\myModelCollector.cpp" />
     <ClCompile Include="myModelIndexer\myLBPIndexer\myLBPIndexer.cpp" />
     <ClCompile Include="myResultDumper\myResultDumper.cpp" />
     <ClCompile Include="myResultVerifier\myResultVerifier.cpp" />
-    <ClCompile Include="myXMLLabel\myXMLLabel.cpp" />
     <ClCompile Include="tinyxml2\tinyxml2.cpp" />
   </ItemGroup>
   <ItemGroup>
