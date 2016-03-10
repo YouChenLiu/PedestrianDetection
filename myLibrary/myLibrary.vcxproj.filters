@@ -78,6 +78,9 @@
     <ClInclude Include="myFeatureExtractor\myBlockBasedExtractor\myBlockBasedExtractor.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="myHistoAnalyzer\myHistoAnalyzer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="myImageSequence\myImageSequence.cpp">
@@ -129,6 +132,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="myFeatureExtractor\myExtractorBase.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="myHistoanalyzer\myHistoAnalyzer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

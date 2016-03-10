@@ -89,6 +89,7 @@
     <ClInclude Include="myFeatureExtractor\myFeatureExtractor.h" />
     <ClInclude Include="myFeatureExtractor\myHOG\myHOG.h" />
     <ClInclude Include="myFeatureExtractor\myLBP\myLBP.h" />
+    <ClInclude Include="myHistoAnalyzer\myHistoAnalyzer.h" />
     <ClInclude Include="myImageSequence\myImageSequence.h" />
     <ClInclude Include="myModelCollector\myModelCollector.h" />
     <ClInclude Include="myModelCollector\myModelCollectorBase.h" />
@@ -110,6 +111,7 @@
     <ClCompile Include="myFeatureExtractor\myFeatureExtractor.cpp" />
     <ClCompile Include="myFeatureExtractor\myHOG\myHOG.cpp" />
     <ClCompile Include="myFeatureExtractor\myLBP\myLBP.cpp" />
+    <ClCompile Include="myHistoanalyzer\myHistoAnalyzer.cpp" />
     <ClCompile Include="myImageSequence\myImageSequence.cpp" />
     <ClCompile Include="myModelCollector\myModelCollector.cpp" />
     <ClCompile Include="myModelIndexer\myLBPIndexer\myLBPIndexer.cpp" />
