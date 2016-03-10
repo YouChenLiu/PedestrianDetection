@@ -1,5 +1,5 @@
 /**
- * @file myXMLLabel.h
+ * @file myLabel.h
  * @brief XML Label class definition.
  */
 
@@ -18,7 +18,7 @@ public:
      * @brief Pre-defined XML tags.
      */
     enum class Tags {
-        ROOT = 0,               //!< Root tag
+        ROOT,                   //!< Root tag
         FILE_DESCRIPTION,       //!< FileDescription tag
         VIDEO_FILE_NAME,        //!< VideoFile tag
         CREATE_DATE,            //!< CreateDate tag
@@ -33,19 +33,19 @@ public:
     };
 
     /**
-     * @brief Pre-defined XML tags.
+     * @brief Pre-defined XML attributes.
      */
     enum class Attributes {
-        FRAME_NUMBER = 0,       //!< frameNumber attribute
+        FRAME_NUMBER,           //!< frameNumber attribute
         TOTAL_RECORD,           //!< totalRecord attribute
         SERIAL_NUMBER           //!< serialNumber attribute
     };
 
     /**
-     * @brief Pre-defined XML tags.
+     * @brief Pre-defined XML shape.
      */
     enum class Shapes {
-        RECTANGLE = 0,          //!< Rectangle
+        RECTANGLE,              //!< Rectangle
         ELLIPSE,                //!< Ellipse
         CIRCLE                  //!< Circle
     };
@@ -62,7 +62,7 @@ private:    // private attribute
     /// Mapping Attributes to string.
     static std::map<Attributes, std::string> m_sAttributeStrings;
 
-public:
+public:     // public method
     /**
      * @brief Default constructor.
      */
@@ -77,7 +77,7 @@ public:
     static std::string GetLabel(T Label);
 
     /**
-    * @brief Get tag string
+    * @brief Get attribute string
     *
     * @param Attribute Pre-defined Attributes
     */
@@ -87,7 +87,7 @@ public:
     }
 
     /**
-    * @brief Get tag string
+    * @brief Get shape string
     *
     * @param Shape Pre-defined Shapes
     */
@@ -99,7 +99,7 @@ public:
     /**
      * @brief Get tag string
      *
-     * @param Label Pre-defined Tags
+     * @param Tag Pre-defined Tags
      */
     template<>
     static std::string GetLabel(myLabel::Tags Tag) {
