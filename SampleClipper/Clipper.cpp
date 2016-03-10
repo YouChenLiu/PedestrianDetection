@@ -1,100 +1,145 @@
-#include <iostream>
-#include <opencv2/core.hpp>
-#include <opencv2/imgproc.hpp>
 #include "../myLibrary/myImageSequence/myImageSequence.h"
+#include "../myLibrary/myLabel/myLabel.h"
 #include "../myLibrary/tinyxml2/tinyxml2.h"
-
-const cv::Size2i NormalizedSize = { 64, 128 };
-const cv::Size2i MinSize = { 10, 20 };
-const int iNegativeSamplesPerImage = 4;
-
-const std::string sRootPath = "D:/Database/spilt/2015-1005_2120-2130/04/";
-const int iFirstNum = 4163;
+#include <opencv2/imgproc.hpp>
+#include <ctime>
 
 int main(void) {
-    using namespace std;
-    using namespace cv;
-    using namespace tinyxml2;
+    // size for normalize the clips
+    const cv::Size2i NormalizedSize(64, 128);
 
-    /*
-    ** use ground-truth to clip the positive samples.
-    */
+    // the minimun size for random generate the negative samples
+    const cv::Size2i MinSize(10, 20);
+
+    // how many samples for a image
+    const int iNegativeSamplesPerImage = 4;
+
+    // the XML file path
+    const std::string sXMLFileName = "C:/Users/youch/Desktop/Waiting/2015-1005_0900-0915_04/2015-1005_0900-0915_04.xml";
+
+    // the index of slash in the XML file path
+    const auto iLastSlash = sXMLFileName.rfind("/") + 1;
+
+    // root path for the images folder
+    const std::string sRootPath = sXMLFileName.substr(0, iLastSlash);
+
+    // the first number of image sequence
+    const int iFirstNum = 4163;
     
+    // use ground-truth to clip the positive samples.
+
+    std::srand(static_cast<unsigned int>(time(NULL)));
+    
+    // the xml file
     tinyxml2::XMLDocument oXML;
-    int i = static_cast<int>(sRootPath.length());
-    string sXMLFileName = sRootPath + sRootPath.substr(sRootPath.length() - 3, 2) + ".xml";
-    if (oXML.LoadFile(sXMLFileName.c_str()) != XMLError::XML_NO_ERROR) {
-        cout << "XML File" << endl;
+    
+    auto Result = oXML.LoadFile(sXMLFileName.c_str());
+    if (Result != tinyxml2::XMLError::XML_NO_ERROR) {
+        std::cout << "XML File" << std::endl;
         system("pause");
         exit(EXIT_FAILURE);
     }
     
+    // sequence for reading
     myImageSequence oImageReader(sRootPath, "", "bmp", false);
     oImageReader.SetAttribute(myImageSequence::Attribute::FIRST_NUMBER, iFirstNum);
     oImageReader.SetAttribute(myImageSequence::Attribute::PADDING_LENGTH, 6);
 
-    myImageSequence oPositiveWriter((sRootPath + string("Positive/").c_str()), "", "bmp");
+    // sequence for writing negative samples
+    myImageSequence oNegativeWriter(sRootPath + "Negative/", "", "bmp");
+    oNegativeWriter.SetAttribute(myImageSequence::Attribute::PADDING_LENGTH, 6);
+
+    // sequence for writing out the positive samples
+    myImageSequence oPositiveWriter(sRootPath + "Positive/", "", "bmp");
     oPositiveWriter.SetAttribute(myImageSequence::Attribute::PADDING_LENGTH, 6);
 
-    Mat mImage;
-    XMLElement* poDataSetElement = oXML.RootElement()->FirstChildElement("DataSet");
-    if (poDataSetElement == nullptr) {
+    // the pointer to data set element
+    auto poDataSet = oXML.RootElement()->FirstChildElement("DataSet");
+    if (poDataSet == nullptr) {
+        std::cout << "Not Found Data Set Tag" << std::endl;
         exit(EXIT_FAILURE);
     }
-    
+
+    // header tag string
+    auto sHeaderTag = myLabel::GetLabel(myLabel::Tags::HEADER);
+
+    // pointer for header element
+    auto poHeader = poDataSet->FirstChildElement(sHeaderTag.c_str());
+    if (poHeader == nullptr) {
+        std::cout << "Not Found Any Header Tag" << std::endl;
+        exit(EXIT_FAILURE);
+    }
+
+    // the reading image
+    cv::Mat mImage;
     while (oImageReader >> mImage) {
-        int iCurrentFrameNumber = oImageReader.GetSequenceNumber();
+        // the sequence number for reading now
+        int iFrameNumber = oImageReader.GetSequenceNumber();
         
-        XMLElement* poHeaderElement = poDataSetElement->FirstChildElement("Header");
-        while ((poHeaderElement != nullptr) && (poHeaderElement->IntAttribute("frameNumber") != iCurrentFrameNumber)) {
-            poHeaderElement = poHeaderElement->NextSiblingElement();
+        // frame number string
+        auto sFrameNumTag = myLabel::GetLabel(myLabel::Attributes::FRAME_NUMBER);
+
+        // find the header tag which matching the iFrameNumber
+        while ((poHeader != nullptr) &&
+               (poHeader->IntAttribute(sFrameNumTag.c_str()) != iFrameNumber)) {
+            poHeader = poHeader->NextSiblingElement();
         }
-        if (poHeaderElement == nullptr) {
-            cout << "Frame " << iCurrentFrameNumber << " Not Found" << endl;
+
+        // break when reach the file end
+        if (poHeader == nullptr) {
             break;
         }
-
-        XMLElement* poRecordElement = poHeaderElement->FirstChildElement();
-        while (poRecordElement != nullptr) {
-            string sStartPoint = poRecordElement->FirstChildElement("StartPoint")->GetText();
-            string sHeight = poRecordElement->FirstChildElement("Height")->GetText();
-            string sWidth = poRecordElement->FirstChildElement("Width")->GetText();
         
-            stringstream ssStartPoint(sStartPoint);
-            Point2i StartPoint = { 0, 0 };
-            char cComma;
-            ssStartPoint >> StartPoint.x >> cComma >> StartPoint.y;
-            int iHeight = stoi(sHeight);
-            int iWidth = stoi(sWidth);
+        // pointer to record tag
+        auto poRecord = poHeader->FirstChildElement();
+        while (poRecord != nullptr) {
+            using std::string;
 
-            Mat mSubImage = mImage.rowRange(StartPoint.y, StartPoint.y + iHeight).colRange(StartPoint.x, StartPoint.x + iWidth);
+            // string for saving tag label
+            string sTagStr = string();
+            
+            sTagStr = myLabel::GetLabel(myLabel::Tags::START_POINT);
+            // start point string
+            string sStart = poRecord->FirstChildElement(sTagStr.c_str())->GetText();
+            
+            sTagStr = myLabel::GetLabel(myLabel::Tags::HEIGHT);
+            // height string
+            string sHeight = poRecord->FirstChildElement(sTagStr.c_str())->GetText();
+            
+            sTagStr = myLabel::GetLabel(myLabel::Tags::WIDTH);
+            // width string
+            string sWidth = poRecord->FirstChildElement(sTagStr.c_str())->GetText();
+            
+            // stream for extracting value
+            std::stringstream ss(sStart + "," + sHeight + "," + sWidth);
+            char cComma;
+            cv::Point2i StartPoint;
+            cv::Size SampleSize;
+            ss  >> StartPoint.x >> cComma >> StartPoint.y
+                >> SampleSize.height >> cComma >> SampleSize.width;
+            
+            cv::Rect2i SampleRegion(StartPoint, SampleSize);
+            cv::Mat mSubImage = mImage(SampleRegion);
             resize(mSubImage, mSubImage, NormalizedSize);
             oPositiveWriter << mSubImage;
 
-            poRecordElement = poRecordElement->NextSiblingElement();
+            poRecord = poRecord->NextSiblingElement();
         }
-    }
-    
-    /*
-    ** use random select to generate negative samples
-    */
 
-    oImageReader.SetAttribute(myImageSequence::Attribute::OFFSET, 0);
-    myImageSequence oNegativeWriter((sRootPath + string("Negative/")).c_str(), "", "bmp");
-    oNegativeWriter.SetAttribute(myImageSequence::Attribute::PADDING_LENGTH, 6);
-    std::srand(static_cast<int>(time(NULL)));
-    while (oImageReader >> mImage) {
+        // use random select to generate negative samples
         for (int i = 0; i < iNegativeSamplesPerImage; ++i) {
-            Point2i RandomPoint(rand() % mImage.cols, rand() % mImage.rows);
-            Size2i RandomSize(rand() % NormalizedSize.width + MinSize.width, rand() % NormalizedSize.height + MinSize.height);
+            cv::Point2i RandomPoint(rand() % mImage.cols, rand() % mImage.rows);
+            cv::Size2i RandomSize(rand() % NormalizedSize.width + MinSize.width,
+                                  rand() % NormalizedSize.height + MinSize.height);
+            
             if (RandomPoint.x + RandomSize.width >= mImage.cols) {
                 RandomPoint.x = mImage.cols - 1 - RandomSize.width;
             }
             if (RandomPoint.y + RandomSize.height >= mImage.rows) {
                 RandomPoint.y = mImage.rows - 1 - RandomSize.height;
             }
-
-            Mat mSubImage = mImage.rowRange(RandomPoint.y, RandomPoint.y + RandomSize.height).colRange(RandomPoint.x, RandomPoint.x + RandomSize.width);
+            cv::Rect2i RandomRegion(RandomPoint, RandomSize);
+            cv::Mat mSubImage = mImage(RandomRegion);
             resize(mSubImage, mSubImage, NormalizedSize);
             oNegativeWriter << mSubImage;
         }

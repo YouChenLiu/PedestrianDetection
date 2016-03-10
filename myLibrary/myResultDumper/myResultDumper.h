@@ -8,7 +8,7 @@
 
 #include "../common.h"
 #include "../tinyxml2/tinyxml2.h"
-#include "../myXMLLabel/myXMLLabel.h"
+#include "../myLabel/myLabel.h"
 #include <memory>
 #include <map>
 
@@ -48,7 +48,7 @@ public:     // public method
      * @param iHeight Rectangle height.
      */
     void AddRectangle(int x, int y, int iWidth, int iHeight) {
-        AddNewRecord(myXMLLabel::Shapes::RECTANGLE, x, y, iWidth, iHeight);
+        AddNewRecord(myLabel::Shapes::RECTANGLE, x, y, iWidth, iHeight);
     }
     
     /**
@@ -60,7 +60,7 @@ public:     // public method
      * @param iMinorAxis Minor axis of new ellipse.
      */
     void AddEllipse(int x, int y, int iMajorAxis, int iMinorAxis) {
-        AddNewRecord(myXMLLabel::Shapes::ELLIPSE, x, y, iMajorAxis, iMinorAxis);
+        AddNewRecord(myLabel::Shapes::ELLIPSE, x, y, iMajorAxis, iMinorAxis);
     }
 
     /**
@@ -71,7 +71,7 @@ public:     // public method
      * @param iRadius Radius of new circle.
      */
     void AddCircle(int x, int y, int iRadius){
-        AddNewRecord(myXMLLabel::Shapes::CIRCLE, x, y, iRadius, iRadius);
+        AddNewRecord(myLabel::Shapes::CIRCLE, x, y, iRadius, iRadius);
     }
 
     /**
@@ -86,7 +86,7 @@ protected:  // protected method
 private:    // private method
     void Init(void);
     void AddNewHeader(void);
-    void AddNewRecord(myXMLLabel::Shapes Shape,
+    void AddNewRecord(myLabel::Shapes Shape,
                       int x, int y, int iWidth, int iHeight);
 };
 
