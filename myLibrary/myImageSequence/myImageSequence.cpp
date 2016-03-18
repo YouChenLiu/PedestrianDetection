@@ -19,7 +19,7 @@ void myImageSequence::Init(void) {
     m_sExtension = "bmp";
 	m_iOffest = -1;
     m_iFirstNumber = 0;
-    m_iPaddingLength = 4;
+    m_iPaddingLength = 6;
     m_cPaddingCharacter = '0';
     m_bIsColor = true;
 }
