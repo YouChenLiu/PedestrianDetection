@@ -69,8 +69,14 @@ void myClassifierBase::WriteFeatureToString(const std::vector<float>& vfFeature,
 }
 
 void myClassifierBase::WriteOutFile(const std::string & sDstPath) {
+    // open file for writing data
     std::ofstream File(sDstPath);
+
+    // write out the buffer
     File << FileBuffer.str();
     File.close();
+
+    // clear buffer
+    FileBuffer.str(std::string());
     FileBuffer.clear();
 }

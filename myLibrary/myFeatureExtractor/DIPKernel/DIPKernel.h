@@ -1,3 +1,8 @@
+/**
+* @file DIPKernel.h
+* @brief DIP Kernel class definition.
+*/
+
 #ifndef _DIP_KERNEL_H_
 #define _DIP_KERNEL_H_
 

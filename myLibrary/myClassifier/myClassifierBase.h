@@ -1,3 +1,7 @@
+/**
+ * @file myClassifierBase.h
+ * @brief Classifier base class definition.
+ */
 #ifndef _MY_CLASSIFIER_BASE_H_
 #define _MY_CLASSIFIER_BASE_H_
 

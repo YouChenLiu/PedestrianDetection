@@ -7,7 +7,7 @@ static const std::array<DIPKernel, 2> m_aoHogMask = {
 };
 
 myHOG::myHOG(const cv::Mat& mImage, int iType, cv::Size2i BlockSize,
-             int iInterval) : myBlockBasedExtractor(mImage, BlockSize) {
+             int iInterval) : myBlockBasedExtractor(cv::Mat(), BlockSize) {
     Init();
     m_mHorizontalGradientImage = mImage * m_aoHogMask.at(0);
     m_mVerticalGradientImage = mImage * m_aoHogMask.at(1);
@@ -75,6 +75,11 @@ void myHOG::Describe(cv::Point2i Position, std::vector<float>& vfHogFeature) con
     if (m_iType != myHOG::Feature::HOG_WITHOUT_NORM) {
         myHOG::Normalize(vfHogFeature);
     }
+}
+
+void myHOG::SetImage(const cv::Mat& mImage) {
+    m_mHorizontalGradientImage = mImage * m_aoHogMask.at(0);
+    m_mVerticalGradientImage = mImage * m_aoHogMask.at(1);
 }
 
 void myHOG::DescribeCell(const cv::Point2i Position, std::vector<float>& vfHogFeature) const {

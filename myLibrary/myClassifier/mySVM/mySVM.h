@@ -1,3 +1,8 @@
+/**
+ * @file mySVM.h
+ * @brief Support Vector Machine class definition.
+ */
+
 #ifndef _MY_SVM_H_
 #define _MY_SVM_H_
 

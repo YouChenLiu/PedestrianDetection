@@ -1,3 +1,8 @@
+/**
+ * @file myHOG.h
+ * @brief Histogram of Gradient class definition.
+ */
+
 #ifndef _MY_HOG_H_
 #define _MY_HOG_H_
 
@@ -57,6 +62,8 @@ public:
     virtual ~myHOG(void);
 
     void Describe(cv::Point2i Position, std::vector<float>& vfHogFeature) const override;
+
+    void SetImage(const cv::Mat& mImage);
 
 private:
     void Init(void);

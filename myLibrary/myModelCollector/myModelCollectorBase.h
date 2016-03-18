@@ -1,3 +1,8 @@
+/**
+ * @file myModelCollectorBase.h
+ * @brief Model Collector Base class definition.
+ */
+
 #ifndef _MY_MODEL_COLLECTOR_BASE_H_
 #define _MY_MODEL_COLLECTOR_BASE_H_
 

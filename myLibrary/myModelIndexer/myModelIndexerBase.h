@@ -1,3 +1,8 @@
+/**
+ * @file myModelIndexerBase.h
+ * @brief Model Indexer Base class definnition.
+ */
+
 #ifndef _MY_MODEL_INDEXER_BASE_H_
 #define _MY_MODEL_INDEXER_BASE_H_
 

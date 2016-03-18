@@ -1,3 +1,8 @@
+/**
+ * @file myBlockBasedExtractor.h
+ * @brief Block based extractor definition.
+ */
+
 #ifndef _MY_BLOCK_BASED_EXTRACTOR_H_
 #define _MY_BLOCK_BASED_EXTRACTOR_H_
 
@@ -35,6 +40,8 @@ public:     // public method
 
     /**
      * @brief Set the block size for extractor
+     *
+     * @param BlockSize The new block size.
      */
     void SetBlockSize(const cv::Size2i BlockSize) { m_BlockSize = BlockSize; }
 

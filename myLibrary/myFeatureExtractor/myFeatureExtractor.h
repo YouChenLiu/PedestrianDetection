@@ -1,3 +1,8 @@
+/**
+ * @file myFeatureExtractor.h
+ * @brief Feature extractor class definition.
+ */
+
 #ifndef _MY_FEATURE_EXTRACTOR_H_
 #define _MY_FEATURE_EXTRACTOR_H_
 
@@ -13,7 +18,9 @@ class myFeatureExtractor : public myBlockBasedExtractor {
 public:
     /// The predefine pattern value.
     class Features : public myHOG::Feature, public myLBP::Feature {};
+
 private:
+    /// The vector of extractors.
     std::vector<std::unique_ptr<myExtractorBase>> m_vpoUsedExtractor;
 
 public:
@@ -37,17 +44,6 @@ public:
     void Describe(cv::Point2i Position, std::vector<float>& vfFeature) const;
 
     /**
-    * @brief Describe the feature at sepecify position.
-    *
-    * @param x A X value of left-top point for description feature.
-    * @param y A Y value of left-top point for description feature.
-    * @param vfFeature The vector will store feature.
-    */
-    void Describe(int x, int y, std::vector<float>& vfFeature) const {
-        Describe(cv::Point2i(x, y), vfFeature);
-    }
-    
-    /**
      * @brief Add new extractor for extracting feature.
      *
      * @param iFeature The predefine pattern in Features
@@ -68,6 +64,8 @@ public:
      * @param Height The height in new block size.
      */
     void SetBlockSize(int Width, int Height) { SetBlockSize(cv::Size2i(Width, Height)); }
+
+    void SetImage(const cv::Mat& mImg) override;
 
 private:
     void Init(void);

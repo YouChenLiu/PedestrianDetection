@@ -1,3 +1,8 @@
+/**
+ * @file myExtractorBase.h
+ * @brief Extractor base class definition.
+ */
+
 #ifndef _MY_EXTRACTOR_BASE_H_
 #define _MY_EXTRACTOR_BASE_H_
 
@@ -45,9 +50,22 @@ public:     // public method
                           std::vector<float>& vfFeature) const = 0;
 
     /**
-     * @brief Setting the image want to extract feature.
+     * @brief Describe the feature at sepecify position.
+     *
+     * @param x A X value of left-top point for description feature.
+     * @param y A Y value of left-top point for description feature.
+     * @param vfFeature The vector will store feature.
      */
-    void SetImage(const cv::Mat& mImage) { m_mImage = mImage; }
+    void Describe(int x, int y, std::vector<float>& vfFeature) const {
+        Describe(cv::Point2i(x, y), vfFeature);
+    }
+
+    /**
+     * @brief Setting the image want to extract feature.
+     *
+     * @param mImage New image.
+     */
+    virtual void SetImage(const cv::Mat& mImage) { m_mImage = mImage; }
 
 protected:  // protectd method
 
