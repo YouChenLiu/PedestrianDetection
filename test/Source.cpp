@@ -1,21 +1,29 @@
 #include "../myLibrary/myClassifier/mySVM/mySVM.h"
+#include "../myLibrary/myClassifier/myAdaBoost/myAdaBoost.h"
 #include "../myLibrary/myModelCollector/myModelCollector.h"
 #include "../myLibrary/myFeatureExtractor/myFeatureExtractor.h"
 #include "../myLibrary/myModelIndexer/myLBPIndexer/myLBPIndexer.h"
 #include "../myLibrary/myImageSequence/myImageSequence.h"
 #include <iomanip>
+#include <opencv2/highgui.hpp>
 
 int main(void) {
+    // root path for training samples
+    const std::string sTrainingSamplesRoot = "D:/Database/01/";
+    // root path for testing samples
+    const std::string sTestingSamplesRoot = "D:/Database/01/";
+    // determind do training or testing
+    const bool bTrainingL1 = false;
+    const bool bTrainingL2 = true;
+    const bool bTesting = true;
+
+    mySupervisedClassifier* oL2Classifier = new mySVM;
+    const std::string sL2Model = "SVM_L2.xml";
+
     const cv::Size2i ImgSize(64, 128);
     const cv::Size2i BlockSize(8, 8);
     const int iCollectorCount = (((ImgSize.height - 2 * BlockSize.height) / 8) *
                                  ((ImgSize.width - 2 * BlockSize.width) / 8));
-    // path for sample images
-    const std::string sRootPath = "D:/Backup/Thermal/noon/";
-
-    // folder name for write out images
-    const std::string sSubFolder = "Morning+Night-Noon/";
-
     // vector of collectors
     std::vector<myModelCollector> voCollector(iCollectorCount);
     for (auto& o : voCollector) {
@@ -23,142 +31,158 @@ int main(void) {
     }
 
     myLBPIndexer oIndexr(BlockSize);
-
-    // reading positive image sequence
-    myImageSequence oPosReader(sRootPath + "Positive/", "", "bmp", false);
-    oPosReader.SetAttribute(myImageSequence::Attribute::PADDING_LENGTH, 6);
-
-    // reading negative images
-    myImageSequence oNegReader(sRootPath + "Negative/", "", "bmp", false);
-    oNegReader.SetAttribute(myImageSequence::Attribute::PADDING_LENGTH, 6);
     
-    cv::Mat mPosImg;
-    cv::Mat mNegImg;
-    /*
-    std::cout << "Reading Positive Samples" << std::endl;
-    while (oPosReader >> mPosImg) {
-        std::cout << "Reading " << oPosReader.GetSequenceNumberString() << "\r";
-        myFeatureExtractor oExtractor(mPosImg, BlockSize);
-        oExtractor.EnableFeature(myFeatureExtractor::Features::HOG_WITH_L2_NORM);
-        oExtractor.EnableFeature(myFeatureExtractor::Features::LBP_8_1_UNIFORM);
-        
-        for (int y = BlockSize.height, iPos = 0; y < mPosImg.rows - BlockSize.height; y += BlockSize.height) {
-            for (int x = BlockSize.width; x < mPosImg.cols - BlockSize.width; x += BlockSize.width, ++iPos) {
-                std::vector<float> vfFeature;
-                cv::Point2i Position(x, y);
-                oExtractor.Describe(Position, vfFeature);
-                auto iIndex = oIndexr.GetBinNumber(mPosImg, Position);
-                voCollector.at(iPos).AddSample(iIndex, +1, vfFeature);
+    // define time intervals strings
+    const std::vector<std::string> vsTimeInterval = { "Morning", "Noon", "Evening", "Night" };
+    // array saves Pos and Neg string
+    const std::array<std::string, 2> vsPosNeg = { "Positive", "Negative" };
+    // array saves labels for pos and neg
+    const std::array<int, 2> viAnswer = { +1, -1 };
+    // vector for feature set
+    const std::vector<int> viFeature = {
+        myFeatureExtractor::Features::HOG_WITH_L2_NORM,
+        myFeatureExtractor::Features::LBP_8_1_UNIFORM
+    };
+    // feature extractor
+    myFeatureExtractor oExtractor(cv::Mat(), BlockSize);
+    for (auto feature : viFeature) {
+        oExtractor.EnableFeature(feature);
+    }
+
+    struct Score {
+        unsigned int TruePositive = 0;
+        unsigned int TrueNegative = 0;
+        unsigned int FalsePositive = 0;
+        unsigned int FalseNegative = 0;
+    } score;
+    
+    if (bTrainingL1) {
+        std::cout << "Start Training" << std::endl;
+        std::cout << "Training Layer 1 Classifier" << std::endl;
+        for (auto sTime : vsTimeInterval) {
+            for (size_t i = 0; i < vsPosNeg.size(); ++i) {
+                std::string sSamplePath = sTrainingSamplesRoot + sTime + "/" + vsPosNeg.at(i) + "/";
+                myImageSequence oReader(sSamplePath, "", "bmp", false);
+                cv::Mat mImg;
+                while (oReader >> mImg) {
+                    std::cout << "\rReading " + sTime + "-" + vsPosNeg.at(i) + ":" + oReader.GetSequenceNumberString();
+                    oExtractor.SetImage(mImg);
+
+                    for (int y = BlockSize.height, iPos = 0; y < mImg.rows - BlockSize.height; y += BlockSize.height) {
+                        for (int x = BlockSize.width; x < mImg.cols - BlockSize.width; x += BlockSize.width, ++iPos) {
+                            std::vector<float> vfFeature;
+                            cv::Point2i Position(x, y);
+                            oExtractor.Describe(Position, vfFeature);
+                            auto iIndex = oIndexr.GetBinNumber(mImg, Position);
+                            voCollector.at(iPos).AddSample(iIndex, viAnswer.at(i), vfFeature);
+                        }
+                    }
+                }
+                std::cout << std::endl;
+            }
+        }
+
+        // train and save all layer 1 models
+        std::ofstream ModelList("models.txt");
+        ModelList << voCollector.size() << std::endl;
+        for (std::size_t i = 0; i < voCollector.size(); ++i) {
+            std::cout << "\rTraining model collector : " << i << " / " << iCollectorCount - 1;
+            voCollector.at(i).TrainModels();
+            ModelList << voCollector.at(i).SaveModels("Models") << std::endl;
+        }
+    } else {
+        std::cout << "Reading saved models" << std::endl;
+        std::ifstream ModelList("models.txt");
+        int iModelsCount = 0;
+        ModelList >> iModelsCount;
+        for (std::size_t i = 0; i < iModelsCount; ++i) {
+            std::string sPath;
+            ModelList >> sPath;
+            voCollector.at(i).LoadModels(sPath);
+            std::cout << "Reading models : " << i << " / " << iModelsCount - 1 << "\r";
+        }
+        std::cout << std::endl;
+    }
+
+    if (bTrainingL2) {
+        std::cout << std::endl << "Training Layer 2 Classifier" << std::endl;
+        for (auto sTime : vsTimeInterval) {
+            for (size_t i = 0; i < vsPosNeg.size(); ++i) {
+                std::string sSamplePath = sTrainingSamplesRoot + sTime + "/" + vsPosNeg.at(i) + "/";
+                myImageSequence oReader(sSamplePath, "", "bmp", false);
+                cv::Mat mImg;
+                while (oReader >> mImg) {
+                    std::cout << "\rReading " + sTime + "-" + vsPosNeg.at(i) + ":" + oReader.GetSequenceNumberString();
+                    oExtractor.SetImage(mImg);
+                    std::vector<float> vfResult(iCollectorCount, 0.0f);
+                    for (int y = BlockSize.height, iPos = 0; y < mImg.rows - BlockSize.height; y += BlockSize.height) {
+                        for (int x = BlockSize.width; x < mImg.cols - BlockSize.width; x += BlockSize.width, ++iPos) {
+                            std::vector<float> vfFeature;
+                            cv::Point2i Position(x, y);
+                            oExtractor.Describe(Position, vfFeature);
+                            auto iIndex = oIndexr.GetBinNumber(mImg, Position);
+                            auto fResult = voCollector.at(iPos).Predict(iIndex, vfFeature);
+                            vfResult.at(iPos) = fResult;
+                        }
+                    }
+                    oL2Classifier->AddSample(viAnswer.at(i), vfResult);
+                }
+                std::cout << std::endl;
+            }
+        }
+
+        oL2Classifier->Train();
+        oL2Classifier->Save(sL2Model);
+        std::cout << "Training Finish" << std::endl;
+    } else {
+        std::cout << "Load L2 Classifier" << std::endl;
+        oL2Classifier->Load(sL2Model);
+    }
+
+    if (bTesting) {
+        for (auto sTime : vsTimeInterval) {
+            for (size_t i = 0; i < vsPosNeg.size(); ++i) {
+                std::string sSamplePath = sTestingSamplesRoot + sTime + "/" + vsPosNeg.at(i) + "/";
+                myImageSequence oReader(sSamplePath, "", "bmp", false);
+                cv::Mat mImg;
+                while (oReader >> mImg) {
+                    std::cout << "\rReading " + sTime + "-" + vsPosNeg.at(i) + ":" + oReader.GetSequenceNumberString();
+                    oExtractor.SetImage(mImg);
+                    std::vector<float> vfResult(iCollectorCount, 0.0f);
+                    for (int y = BlockSize.height, iPos = 0; y < mImg.rows - BlockSize.height; y += BlockSize.height) {
+                        for (int x = BlockSize.width; x < mImg.cols - BlockSize.width; x += BlockSize.width, ++iPos) {
+                            std::vector<float> vfFeature;
+                            cv::Point2i Position(x, y);
+                            oExtractor.Describe(Position, vfFeature);
+                            auto iIndex = oIndexr.GetBinNumber(mImg, Position);
+                            auto fResult = voCollector.at(iPos).Predict(iIndex, vfFeature);
+                            vfResult.at(iPos) = fResult;
+                        }
+                    }
+                    auto DetectingResult = oL2Classifier->Predict(vfResult);
+                    if (DetectingResult == viAnswer.at(i)) {
+                        if (viAnswer.at(i) == 1) {
+                            ++score.TruePositive;
+                        } else {
+                            ++score.TrueNegative;
+                        }
+                    } else {
+                        if (viAnswer.at(i) == 1) {
+                            ++score.FalsePositive;
+                        } else {
+                            ++score.FalseNegative;
+                        }
+                    }
+                }
+                std::cout << std::endl;
             }
         }
     }
-    std::cout << std::endl << oPosReader.GetSequenceNumber()<< " Positive Samples" << std::endl;
 
-    std::cout << "Reading Negative Samples" << std::endl;
-    while (oNegReader >> mNegImg) {
-        std::cout << "Reading " << oNegReader.GetSequenceNumberString() << "\r";
-        myFeatureExtractor oExtractor(mNegImg, BlockSize);
-        oExtractor.EnableFeature(myFeatureExtractor::Features::HOG_WITH_L2_NORM);
-        oExtractor.EnableFeature(myFeatureExtractor::Features::LBP_8_1_UNIFORM);
+    std::cout << "TP: " << score.TruePositive << std::endl
+        << "FP: " << score.FalsePositive << std::endl
+        << "TN: " << score.TrueNegative << std::endl
+        << "FN: " << score.FalseNegative << std::endl;
 
-        for (int y = BlockSize.height, iPos = 0; y < mNegImg.rows - BlockSize.height; y += BlockSize.height) {
-            for (int x = BlockSize.width; x < mNegImg.cols - BlockSize.width; x += BlockSize.width, ++iPos) {
-                std::vector<float> vfFeature;
-                cv::Point2i Position(x, y);
-                oExtractor.Describe(Position, vfFeature);
-                auto iIndex = oIndexr.GetBinNumber(mNegImg, Position);
-                voCollector.at(iPos).AddSample(iIndex, -1, vfFeature);
-            }
-        }
-    }
-    std::cout <<std::endl << oNegReader.GetSequenceNumber()<< " Negative Samples" << std::endl;
-
-    std::ofstream FeatureList("feature.txt");
-    FeatureList << voCollector.size() << std::endl;
-    for (std::size_t i = 0; i < voCollector.size(); ++i) {
-        std::cout << "Save features in collector : " << i << " / " << iCollectorCount - 1 << "\r";
-        FeatureList << voCollector.at(i).SaveFeatures("Features") << std::endl;
-    }
-    std::cout << std::endl << "All features are saved" << std::endl;
-    
-    std::ofstream ModelList("models.txt");
-    ModelList << voCollector.size() << std::endl;
-    for (std::size_t i = 0; i < voCollector.size(); ++i) {
-        std::cout << "Training model collector : " << i << " / " << iCollectorCount - 1 << "\r";
-        voCollector.at(i).TrainModels();
-        ModelList << voCollector.at(i).SaveModels("Models") << std::endl;
-    }
-    std::cout << std::endl << "All models are trained and saved" << std::endl;
-    */
-    
-    // testing
-    
-    // reading models
-    std::cout << "Reading saved models" << std::endl;
-    std::ifstream ModelList("models.txt");
-    int iModelsCount = 0;
-    ModelList >> iModelsCount;
-    for (std::size_t i = 0; i < iModelsCount; ++i) {
-        std::string sPath;
-        ModelList >> sPath;
-        voCollector.at(i).LoadModels(sPath);
-        std::cout << "Reading models : " << i << " / " << iModelsCount - 1 << "\r";
-    }
-
-    std::cout << std::endl << "Testing Positive Samples" << std::endl;
-    std::string sInstruction = "mkdir \"" + sSubFolder + "Positive\"";
-    system(sInstruction.c_str());
-    myImageSequence oPosWriter(sSubFolder + "Positive/", "", "jpg");
-    oPosWriter.SetAttribute(myImageSequence::Attribute::PADDING_LENGTH, 6);
-    while (oPosReader >> mPosImg) {
-        std::cout << "Reading " << oPosReader.GetSequenceNumberString() << "\r";
-        myFeatureExtractor oExtractor(mPosImg, BlockSize);
-        oExtractor.EnableFeature(myFeatureExtractor::Features::HOG_WITH_L2_NORM);
-        oExtractor.EnableFeature(myFeatureExtractor::Features::LBP_8_1_UNIFORM);
-
-        //cv::Mat mPosResult = cv::Mat::ones(mPosImg.size(), CV_8UC1) * 127;
-        cv::Mat mPosResult = cv::Mat::ones(cv::Size2i(ImgSize.width * 2, ImgSize.height), CV_8UC1) * 127;
-        for (int y = BlockSize.height, iPos = 0; y < mPosImg.rows - BlockSize.height; y += BlockSize.height) {
-            for (int x = BlockSize.width; x < mPosImg.cols - BlockSize.width; x += BlockSize.width, ++iPos) {
-                std::vector<float> vfFeature;
-                cv::Point2i Position(x, y);
-                oExtractor.Describe(Position, vfFeature);
-                auto iIndex = oIndexr.GetBinNumber(mPosImg, Position);
-                auto fResult = voCollector.at(iPos).Predict(iIndex, vfFeature);
-                unsigned char uc = (fResult == +1) ? 255u : (fResult == -1) ? 0u : 127u;
-                mPosResult(cv::Rect2i(cv::Point2i(64 + x, y), BlockSize)) = cv::Scalar::all(uc);
-            }
-        }
-        mPosImg.copyTo(mPosResult(cv::Rect2i(cv::Point2i(0, 0), cv::Size2i(64, 128))));
-        oPosWriter << mPosResult;
-    }
-
-    std::cout << std::endl << "Testing Negative Samples" << std::endl;
-    sInstruction = "mkdir \"" + sSubFolder + "Negative\"";
-    system(sInstruction.c_str());
-    myImageSequence oNegWriter(sSubFolder + "Negative/", "", "jpg");
-    oNegWriter.SetAttribute(myImageSequence::Attribute::PADDING_LENGTH, 6);
-    while (oNegReader >> mNegImg) {
-        std::cout << "Reading " << oNegReader.GetSequenceNumberString() << "\r";
-        myFeatureExtractor oExtractor(mNegImg, BlockSize);
-        oExtractor.EnableFeature(myFeatureExtractor::Features::HOG_WITH_L2_NORM);
-        oExtractor.EnableFeature(myFeatureExtractor::Features::LBP_8_1_UNIFORM);
-
-        cv::Mat mNegResult = cv::Mat::ones(cv::Size2i(ImgSize.width * 2, ImgSize.height), CV_8UC1) * 127;
-        for (int y = BlockSize.height, iPos = 0; y < mNegImg.rows - BlockSize.height; y += BlockSize.height) {
-            for (int x = BlockSize.width; x < mNegImg.cols - BlockSize.width; x += BlockSize.width, ++iPos) {
-                std::vector<float> vfFeature;
-                cv::Point2i Position(x, y);
-                oExtractor.Describe(Position, vfFeature);
-                auto iIndex = oIndexr.GetBinNumber(mNegImg, Position);
-                auto fResult = voCollector.at(iPos).Predict(iIndex, vfFeature);
-                unsigned char uc = (fResult == +1) ? 255u : (fResult == -1) ? 0u : 127u;
-                mNegResult(cv::Rect2i(cv::Point2i(64 + x, y), BlockSize)) = cv::Scalar::all(uc);
-            }
-        }
-        mNegImg.copyTo(mNegResult(cv::Rect2i(cv::Point2i(0, 0), cv::Size2i(64, 128))));
-        oNegWriter << mNegResult;
-    }
-    
     return 0;
 }

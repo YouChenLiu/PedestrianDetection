@@ -73,3 +73,9 @@ void myFeatureExtractor::EnableFeature(int iFeature) {
 
     m_vpoUsedExtractor.push_back(std::move(pExtractor));
 }
+
+void myFeatureExtractor::SetImage(const cv::Mat& mImg) {
+    for (auto& base : m_vpoUsedExtractor) {
+        base->SetImage(mImg);
+    }
+}

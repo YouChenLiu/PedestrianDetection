@@ -14,7 +14,7 @@
 /**
  * @brief Class for computing any blockbased feature.
  */
-class myFeatureExtractor : protected myBlockBasedExtractor {
+class myFeatureExtractor : public myBlockBasedExtractor {
 public:
     /// The predefine pattern value.
     class Features : public myHOG::Feature, public myLBP::Feature {};
@@ -64,6 +64,8 @@ public:
      * @param Height The height in new block size.
      */
     void SetBlockSize(int Width, int Height) { SetBlockSize(cv::Size2i(Width, Height)); }
+
+    void SetImage(const cv::Mat& mImg) override;
 
 private:
     void Init(void);
