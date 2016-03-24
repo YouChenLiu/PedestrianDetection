@@ -11,9 +11,9 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{919745C3-F1B0-4B0E-B37C-21AA284D5E43}</ProjectGuid>
+    <ProjectGuid>{9B8C628D-C5E6-47E3-BC74-D3E9640E65EC}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
-    <RootNamespace>test</RootNamespace>
+    <RootNamespace>TwoLayersDetection</RootNamespace>
     <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -49,7 +49,6 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <TargetName>$(ProjectName)</TargetName>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -84,10 +83,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="Header.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="Source.cpp" />
+    <ClCompile Include="Detection.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\myLibrary\myLibrary.vcxproj">
