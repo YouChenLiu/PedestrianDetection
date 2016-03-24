@@ -4,7 +4,7 @@
 
 int main(void) {
     const cv::Size2i BlockSize(8, 8);
-    const std::string sRootPath = "D:/Backup/Thermal/morning+noon+night/";
+    const std::string sRootPath = "D:/Database/01/All/";
     const std::vector<int> viFeatureSet = { 
         myFeatureExtractor::Features::HOG_WITH_L2_NORM,
         myFeatureExtractor::Features::LBP_8_1_UNIFORM
@@ -15,7 +15,6 @@ int main(void) {
     {
         // read the positive smaples and calculate the hog feature
         myImageSequence oPositiveReader(sRootPath + "Positive/", "", "bmp", false);
-        oPositiveReader.SetAttribute(myImageSequence::Attribute::PADDING_LENGTH, 6);
         std::cout << "loading positive images" << std::endl;
         cv::Mat mPositiveSample;
         while (oPositiveReader >> mPositiveSample) {
@@ -44,7 +43,6 @@ int main(void) {
     {
         // read the negative smaples and calculate the hog feature
         myImageSequence oNegativeReader(sRootPath + "Negative/", "", "bmp", false);
-        oNegativeReader.SetAttribute(myImageSequence::Attribute::PADDING_LENGTH, 6);
         std::cout << std::endl << "loading negative images" << std::endl;
         cv::Mat mNegativeSample;
         while (oNegativeReader >> mNegativeSample) {
@@ -72,7 +70,7 @@ int main(void) {
     }
 
     std::cout << std::endl << "Training Start" << std::endl;
-    oSVM.Train();
+    oSVM.TrainAuto(4);
     oSVM.Save("Model.xml");
     std::cout << "Training Finish" << std::endl;
 
