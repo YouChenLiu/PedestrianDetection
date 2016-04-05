@@ -15,7 +15,7 @@ int main(void) {
     const std::string sTestingSamplesRoot = "D:/Database/02/";
     // determind do training or testing
     const bool bTrainingL1 = false;
-    const bool bTrainingL2 = false;
+    const bool bTrainingL2 = true;
     const bool bTesting = true;
     const bool bRandomSelect = false;
     const cv::Size2i ImgSize(64, 128);
@@ -23,11 +23,11 @@ int main(void) {
     const int iCollectorCount = (((ImgSize.height - 2 * BlockSize.height) / 8) *
                                  ((ImgSize.width - 2 * BlockSize.width) / 8));
 
-    mySupervisedClassifier* oL2Classifier = new myAdaBoost(70);
-    const std::string sL2Model = "A_L2_70.xml";
-    const std::string sModelName = "LIN_Models";
+    mySupervisedClassifier* oL2Classifier = new myAdaBoost(60);
+    const std::string sL2Model = "A_L2_60_LBP.xml";
+    const std::string sModelName = "LBP_Models";
 
-    const bool bSaving = true;
+    const bool bSaving = false;
 
     // vector of collectors
     std::vector<myModelCollector> voCollector(iCollectorCount);
@@ -45,7 +45,7 @@ int main(void) {
     const std::array<int, 2> viAnswer = { +1, -1 };
     // vector for feature set
     const std::vector<int> viFeature = {
-        myFeatureExtractor::Features::HOG_WITH_L2_NORM,
+        //myFeatureExtractor::Features::HOG_WITH_L2_NORM
         myFeatureExtractor::Features::LBP_8_1_UNIFORM
     };
     srand(time(nullptr));
@@ -158,6 +158,7 @@ int main(void) {
 
     if (bTesting) {
         system("mkdir \"Wrong\"");
+        std::ofstream ListFile(sModelName + "_WRONG.txt");
         for (auto sTime : vsTimeInterval) {
             for (size_t i = 0; i < vsPosNeg.size(); ++i) {
                 std::string sSamplePath = sTestingSamplesRoot + sTime + "/" + vsPosNeg.at(i) + "/";
@@ -190,17 +191,16 @@ int main(void) {
 
                         if (viAnswer.at(i) == 1) {
                             sPN = "pos";
-                            ++score.FalsePositive;
+                            ++score.FalseNegative;
                         } else {
                             sPN = "neg";
-                            ++score.FalseNegative;
+                            ++score.FalsePositive;
                         }
                         if (bSaving) {
                             cv::imwrite("Wrong/" + sPN + oReader.GetSequenceNumberString() + ".jpg", mImg);
                         }
                         sResult = sPN + oReader.GetSequenceNumberString() + sResult;
                     }
-                    static std::ofstream ListFile("My.txt");
                     ListFile << sResult;
                 }
                 std::cout << std::endl;
