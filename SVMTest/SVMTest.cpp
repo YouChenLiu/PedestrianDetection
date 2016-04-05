@@ -21,6 +21,7 @@ int main(void) {
 
     //  read the smv model
     mySVM oSVM("../SVMTraining/Model.xml");
+    std::ofstream FileList("Dense.txt");
     
     {
         // read the positive smaples and calculate the hog feature
@@ -51,7 +52,7 @@ int main(void) {
                     mSample.at<float>(0, i++) = fFeature;
                 }
             }
-            static std::ofstream FileList("Dense.txt");
+            
             std::string sResult = "\n";
             auto result = oSVM.Predict(mSample);
             if (result != 1) {
@@ -95,7 +96,7 @@ int main(void) {
                     mSample.at<float>(0, i++) = fFeature;
                 }
             }
-            static std::ofstream FileList("Dense.txt");
+            
             std::string sResult = "\n";
             auto result = static_cast<int>(oSVM.Predict(mSample));
             if (result != -1) {
