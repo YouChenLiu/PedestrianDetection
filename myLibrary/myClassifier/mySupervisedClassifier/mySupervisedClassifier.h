@@ -9,18 +9,20 @@
 #include "../myClassifierBase.h"
 #include <opencv2/ml.hpp>
 
-/** 
- * @brief Base class for supervised classifier.
- *
- * It's a base class for supervised learing classifier.
- * It uses machine learning module in opencv reduce the work.
- * You can inherit it and design your classifier without worring about
- * the features and labels.
- */
-class mySupervisedClassifier : public myClassifierBase {
-public:     // public attribute
+namespace Classifier {
 
-protected:  // protected attribute
+  /**
+   * @brief Base class for supervised classifier.
+   *
+   * It's a base class for supervised learing classifier.
+   * It uses machine learning module in opencv reduce the work.
+   * You can inherit it and design your classifier without worring about
+   * the features and labels.
+   */
+  class mySupervisedClassifier : public myClassifierBase {
+  public:     // public attribute
+
+  protected:  // protected attribute
     /// The array for saving answer labels.
     std::vector<int> m_viLabel;
 
@@ -30,7 +32,7 @@ protected:  // protected attribute
     /// The openCV smart pointer to point training data.
     cv::Ptr<cv::ml::TrainData> m_poTrainingData;
 
-public:     // public method
+  public:     // public method
     /**
      * @brief Default constructor
      */
@@ -55,20 +57,20 @@ public:     // public method
      * @return A OpenCV smart pointer to classifier.
      */
     const cv::Ptr<cv::ml::StatModel> GetClassifier(void) const {
-        return m_poClassifier;
+      return m_poClassifier;
     }
 
     virtual void Train(void) override;
-    
+
     float Predict(const cv::Mat& mSample) const override {
-        return m_poClassifier->empty() ? NAN : m_poClassifier->predict(mSample);
+      return m_poClassifier->empty() ? NAN : m_poClassifier->predict(mSample);
     }
 
     float Predict(const std::vector<float>& vfSample) const override;
 
     bool Save(const std::string& sDstPath) const override;
 
-protected:  // protected method
+  protected:  // protected method
     /**
      * @brief Add a label to array.
      *
@@ -84,14 +86,15 @@ protected:  // protected method
      */
     void MakeTrainingData(void);
 
-private:    // private method
+  private:    // private method
     /**
-     * @brief Add a feature string with its label to label and feature array.
-     *
-     * @param iLabel The iLabel represents the feature meaning.
-     * @param sLineOfString The feature saving in a string.
-     */
+      * @brief Add a feature string with its label to label and feature array.
+      *
+      * @param iLabel The iLabel represents the feature meaning.
+      * @param sLineOfString The feature saving in a string.
+      */
     void AddSample(int iLabel, const std::string& sLineOfString);
-};
+  };
 
+};
 #endif // !_MY_SUPERVISED_CLASSIFIER_H_

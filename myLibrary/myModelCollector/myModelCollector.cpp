@@ -21,7 +21,7 @@ void myModelCollector::Resize(unsigned int iCount) {
     m_vpoModel.clear();
     m_vpoModel.reserve(iCount);
     for (size_t i = 0; i < iCount; ++i) {
-        m_vpoModel.push_back(std::make_unique<mySVM>());
+        m_vpoModel.push_back(std::make_unique<Classifier::mySVM>());
     }
 }
 
