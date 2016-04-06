@@ -3,34 +3,42 @@
  * @brief Feature extractor class definition.
  */
 
-#ifndef _MY_FEATURE_EXTRACTOR_H_
-#define _MY_FEATURE_EXTRACTOR_H_
+#ifndef _MY_BLOCK_DESCRIPTOR_H_
+#define _MY_BLOCK_DESCRIPTOR_H_
 
 #include <memory>
-#include "../myFeatureExtractor/myBlockBasedExtractor/myBlockBasedExtractor.h"
-#include "myHOG/myHOG.h"
-#include "myLBP/myLBP.h"
+#include "../myBlockDescriptorBase.h"
+#include "../myHOG/myHOG.h"
+#include "../myLBP/myLBP.h"
 
-/**
- * @brief Class for computing any blockbased feature.
- */
-class myFeatureExtractor : public myBlockBasedExtractor {
-public:
+namespace Descriptor {
+
+  /**
+   * @brief Class for computing any blockbased feature.
+   */
+  class myBlockDescriptor : public myBlockDescriptorBase {
+  public:
     /// The predefine pattern value.
-    class Features : public myHOG::Feature, public myLBP::Feature {};
+    class Feature : public myHOG::Feature, public myLBP::Feature {
+    public:
+      static const int L1_NORM = NORMALIZATION_FLAG | (0x01 << NORM_OFFSET);
+      static const int L1_SQRT = NORMALIZATION_FLAG | (0x02 << NORM_OFFSET);
+      static const int L2_NORM = NORMALIZATION_FLAG | (0x03 << NORM_OFFSET);
+      static const int L2_SQRT = NORMALIZATION_FLAG | (0x04 << NORM_OFFSET);
+    };
 
-private:
+  private:
     /// The vector of extractors.
-    std::vector<std::unique_ptr<myExtractorBase>> m_vpoUsedExtractor;
+    std::vector<std::unique_ptr<Descriptor::myDescriptorBase>> m_vpoUsedDescriptor;
 
-public:
+  public:
     /**
      * @brief Create with a image.
      *
      * @param mImage A image for computing feature.
      * @param BlockSize A region size for computing feature.
      */
-    myFeatureExtractor(const cv::Mat& mImage, cv::Size2i BlockSize = cv::Size2i(8, 8));
+    myBlockDescriptor(const cv::Mat& mImage, cv::Size2i BlockSize = cv::Size2i(8, 8));
 
     /**
      * @brief Create with a IplImage.
@@ -38,8 +46,8 @@ public:
      * @param pImage A image for computing feature.
      * @param BlockSize A region size for computing feature.
      */
-    myFeatureExtractor(IplImage* pImage, CvSize BlockSize = cvSize(8, 8));
-    ~myFeatureExtractor(void);
+    myBlockDescriptor(IplImage* pImage, CvSize BlockSize = cvSize(8, 8));
+    ~myBlockDescriptor(void);
 
     void Describe(cv::Point2i Position, std::vector<float>& vfFeature) const;
 
@@ -67,9 +75,10 @@ public:
 
     void SetImage(const cv::Mat& mImg) override;
 
-private:
+  private:
     void Init(void);
-    
-};
+    void Normalize(int iNormMethod, std::vector<float>& vfFeature) const;
+  };
 
+};
 #endif
