@@ -27,7 +27,7 @@ void myModelCollector::Resize(unsigned int iCount) {
 
 void myModelCollector::TrainModels(void) {
     for (const auto& model : m_vpoModel) {
-        model->Train();
+        model->TrainAuto(4);
     }
 }
 

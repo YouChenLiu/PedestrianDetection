@@ -8,9 +8,8 @@
  *  After all, just glad for use.
 */
 
-#include <iostream>
-#include <opencv2/core.hpp>
 #include <opencv2/imgproc.hpp>
+#include <opencv2/highgui.hpp>
 #include "../myLibrary/myImageSequence/myImageSequence.h"
 
 // parameters for reading images

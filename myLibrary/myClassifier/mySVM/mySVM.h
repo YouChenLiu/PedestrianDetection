@@ -117,10 +117,11 @@ private:    // private attribute
      * MAX_ITER : stop training wehn reach max count or converge.
      * EPS : stop training when it's converge.
      */
-    static const int CRITERIA_TYPE = cv::TermCriteria::MAX_ITER;
+    static const int CRITERIA_TYPE = cv::TermCriteria::MAX_ITER | 
+                                     cv::TermCriteria::EPS;
 
     /// the maximum training cycle count
-    static const int ITERATION_COUNT = 10000;
+    static const int ITERATION_COUNT = 100000;
 
     /** 
      * The system is converge when diffrence less than it.

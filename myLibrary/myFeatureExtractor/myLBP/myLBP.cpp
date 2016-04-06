@@ -71,7 +71,7 @@ void myLBP::SetAttributes(int iPattern) {
     m_iLength = ((iPattern % myLBP::NUMBER_OF_PATTERNS == 2) ? 16 : 8);
 }
 
-void myLBP::Describe(cv::Point2i Position, std::vector<float>& viFeature) const {
+void myLBP::Describe(cv::Point2i Position, std::vector<float>& vfFeature) const {
     auto iUniformMapIndex = m_iLength / 8 - 1;
     std::vector<float> viTempBins(m_avbUniformMap.at(iUniformMapIndex).size(),
                                   0.0f);
@@ -85,22 +85,22 @@ void myLBP::Describe(cv::Point2i Position, std::vector<float>& viFeature) const 
         }
     }
 
-    viFeature.clear();
+    vfFeature.clear();
     float iNonuniformBin = 0.0f;
     for (std::size_t i = 0; i < myLBP::m_avbUniformMap.at(iUniformMapIndex).size(); ++i) {
         if (m_bIsUniform == true) {
             if (myLBP::m_avbUniformMap.at(iUniformMapIndex).at(i) == true) {
-                viFeature.push_back(viTempBins.at(i));
+                vfFeature.push_back(viTempBins.at(i));
             } else {
                 iNonuniformBin += viTempBins.at(i);
             }
         } else {
-            viFeature.push_back(viTempBins.at(i));
+            vfFeature.push_back(viTempBins.at(i));
         }
     }
 
     if (m_bIsUniform == true) {
-        viFeature.push_back(iNonuniformBin);
+        vfFeature.push_back(iNonuniformBin);
     }
 }
 

@@ -3,186 +3,95 @@
 #include "../myLibrary/myModelCollector/myModelCollector.h"
 #include "../myLibrary/myFeatureExtractor/myFeatureExtractor.h"
 #include "../myLibrary/myModelIndexer/myLBPIndexer/myLBPIndexer.h"
-#include "../myLibrary/myImageSequence/myImageSequence.h"
-#include <iomanip>
+#include <fstream>
 #include <opencv2/highgui.hpp>
+#include <opencv2/imgproc.hpp>
 
 int main(void) {
-    // root path for training samples
-    const std::string sTrainingSamplesRoot = "D:/Database/01/";
-    // root path for testing samples
-    const std::string sTestingSamplesRoot = "D:/Database/01/";
-    // determind do training or testing
-    const bool bTrainingL1 = false;
-    const bool bTrainingL2 = true;
-    const bool bTesting = true;
-
-    mySupervisedClassifier* oL2Classifier = new mySVM;
-    const std::string sL2Model = "SVM_L2.xml";
-
     const cv::Size2i ImgSize(64, 128);
     const cv::Size2i BlockSize(8, 8);
     const int iCollectorCount = (((ImgSize.height - 2 * BlockSize.height) / 8) *
                                  ((ImgSize.width - 2 * BlockSize.width) / 8));
-    // vector of collectors
-    std::vector<myModelCollector> voCollector(iCollectorCount);
-    for (auto& o : voCollector) {
-        o.Resize(59);
-    }
-
     myLBPIndexer oIndexr(BlockSize);
-    
-    // define time intervals strings
-    const std::vector<std::string> vsTimeInterval = { "Morning", "Noon", "Evening", "Night" };
-    // array saves Pos and Neg string
-    const std::array<std::string, 2> vsPosNeg = { "Positive", "Negative" };
-    // array saves labels for pos and neg
-    const std::array<int, 2> viAnswer = { +1, -1 };
-    // vector for feature set
+    myFeatureExtractor oExtractor(cv::Mat(), BlockSize);
     const std::vector<int> viFeature = {
         myFeatureExtractor::Features::HOG_WITH_L2_NORM,
         myFeatureExtractor::Features::LBP_8_1_UNIFORM
     };
-    // feature extractor
-    myFeatureExtractor oExtractor(cv::Mat(), BlockSize);
     for (auto feature : viFeature) {
         oExtractor.EnableFeature(feature);
     }
+    std::cout << "Reading saved models" << std::endl;
+    std::ifstream ModelList("../TwoLayersDetection/LIN_Models.txt");
+    // vector of collectors
+    std::vector<myModelCollector> voCollector(84);
+    for (auto& o : voCollector) {
+        o.Resize(59);
+    }
+    int iModelsCount = 0;
+    ModelList >> iModelsCount;
+    for (std::size_t i = 0; i < iModelsCount; ++i) {
+        std::string sPath;
+        ModelList >> sPath;
+        voCollector.at(i).LoadModels("../TwoLayersDetection/" + sPath);
+        std::cout << "Reading models : " << i << " / " << iModelsCount - 1 << "\r";
+    }
+    std::cout << std::endl;
+    mySupervisedClassifier* oL2Classifier = new myAdaBoost(70);
+    oL2Classifier->Load("../TwoLayersDetection/A_L2_70.xml");
 
-    struct Score {
-        unsigned int TruePositive = 0;
-        unsigned int TrueNegative = 0;
-        unsigned int FalsePositive = 0;
-        unsigned int FalseNegative = 0;
-    } score;
-    
-    if (bTrainingL1) {
-        std::cout << "Start Training" << std::endl;
-        std::cout << "Training Layer 1 Classifier" << std::endl;
-        for (auto sTime : vsTimeInterval) {
-            for (size_t i = 0; i < vsPosNeg.size(); ++i) {
-                std::string sSamplePath = sTrainingSamplesRoot + sTime + "/" + vsPosNeg.at(i) + "/";
-                myImageSequence oReader(sSamplePath, "", "bmp", false);
-                cv::Mat mImg;
-                while (oReader >> mImg) {
-                    std::cout << "\rReading " + sTime + "-" + vsPosNeg.at(i) + ":" + oReader.GetSequenceNumberString();
-                    oExtractor.SetImage(mImg);
+    const std::string sRoot("D:/Database/02/Night/");
+    std::ifstream List("Dense.txt");
+    std::string str;
 
-                    for (int y = BlockSize.height, iPos = 0; y < mImg.rows - BlockSize.height; y += BlockSize.height) {
-                        for (int x = BlockSize.width; x < mImg.cols - BlockSize.width; x += BlockSize.width, ++iPos) {
-                            std::vector<float> vfFeature;
-                            cv::Point2i Position(x, y);
-                            oExtractor.Describe(Position, vfFeature);
-                            auto iIndex = oIndexr.GetBinNumber(mImg, Position);
-                            voCollector.at(iPos).AddSample(iIndex, viAnswer.at(i), vfFeature);
-                        }
-                    }
-                }
-                std::cout << std::endl;
+    while (std::getline(List, str)) {
+        if (str.length() == 0) {
+            continue;
+        }
+
+        std::string sFileName;
+        std::string sPN = str.substr(0, 3);
+        if (str.substr(0, 3).compare("pos") == 0) {
+            sFileName = "Positive/" + str.substr(3, 6) + ".bmp";
+        } else {
+            sFileName = "Negative/" + str.substr(3, 6) + ".bmp";
+        }
+
+        std::string sPath = sRoot + sFileName;
+        cv::Mat mImg = cv::imread(sPath, cv::IMREAD_GRAYSCALE);
+        
+        cv::Mat mDistribution = cv::Mat::ones(ImgSize, CV_8UC1) * 127;
+        oExtractor.SetImage(mImg);
+        std::vector<float> vfResult(iCollectorCount, 0.0f);
+        for (int y = BlockSize.height, iPos = 0; y < mImg.rows - BlockSize.height; y += BlockSize.height) {
+            for (int x = BlockSize.width; x < mImg.cols - BlockSize.width; x += BlockSize.width, ++iPos) {
+                std::vector<float> vfFeature;
+                cv::Point2i Position(x, y);
+                oExtractor.Describe(Position, vfFeature);
+                auto iIndex = oIndexr.GetBinNumber(mImg, Position);
+                auto fResult = voCollector.at(iPos).Predict(iIndex, vfFeature);
+                vfResult.at(iPos) = fResult;
+                auto Color = (fResult == -1) ? cv::Scalar::all(0) :
+                    ((fResult == 1) ? cv::Scalar::all(255) :
+                     cv::Scalar::all(127));
+                
+                auto Region = cv::Rect2i(Position, BlockSize);
+                mDistribution(Region).setTo(Color);
+                
             }
         }
-
-        // train and save all layer 1 models
-        std::ofstream ModelList("models.txt");
-        ModelList << voCollector.size() << std::endl;
-        for (std::size_t i = 0; i < voCollector.size(); ++i) {
-            std::cout << "\rTraining model collector : " << i << " / " << iCollectorCount - 1;
-            voCollector.at(i).TrainModels();
-            ModelList << voCollector.at(i).SaveModels("Models") << std::endl;
-        }
-    } else {
-        std::cout << "Reading saved models" << std::endl;
-        std::ifstream ModelList("models.txt");
-        int iModelsCount = 0;
-        ModelList >> iModelsCount;
-        for (std::size_t i = 0; i < iModelsCount; ++i) {
-            std::string sPath;
-            ModelList >> sPath;
-            voCollector.at(i).LoadModels(sPath);
-            std::cout << "Reading models : " << i << " / " << iModelsCount - 1 << "\r";
-        }
-        std::cout << std::endl;
+        
+        cv::Mat mResult = cv::Mat::zeros(cv::Size2i(128, 128), CV_8UC1);
+        mImg.copyTo(mResult(cv::Rect2i(0, 0, 64, 128)));
+        mDistribution.copyTo(mResult(cv::Rect2i(64, 0, 64, 128)));
+        auto DetectingResult = oL2Classifier->Predict(vfResult);
+        cv::putText(mResult,
+                    (DetectingResult == -1) ? "-" : "+",
+                    cv::Point2i(30, 60),
+                    cv::FONT_HERSHEY_PLAIN,
+                    1.0,
+                    cv::Scalar::all(0));
+        cv::imwrite("Image/" + str + ".jpg", mResult);
     }
-
-    if (bTrainingL2) {
-        std::cout << std::endl << "Training Layer 2 Classifier" << std::endl;
-        for (auto sTime : vsTimeInterval) {
-            for (size_t i = 0; i < vsPosNeg.size(); ++i) {
-                std::string sSamplePath = sTrainingSamplesRoot + sTime + "/" + vsPosNeg.at(i) + "/";
-                myImageSequence oReader(sSamplePath, "", "bmp", false);
-                cv::Mat mImg;
-                while (oReader >> mImg) {
-                    std::cout << "\rReading " + sTime + "-" + vsPosNeg.at(i) + ":" + oReader.GetSequenceNumberString();
-                    oExtractor.SetImage(mImg);
-                    std::vector<float> vfResult(iCollectorCount, 0.0f);
-                    for (int y = BlockSize.height, iPos = 0; y < mImg.rows - BlockSize.height; y += BlockSize.height) {
-                        for (int x = BlockSize.width; x < mImg.cols - BlockSize.width; x += BlockSize.width, ++iPos) {
-                            std::vector<float> vfFeature;
-                            cv::Point2i Position(x, y);
-                            oExtractor.Describe(Position, vfFeature);
-                            auto iIndex = oIndexr.GetBinNumber(mImg, Position);
-                            auto fResult = voCollector.at(iPos).Predict(iIndex, vfFeature);
-                            vfResult.at(iPos) = fResult;
-                        }
-                    }
-                    oL2Classifier->AddSample(viAnswer.at(i), vfResult);
-                }
-                std::cout << std::endl;
-            }
-        }
-
-        oL2Classifier->Train();
-        oL2Classifier->Save(sL2Model);
-        std::cout << "Training Finish" << std::endl;
-    } else {
-        std::cout << "Load L2 Classifier" << std::endl;
-        oL2Classifier->Load(sL2Model);
-    }
-
-    if (bTesting) {
-        for (auto sTime : vsTimeInterval) {
-            for (size_t i = 0; i < vsPosNeg.size(); ++i) {
-                std::string sSamplePath = sTestingSamplesRoot + sTime + "/" + vsPosNeg.at(i) + "/";
-                myImageSequence oReader(sSamplePath, "", "bmp", false);
-                cv::Mat mImg;
-                while (oReader >> mImg) {
-                    std::cout << "\rReading " + sTime + "-" + vsPosNeg.at(i) + ":" + oReader.GetSequenceNumberString();
-                    oExtractor.SetImage(mImg);
-                    std::vector<float> vfResult(iCollectorCount, 0.0f);
-                    for (int y = BlockSize.height, iPos = 0; y < mImg.rows - BlockSize.height; y += BlockSize.height) {
-                        for (int x = BlockSize.width; x < mImg.cols - BlockSize.width; x += BlockSize.width, ++iPos) {
-                            std::vector<float> vfFeature;
-                            cv::Point2i Position(x, y);
-                            oExtractor.Describe(Position, vfFeature);
-                            auto iIndex = oIndexr.GetBinNumber(mImg, Position);
-                            auto fResult = voCollector.at(iPos).Predict(iIndex, vfFeature);
-                            vfResult.at(iPos) = fResult;
-                        }
-                    }
-                    auto DetectingResult = oL2Classifier->Predict(vfResult);
-                    if (DetectingResult == viAnswer.at(i)) {
-                        if (viAnswer.at(i) == 1) {
-                            ++score.TruePositive;
-                        } else {
-                            ++score.TrueNegative;
-                        }
-                    } else {
-                        if (viAnswer.at(i) == 1) {
-                            ++score.FalsePositive;
-                        } else {
-                            ++score.FalseNegative;
-                        }
-                    }
-                }
-                std::cout << std::endl;
-            }
-        }
-    }
-
-    std::cout << "TP: " << score.TruePositive << std::endl
-        << "FP: " << score.FalsePositive << std::endl
-        << "TN: " << score.TrueNegative << std::endl
-        << "FN: " << score.FalseNegative << std::endl;
-
     return 0;
 }
