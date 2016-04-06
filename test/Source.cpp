@@ -1,7 +1,7 @@
 #include "../myLibrary/myClassifier/mySVM/mySVM.h"
 #include "../myLibrary/myClassifier/myAdaBoost/myAdaBoost.h"
 #include "../myLibrary/myModelCollector/myModelCollector.h"
-#include "../myLibrary/myFeatureExtractor/myFeatureExtractor.h"
+#include "../myLibrary/myFeatureDescriptor/myBlockDescriptor/myBlockDescriptor.h"
 #include "../myLibrary/myModelIndexer/myLBPIndexer/myLBPIndexer.h"
 #include "../myLibrary/myImageSequence/myImageSequence.h"
 #include <iomanip>
@@ -17,7 +17,7 @@ int main(void) {
     const bool bTrainingL2 = true;
     const bool bTesting = true;
 
-    mySupervisedClassifier* oL2Classifier = new mySVM;
+    Classifier::mySupervisedClassifier* oL2Classifier = new Classifier::mySVM;
     const std::string sL2Model = "SVM_L2.xml";
 
     const cv::Size2i ImgSize(64, 128);
@@ -40,11 +40,11 @@ int main(void) {
     const std::array<int, 2> viAnswer = { +1, -1 };
     // vector for feature set
     const std::vector<int> viFeature = {
-        myFeatureExtractor::Features::HOG_WITH_L2_NORM,
-        myFeatureExtractor::Features::LBP_8_1_UNIFORM
+        Descriptor::myBlockDescriptor::Feature::HOG_SINGLE_CELL | Descriptor::myBlockDescriptor::Feature::L1_NORM,
+        Descriptor::myBlockDescriptor::Feature::LBP_8_1_UNIFORM
     };
     // feature extractor
-    myFeatureExtractor oExtractor(cv::Mat(), BlockSize);
+    Descriptor::myBlockDescriptor oExtractor(cv::Mat(), BlockSize);
     for (auto feature : viFeature) {
         oExtractor.EnableFeature(feature);
     }

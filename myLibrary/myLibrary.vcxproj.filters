@@ -93,6 +93,9 @@
     <ClInclude Include="DIPKernel\DIPKernel.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="myModelIndexer\myLBPIndexer\mylbpindexer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="myImageSequence\myImageSequence.cpp">
@@ -138,6 +141,9 @@
       <Filter>Source Files\Classifier</Filter>
     </ClCompile>
     <ClCompile Include="DIPKernel\DIPKernel.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="myModelIndexer\myLBPIndexer\myLBPIndexer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

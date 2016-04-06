@@ -95,6 +95,7 @@
     <ClInclude Include="myLabel\myLabel.h" />
     <ClInclude Include="myModelCollector\myModelCollector.h" />
     <ClInclude Include="myModelCollector\myModelCollectorBase.h" />
+    <ClInclude Include="myModelIndexer\myLBPIndexer\mylbpindexer.h" />
     <ClInclude Include="myModelIndexer\myModelIndexerBase.h" />
     <ClInclude Include="myResultDumper\myResultDumper.h" />
     <ClInclude Include="myResultVerifier\myResultVerifier.h" />
@@ -113,6 +114,7 @@
     <ClCompile Include="myImageSequence\myImageSequence.cpp" />
     <ClCompile Include="myLabel\myLabel.cpp" />
     <ClCompile Include="myModelCollector\myModelCollector.cpp" />
+    <ClCompile Include="myModelIndexer\myLBPIndexer\myLBPIndexer.cpp" />
     <ClCompile Include="myResultDumper\myResultDumper.cpp" />
     <ClCompile Include="myResultVerifier\myResultVerifier.cpp" />
     <ClCompile Include="tinyxml2\tinyxml2.cpp" />
