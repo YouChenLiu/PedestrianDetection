@@ -13,6 +13,18 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Header Files\Descriptor">
+      <UniqueIdentifier>{f44fc891-cf9a-428f-b664-682fa44fae5a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Descriptor">
+      <UniqueIdentifier>{f021284c-2bb3-428c-a725-00c60bb09111}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Classifier">
+      <UniqueIdentifier>{76654ca0-541d-4dd8-a30e-c9b4a35b47d0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Classifier">
+      <UniqueIdentifier>{c6a7adbc-68be-474e-b005-93b1e7aaa0a8}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />
@@ -21,22 +33,7 @@
     <ClInclude Include="myImageSequence\myImageSequence.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="myFeatureExtractor\myHOG\myHOG.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="myFeatureExtractor\myLBP\myLBP.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="myFeatureExtractor\myFeatureExtractor.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="myFeatureExtractor\myExtractorBase.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="myResultVerifier\myResultVerifier.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="myFeatureExtractor\DIPKernel\DIPKernel.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="myResultDumper\myResultDumper.h">
@@ -54,25 +51,7 @@
     <ClInclude Include="myModelCollector\myModelCollector.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="myClassifier\myClassifierBase.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="myClassifier\mySupervisedClassifier\mySupervisedClassifier.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="myClassifier\mySVM\mySVM.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="myClassifier\myAdaBoost\myAdaBoost.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="myModelIndexer\myModelIndexerBase.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="myModelIndexer\myLBPIndexer\myLBPIndexer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="myFeatureExtractor\myBlockBasedExtractor\myBlockBasedExtractor.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="myHistoAnalyzer\myHistoAnalyzer.h">
@@ -81,12 +60,42 @@
     <ClInclude Include="myLabel\myLabel.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="myFeatureDescriptor\myHOG\myHOG.h">
+      <Filter>Header Files\Descriptor</Filter>
+    </ClInclude>
+    <ClInclude Include="myFeatureDescriptor\myLBP\myLBP.h">
+      <Filter>Header Files\Descriptor</Filter>
+    </ClInclude>
+    <ClInclude Include="myFeatureDescriptor\myBlockDescriptorBase.h">
+      <Filter>Header Files\Descriptor</Filter>
+    </ClInclude>
+    <ClInclude Include="myFeatureDescriptor\myBlockDescriptor\myBlockDescriptor.h">
+      <Filter>Header Files\Descriptor</Filter>
+    </ClInclude>
+    <ClInclude Include="myFeatureDescriptor\myDescriptorBase.h">
+      <Filter>Header Files\Descriptor</Filter>
+    </ClInclude>
+    <ClInclude Include="myFeatureDescriptor\FeatureDefinition.h">
+      <Filter>Header Files\Descriptor</Filter>
+    </ClInclude>
+    <ClInclude Include="myClassifier\mySVM\mySVM.h">
+      <Filter>Header Files\Classifier</Filter>
+    </ClInclude>
+    <ClInclude Include="myClassifier\mySupervisedClassifier\mySupervisedClassifier.h">
+      <Filter>Header Files\Classifier</Filter>
+    </ClInclude>
+    <ClInclude Include="myClassifier\myClassifierBase.h">
+      <Filter>Header Files\Classifier</Filter>
+    </ClInclude>
+    <ClInclude Include="myClassifier\myAdaBoost\myAdaBoost.h">
+      <Filter>Header Files\Classifier</Filter>
+    </ClInclude>
+    <ClInclude Include="DIPKernel\DIPKernel.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="myImageSequence\myImageSequence.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="myFeatureExtractor\myHOG\myHOG.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="tinyxml2\tinyxml2.cpp">
@@ -95,46 +104,40 @@
     <ClCompile Include="myResultVerifier\myResultVerifier.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="myFeatureExtractor\myLBP\myLBP.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="myFeatureExtractor\myFeatureExtractor.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="myFeatureExtractor\DIPKernel\DIPKernel.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="myResultDumper\myResultDumper.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="myModelCollector\myModelCollector.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="myClassifier\mySupervisedClassifier\mySupervisedClassifier.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="myClassifier\mySVM\mySVM.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="myClassifier\myAdaBoost\myAdaBoost.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="myClassifier\myClassifierBase.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="myModelIndexer\myLBPIndexer\myLBPIndexer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="myFeatureExtractor\myBlockBasedExtractor\myBlockBasedExtractor.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="myFeatureExtractor\myExtractorBase.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="myHistoanalyzer\myHistoAnalyzer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="myLabel\myLabel.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="myFeatureDescriptor\myLBP\myLBP.cpp">
+      <Filter>Source Files\Descriptor</Filter>
+    </ClCompile>
+    <ClCompile Include="myFeatureDescriptor\myHOG\myHOG.cpp">
+      <Filter>Source Files\Descriptor</Filter>
+    </ClCompile>
+    <ClCompile Include="myFeatureDescriptor\myBlockDescriptor\myBlockDescriptor.cpp">
+      <Filter>Source Files\Descriptor</Filter>
+    </ClCompile>
+    <ClCompile Include="myClassifier\mySupervisedClassifier\mySupervisedClassifier.cpp">
+      <Filter>Source Files\Classifier</Filter>
+    </ClCompile>
+    <ClCompile Include="myClassifier\mySVM\mySVM.cpp">
+      <Filter>Source Files\Classifier</Filter>
+    </ClCompile>
+    <ClCompile Include="myClassifier\myClassifierBase.cpp">
+      <Filter>Source Files\Classifier</Filter>
+    </ClCompile>
+    <ClCompile Include="myClassifier\myAdaBoost\myAdaBoost.cpp">
+      <Filter>Source Files\Classifier</Filter>
+    </ClCompile>
+    <ClCompile Include="DIPKernel\DIPKernel.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

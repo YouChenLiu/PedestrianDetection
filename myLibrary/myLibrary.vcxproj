@@ -79,43 +79,40 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="common.h" />
+    <ClInclude Include="DIPKernel\DIPKernel.h" />
     <ClInclude Include="myClassifier\myAdaBoost\myAdaBoost.h" />
     <ClInclude Include="myClassifier\myClassifierBase.h" />
     <ClInclude Include="myClassifier\mySupervisedClassifier\mySupervisedClassifier.h" />
     <ClInclude Include="myClassifier\mySVM\mySVM.h" />
-    <ClInclude Include="myFeatureExtractor\DIPKernel\DIPKernel.h" />
-    <ClInclude Include="myFeatureExtractor\myBlockBasedExtractor\myBlockBasedExtractor.h" />
-    <ClInclude Include="myFeatureExtractor\myExtractorBase.h" />
-    <ClInclude Include="myFeatureExtractor\myFeatureExtractor.h" />
-    <ClInclude Include="myFeatureExtractor\myHOG\myHOG.h" />
-    <ClInclude Include="myFeatureExtractor\myLBP\myLBP.h" />
+    <ClInclude Include="myFeatureDescriptor\FeatureDefinition.h" />
+    <ClInclude Include="myFeatureDescriptor\myBlockDescriptorBase.h" />
+    <ClInclude Include="myFeatureDescriptor\myBlockDescriptor\myBlockDescriptor.h" />
+    <ClInclude Include="myFeatureDescriptor\myDescriptorBase.h" />
+    <ClInclude Include="myFeatureDescriptor\myHOG\myHOG.h" />
+    <ClInclude Include="myFeatureDescriptor\myLBP\myLBP.h" />
     <ClInclude Include="myHistoAnalyzer\myHistoAnalyzer.h" />
     <ClInclude Include="myImageSequence\myImageSequence.h" />
     <ClInclude Include="myLabel\myLabel.h" />
     <ClInclude Include="myModelCollector\myModelCollector.h" />
     <ClInclude Include="myModelCollector\myModelCollectorBase.h" />
-    <ClInclude Include="myModelIndexer\myLBPIndexer\myLBPIndexer.h" />
     <ClInclude Include="myModelIndexer\myModelIndexerBase.h" />
     <ClInclude Include="myResultDumper\myResultDumper.h" />
     <ClInclude Include="myResultVerifier\myResultVerifier.h" />
     <ClInclude Include="tinyxml2\tinyxml2.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="DIPKernel\DIPKernel.cpp" />
     <ClCompile Include="myClassifier\myAdaBoost\myAdaBoost.cpp" />
     <ClCompile Include="myClassifier\myClassifierBase.cpp" />
     <ClCompile Include="myClassifier\mySupervisedClassifier\mySupervisedClassifier.cpp" />
     <ClCompile Include="myClassifier\mySVM\mySVM.cpp" />
-    <ClCompile Include="myFeatureExtractor\DIPKernel\DIPKernel.cpp" />
-    <ClCompile Include="myFeatureExtractor\myBlockBasedExtractor\myBlockBasedExtractor.cpp" />
-    <ClCompile Include="myFeatureExtractor\myExtractorBase.cpp" />
-    <ClCompile Include="myFeatureExtractor\myFeatureExtractor.cpp" />
-    <ClCompile Include="myFeatureExtractor\myHOG\myHOG.cpp" />
-    <ClCompile Include="myFeatureExtractor\myLBP\myLBP.cpp" />
+    <ClCompile Include="myFeatureDescriptor\myBlockDescriptor\myBlockDescriptor.cpp" />
+    <ClCompile Include="myFeatureDescriptor\myHOG\myHOG.cpp" />
+    <ClCompile Include="myFeatureDescriptor\myLBP\myLBP.cpp" />
     <ClCompile Include="myHistoanalyzer\myHistoAnalyzer.cpp" />
     <ClCompile Include="myImageSequence\myImageSequence.cpp" />
     <ClCompile Include="myLabel\myLabel.cpp" />
     <ClCompile Include="myModelCollector\myModelCollector.cpp" />
-    <ClCompile Include="myModelIndexer\myLBPIndexer\myLBPIndexer.cpp" />
     <ClCompile Include="myResultDumper\myResultDumper.cpp" />
     <ClCompile Include="myResultVerifier\myResultVerifier.cpp" />
     <ClCompile Include="tinyxml2\tinyxml2.cpp" />
