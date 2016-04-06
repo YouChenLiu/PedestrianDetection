@@ -15,7 +15,9 @@ namespace Descriptor {
    */
   class myLBP : public myBlockDescriptorBase {
   protected:
+    /// a flag means the feature is uniform or not.
     static const int UNIFORM_FLAG = 0x80 << PATTERN_OFFSET;
+    /// the standard LBP feature.
     static const int LBP = WELL_KNOWN_FEATURE_FLAG | BLOCK_BASED_FLAG |
       (LBP_FEATURE << FEATURE_OFFSET);
 
@@ -59,11 +61,11 @@ namespace Descriptor {
     static const unsigned int MAX_LENGTH = 16;
 
   protected:  // protected attrribute
-      /**
-       * @brief Sampling points for LBP.
-       *
-       * The sampling position around the center point for computing LBP feature.
-       */
+    /**
+     * @brief Sampling points for LBP.
+     *
+     * The sampling position around the center point for computing LBP feature.
+     */
     static std::array<std::vector<cv::Point2i>,
       myLBP::NUMBER_OF_PATTERNS> m_SamplingPoints;
 

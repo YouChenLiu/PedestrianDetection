@@ -29,7 +29,13 @@ namespace Classifier {
     }
   }
 
-  // push all features saved in string with specify delim
+  /**
+   * @brief push all features saved in string with specify delim.
+   *
+   * @param s splited string
+   * @param delim spliter character
+   * @param vfFeature vector for saving result
+   */
   void ReadFeaturesFromString(const std::string& s,
                               char delim,
                               std::vector<float>& vfFeature) {

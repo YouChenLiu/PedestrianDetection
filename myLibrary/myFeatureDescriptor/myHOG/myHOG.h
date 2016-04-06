@@ -15,6 +15,7 @@ namespace Descriptor {
    */
   class myHOG : public myBlockDescriptorBase {
   protected:
+    /// standard HOG feature
     static const int HOG = WELL_KNOWN_FEATURE_FLAG | BLOCK_BASED_FLAG |
       (HOG_FEATURE << FEATURE_OFFSET);
 
@@ -26,6 +27,7 @@ namespace Descriptor {
     public:
       /// Stadard HOG feature.
       static const int HOG_STANDARD = HOG;
+      /// HOG feature with only one cell.
       static const int HOG_SINGLE_CELL = HOG_STANDARD | (0x01 << PATTERN_OFFSET);
     };
 

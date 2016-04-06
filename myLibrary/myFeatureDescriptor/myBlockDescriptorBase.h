@@ -1,6 +1,6 @@
 /**
- * @file myBlockBasedExtractor.h
- * @brief Block based extractor definition.
+ * @file myBlockDescriptorBase.h
+ * @brief Block based descriptor base class definition.
  */
 
 #ifndef _MY_BLOCK_DESCRIPTOR_BASE_H_
@@ -12,16 +12,11 @@
 namespace Descriptor {
 
   /**
-   * @brief Base class for feature extractor
+   * @brief Base class for feature descriptor
    * which computes feature in a region.
    */
   class myBlockDescriptorBase : public myDescriptorBase {
   public:     // public attribute
-    /// The value uses to prevent the division of zero exception.
-    static const float m_fUnimportantValue;
-
-    /// This value uses to enlarge the feature value after nomalization
-    static const int m_iMagnifyingFactor = 100;
 
   protected:  // protected attribute
     /// The region size for extractor feature.

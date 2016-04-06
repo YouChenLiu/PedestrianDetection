@@ -1,6 +1,6 @@
 /**
- * @file myFeatureExtractor.h
- * @brief Feature extractor class definition.
+ * @file myBlockDescriptor.h
+ * @brief block descriptor class definition.
  */
 
 #ifndef _MY_BLOCK_DESCRIPTOR_H_
@@ -14,22 +14,32 @@
 namespace Descriptor {
 
   /**
-   * @brief Class for computing any blockbased feature.
+   * @brief Class for computing any block-based feature.
    */
   class myBlockDescriptor : public myBlockDescriptorBase {
   public:
     /// The predefine pattern value.
     class Feature : public myHOG::Feature, public myLBP::Feature {
     public:
+      /// L1 norm flag
       static const int L1_NORM = NORMALIZATION_FLAG | (0x01 << NORM_OFFSET);
+      /// L1 sqrt flag
       static const int L1_SQRT = NORMALIZATION_FLAG | (0x02 << NORM_OFFSET);
+      /// L2 norm flag
       static const int L2_NORM = NORMALIZATION_FLAG | (0x03 << NORM_OFFSET);
+      /// L2 sqrt flag
       static const int L2_SQRT = NORMALIZATION_FLAG | (0x04 << NORM_OFFSET);
     };
 
   private:
     /// The vector of extractors.
     std::vector<std::unique_ptr<Descriptor::myDescriptorBase>> m_vpoUsedDescriptor;
+
+    /// This value uses to enlarge the feature value after nomalization
+    static const int m_iMagnifyingFactor = 100;
+    
+    /// The value uses to prevent the division of zero exception.
+    static const float m_fUnimportantValue;
 
   public:
     /**

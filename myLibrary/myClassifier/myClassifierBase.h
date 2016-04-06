@@ -9,6 +9,9 @@
 #include <fstream>
 #include <sstream>
 
+/**
+ * @brief Classifier namespace
+ */
 namespace Classifier {
 
   /**
