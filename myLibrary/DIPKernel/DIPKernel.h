@@ -6,7 +6,7 @@
 #ifndef _DIP_KERNEL_H_
 #define _DIP_KERNEL_H_
 
-#include "../../common.h"
+#include "../common.h"
 
 /**
  * @brief Class for processing mask correlation.
