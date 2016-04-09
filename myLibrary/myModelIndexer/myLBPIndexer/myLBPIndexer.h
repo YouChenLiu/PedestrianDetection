@@ -7,14 +7,14 @@
 #define _MY_LBP_INDEXER_H_
 
 #include "../myModelIndexerBase.h"
-#include "../../myFeatureExtractor/myLBP/myLBP.h"
+#include "../../myFeatureDescriptor/myLBP/myLBP.h"
 
 /**
  * @brief Class for calculating index.
  *
  * This class is a indexer for getting bin number by LBP algorithm.
  */
-class myLBPIndexer final : public myModelIndexerBase, protected myLBP {
+class myLBPIndexer final : public myModelIndexerBase, protected Descriptor::myLBP {
 public:     // public attribute
 
 protected:  // protected attribute

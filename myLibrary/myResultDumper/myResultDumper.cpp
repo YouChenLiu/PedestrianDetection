@@ -48,7 +48,6 @@ void myResultDumper::AddNewHeader(void) {
     m_poCurrentHeader = poHeader;
 }
 
-inline
 void myResultDumper::AddNewRecord(myLabel::Shapes shape, int x, int y, int iWidth, int iHeight) {
     auto poRecord = m_poXMLDocument->NewElement(myLabel::GetLabel(myLabel::Tags::RECORD).c_str());
     poRecord->SetAttribute(myLabel::GetLabel(myLabel::Attributes::SERIAL_NUMBER).c_str(),

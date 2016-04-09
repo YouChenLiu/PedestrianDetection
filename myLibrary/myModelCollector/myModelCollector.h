@@ -29,7 +29,7 @@ private:    // private attribute
     bool m_bCreatingFromFile;
 
     /// array for saving models such as svm
-    std::vector<std::unique_ptr<mySVM>> m_vpoModel;
+    std::vector<std::unique_ptr<Classifier::mySVM>> m_vpoModel;
 
 public:     // public method
     /**

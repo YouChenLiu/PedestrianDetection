@@ -10,27 +10,32 @@
 #include <sstream>
 
 /**
- * @brief Base class for my cklassifier library.
- *
- * It contain a vector of vector of float for saving features and
- * some methods for accessing it such as load and save features.
- * It also contain some methods for calssifier like train and predict.
- * If you want to design your classifer, you should inherit derived class
- * superviesed or unsupervised class.
- * Do not modify this class or modify it carefully, please.
+ * @brief Classifier namespace
  */
-class myClassifierBase {
-public:     // public attribute
+namespace Classifier {
 
-protected:  // protected attribute
+  /**
+   * @brief Base class for my cklassifier library.
+   *
+   * It contain a vector of vector of float for saving features and
+   * some methods for accessing it such as load and save features.
+   * It also contain some methods for calssifier like train and predict.
+   * If you want to design your classifer, you should inherit derived class
+   * superviesed or unsupervised class.
+   * Do not modify this class or modify it carefully, please.
+   */
+  class myClassifierBase {
+  public:     // public attribute
+
+  protected:  // protected attribute
     /// the array for saving features
     std::vector<std::vector<float>> m_vvfFeature;
 
-private:    // private attribute
+  private:    // private attribute
     /// stream for caching write out data
     std::stringstream FileBuffer;
 
-public:     // public method
+  public:     // public method
     /**
      * @brief Default Constructor.
      */
@@ -42,24 +47,24 @@ public:     // public method
      */
     virtual void Train(void) = 0;
 
-     /**
-     * @brief Predict response for the provided sample
-     *  encapsulated in opencv matrix.
-     *
-     * @param mSample Features saved in Mat
-     * @return The classification result.
-     * @retval NAN The classifier is empty.
-     */
+    /**
+    * @brief Predict response for the provided sample
+    *  encapsulated in opencv matrix.
+    *
+    * @param mSample Features saved in Mat
+    * @return The classification result.
+    * @retval NAN The classifier is empty.
+    */
     virtual float Predict(const cv::Mat& mSample) const = 0;
 
-     /**
-     * @brief Predict response for the provided sample encapsulated in
-     *  std::vector.
-     *
-     * @param vfSample Features saved in vector.
-     * @return The classifcation result.
-     * @retval NAN The classifier is empty.
-     */
+    /**
+    * @brief Predict response for the provided sample encapsulated in
+    *  std::vector.
+    *
+    * @param vfSample Features saved in vector.
+    * @return The classifcation result.
+    * @retval NAN The classifier is empty.
+    */
     virtual float Predict(const std::vector<float>& vfSample) const = 0;
 
     /**
@@ -94,14 +99,14 @@ public:     // public method
      */
     virtual void LoadFeatures(const std::string& sFeatureFile);
 
-protected:  // protected method
-    /**
-     * @brief Add a sample to array.
-     *
-     * @param vfNewFeature New feature want to add to table.
-     */
+  protected:  // protected method
+      /**
+       * @brief Add a sample to array.
+       *
+       * @param vfNewFeature New feature want to add to table.
+       */
     void AddFeature(const std::vector<float>& vfNewFeature) {
-        m_vvfFeature.push_back(vfNewFeature);
+      m_vvfFeature.push_back(vfNewFeature);
     }
 
     /**
@@ -118,7 +123,7 @@ protected:  // protected method
      * @param sData The data will write to cache.
      */
     void WriteData(const std::string& sData) {
-        FileBuffer << sData;
+      FileBuffer << sData;
     }
 
     /**
@@ -137,8 +142,9 @@ protected:  // protected method
      */
     void WriteOutFile(const std::string& sDstPath);
 
-private:    // private method
+  private:    // private method
+
+  };
 
 };
-
 #endif // !_MY_CLASSIFIER_BASE_H_
