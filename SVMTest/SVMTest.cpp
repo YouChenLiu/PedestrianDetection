@@ -1,5 +1,5 @@
 #include "../myLibrary/myImageSequence/myImageSequence.h"
-#include "../myLibrary/myFeatureExtractor/myFeatureExtractor.h"
+#include "../myLibrary/myFeatureDescriptor/myBlockDescriptor/myBlockDescriptor.h"
 #include "../myLibrary/myClassifier/mySVM/mySVM.h"
 #include <opencv2/highgui.hpp>
 #include <fstream>
@@ -8,8 +8,8 @@ int main(void) {
     const cv::Size2i BlockSize(8, 8);
     const std::string sRootPath = "D:/Database/02/Night/";
     const std::vector<int> viFeatureSet = {
-        myFeatureExtractor::Features::HOG_WITH_L2_NORM,
-        myFeatureExtractor::Features::LBP_8_1_UNIFORM
+        Descriptor::myBlockDescriptor::Feature::HOG_STANDARD | Descriptor::myBlockDescriptor::Feature::L2_NORM,
+        Descriptor::myBlockDescriptor::Feature::LBP_8_1_UNIFORM
     };
 
     struct Score {
@@ -20,7 +20,7 @@ int main(void) {
     } score;
 
     //  read the smv model
-    mySVM oSVM("../SVMTraining/Model.xml");
+    Classifier::mySVM oSVM("../SVMTraining/Model.xml");
     std::ofstream FileList("Dense.txt");
     
     {
@@ -31,7 +31,7 @@ int main(void) {
         cv::Mat mPositiveSample;
         while (oPositiveReader >> mPositiveSample) {
             std::cout << "\r" << oPositiveReader.GetSequenceNumberString();
-            myFeatureExtractor oExtractor(mPositiveSample, BlockSize);
+            Descriptor::myBlockDescriptor oExtractor(mPositiveSample, BlockSize);
             for (const auto i : viFeatureSet) {
                 oExtractor.EnableFeature(i);
             }
@@ -75,7 +75,7 @@ int main(void) {
         std::vector<std::vector<float>> vvfNegativeFeatures;
         while (oNegativeReader >> mNegativeSample) {
             std::cout << "\r" << oNegativeReader.GetSequenceNumberString();
-            myFeatureExtractor oExtractor(mNegativeSample, BlockSize);
+            Descriptor::myBlockDescriptor oExtractor(mNegativeSample, BlockSize);
             for (const auto i : viFeatureSet) {
                 oExtractor.EnableFeature(i);
             }

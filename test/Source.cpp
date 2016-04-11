@@ -1,22 +1,31 @@
 #include "../myLibrary/myClassifier/mySVM/mySVM.h"
 #include "../myLibrary/myClassifier/myAdaBoost/myAdaBoost.h"
 #include "../myLibrary/myModelCollector/myModelCollector.h"
-#include "../myLibrary/myFeatureExtractor/myFeatureExtractor.h"
+#include "../myLibrary/myFeatureDescriptor/myBlockDescriptor/myBlockDescriptor.h"
 #include "../myLibrary/myModelIndexer/myLBPIndexer/myLBPIndexer.h"
 #include <fstream>
 #include <opencv2/highgui.hpp>
 #include <opencv2/imgproc.hpp>
 
 int main(void) {
+    // root path for training samples
+    const std::string sTrainingSamplesRoot = "D:/Database/01/";
+    // root path for testing samples
+    const std::string sTestingSamplesRoot = "D:/Database/01/";
+    // determind do training or testing
+    const bool bTrainingL1 = false;
+    const bool bTrainingL2 = true;
+    const bool bTesting = true;
+
     const cv::Size2i ImgSize(64, 128);
     const cv::Size2i BlockSize(8, 8);
     const int iCollectorCount = (((ImgSize.height - 2 * BlockSize.height) / 8) *
                                  ((ImgSize.width - 2 * BlockSize.width) / 8));
     myLBPIndexer oIndexr(BlockSize);
-    myFeatureExtractor oExtractor(cv::Mat(), BlockSize);
+    Descriptor::myBlockDescriptor oExtractor(cv::Mat(), BlockSize);
     const std::vector<int> viFeature = {
-        myFeatureExtractor::Features::HOG_WITH_L2_NORM,
-        myFeatureExtractor::Features::LBP_8_1_UNIFORM
+        Descriptor::myBlockDescriptor::Feature::HOG_STANDARD | Descriptor::myBlockDescriptor::Feature::L2_NORM,
+        Descriptor::myBlockDescriptor::Feature::LBP_8_1_UNIFORM
     };
     for (auto feature : viFeature) {
         oExtractor.EnableFeature(feature);
@@ -37,7 +46,7 @@ int main(void) {
         std::cout << "Reading models : " << i << " / " << iModelsCount - 1 << "\r";
     }
     std::cout << std::endl;
-    mySupervisedClassifier* oL2Classifier = new myAdaBoost(70);
+    Classifier::mySupervisedClassifier* oL2Classifier = new Classifier::myAdaBoost(70);
     oL2Classifier->Load("../TwoLayersDetection/A_L2_70.xml");
 
     const std::string sRoot("D:/Database/02/Night/");

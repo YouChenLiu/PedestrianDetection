@@ -1,9 +1,7 @@
-#include <iostream>
-#include <opencv2/core.hpp>
 #include <opencv2/imgproc.hpp>
 #include <opencv2/ml.hpp>
 #include "../myLibrary/myImageSequence/myImageSequence.h"
-#include "../myLibrary/myFeatureExtractor/myFeatureExtractor.h"
+#include "../myLibrary/myFeatureDescriptor/myBlockDescriptor/myBlockDescriptor.h"
 #include "../myLibrary/myResultDumper/myResultDumper.h"
 
 int main(void) {
@@ -20,9 +18,9 @@ int main(void) {
     int iFrameNumber = 0;
 	cv::Mat mImage;
     while (oImageReader >> mImage) {
-        myFeatureExtractor oExtractor(mImage, BlockSize);
-        oExtractor.EnableFeature(myFeatureExtractor::Features::HOG_WITHOUT_NORM);
-        oExtractor.EnableFeature(myFeatureExtractor::Features::LBP_8_1_UNIFORM);
+        Descriptor::myBlockDescriptor oExtractor(mImage, BlockSize);
+        oExtractor.EnableFeature(Descriptor::myBlockDescriptor::Feature::HOG_STANDARD | Descriptor::myBlockDescriptor::Feature::L2_NORM);
+        oExtractor.EnableFeature(Descriptor::myBlockDescriptor::Feature::LBP_8_1_UNIFORM);
         for (int y = 0; y < mImage.rows / NormalizedSize.height; ++y) {
             for (int x = 0; x < mImage.cols / NormalizedSize.width; ++x) {
                 cv::Size2i BoundingBox = NormalizedSize;

@@ -1,17 +1,17 @@
 #include "../myLibrary/myImageSequence/myImageSequence.h"
-#include "../myLibrary/myFeatureExtractor/myFeatureExtractor.h"
+#include "../myLibrary/myFeatureDescriptor/myBlockDescriptor/myBlockDescriptor.h"
 #include "../myLibrary/myClassifier/mySVM/mySVM.h"
 
 int main(void) {
     const cv::Size2i BlockSize(8, 8);
     const std::string sRootPath = "D:/Database/01/All/";
     const std::vector<int> viFeatureSet = { 
-        myFeatureExtractor::Features::HOG_WITH_L2_NORM,
-        myFeatureExtractor::Features::LBP_8_1_UNIFORM
+        Descriptor::myBlockDescriptor::Feature::HOG_STANDARD | Descriptor::myBlockDescriptor::Feature::L2_NORM,
+        Descriptor::myBlockDescriptor::Feature::LBP_8_1_UNIFORM
     };
     
     // create a svm for training
-    mySVM oSVM;
+    Classifier::mySVM oSVM;
     {
         // read the positive smaples and calculate the hog feature
         myImageSequence oPositiveReader(sRootPath + "Positive/", "", "bmp", false);
@@ -21,7 +21,7 @@ int main(void) {
             const std::string sSeqNumber = oPositiveReader.GetSequenceNumberString();
             std::cout << "\r" << sSeqNumber;
 
-            myFeatureExtractor oExtractor(mPositiveSample, BlockSize);
+            Descriptor::myBlockDescriptor oExtractor(mPositiveSample, BlockSize);
             for (const auto i : viFeatureSet) {
                 oExtractor.EnableFeature(i);
             }
@@ -49,7 +49,7 @@ int main(void) {
             const std::string sSeqNumber = oNegativeReader.GetSequenceNumberString();
             std::cout << "\r" << sSeqNumber;
 
-            myFeatureExtractor oExtractor(mNegativeSample, BlockSize);
+            Descriptor::myBlockDescriptor oExtractor(mNegativeSample, BlockSize);
             for (const auto i : viFeatureSet) {
                 oExtractor.EnableFeature(i);
             }

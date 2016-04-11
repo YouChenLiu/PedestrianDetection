@@ -8,101 +8,104 @@
 
 #include "../mySupervisedClassifier/mySupervisedClassifier.h"
 
-using cv::ml::ParamGrid;
-using cv::ml::SVM;
+  using cv::ml::ParamGrid;
+  using cv::ml::SVM;
 
-/**
- * @brief SVM classifer
- *
- * mySVM is a warped class.
- * It let's use opencv svm more convenience.
- */
-class mySVM final : public mySupervisedClassifier {
-public:     //public attribute
-    /// encapsulate parameters for svm optimization problem
+namespace Classifier {
+
+
+  /**
+   * @brief SVM classifer
+   *
+   * mySVM is a warped class.
+   * It let's use opencv svm more convenience.
+   */
+  class mySVM final : public mySupervisedClassifier {
+  public:     //public attribute
+      /// encapsulate parameters for svm optimization problem
     class myOptimalParam {
     public: // public arrtibute
-        /**
-         * For SVM::C_SVC, SVM::EPS_SVR or SVM::NU_SVR.
-         * The default value is 1.0.
-         */
-        double C;
+      /**
+       * For SVM::C_SVC, SVM::EPS_SVR or SVM::NU_SVR.
+       * The default value is 1.0.
+       */
+      double C;
 
-        /**
-         * For SVM::NU_SVC, SVM::ONE_CLASS or SVM::NU_SVR.
-         * default value is 0.0.
-         */
-        double Nu;
+      /**
+       * For SVM::NU_SVC, SVM::ONE_CLASS or SVM::NU_SVR.
+       * default value is 0.0.
+       */
+      double Nu;
 
-        /**
-         * For SVM::EPS_SVR.
-         * The default value is 0.0.
-         */
-        double P;
+      /**
+       * For SVM::EPS_SVR.
+       * The default value is 0.0.
+       */
+      double P;
 
     public: // public method
-        /**
-         * @brief Default contrunctor.
-         *
-         * Set parameters with default value.
-         */
-        myOptimalParam(void) {
-            C = 1.0; Nu = P = 0.0;
-        }
+      /**
+       * @brief Default contrunctor.
+       *
+       * Set parameters with default value.
+       */
+      myOptimalParam(void) {
+        C = 1.0; Nu = P = 0.0;
+      }
 
-        /**
-         * @brief Instance with specific value
-         */
-        myOptimalParam(double c, double nu, double p) {
-            C = c; Nu = nu; P = p;
-        }
+      /**
+       * @brief Instance with specific value
+       */
+      myOptimalParam(double c, double nu, double p) {
+        C = c; Nu = nu; P = p;
+      }
     };
-    
+
     /// encapsulate parameters for svm kernel function
     class myFunctionParam {
     public:
-        /**
-         * For SVM::POLY.
-         * The default value is 0.0.
-         */
-        double Degree;
+      /**
+       * For SVM::POLY.
+       * The default value is 0.0.
+       */
+      double Degree;
 
-        /** For SVM::POLY, SVM::RBF, SVM::SIGMOID or SVM::CHI2.
-         * default value is 1.0.
-         */
-        double Gamma;
+      /** For SVM::POLY, SVM::RBF, SVM::SIGMOID or SVM::CHI2.
+       * default value is 1.0.
+       */
+      double Gamma;
 
-        /**
-         * For SVM::POLY or SVM::SIGMOID.
-         * default value is 0.0
-         */
-        double Coef0;
+      /**
+       * For SVM::POLY or SVM::SIGMOID.
+       * default value is 0.0
+       */
+      double Coef0;
 
     public:
-        /**
-        * @brief Default contrunctor
-        *
-        * Set parameters with default value.
-        */
-        myFunctionParam(void) {
-            Degree = Coef0 = 0.0; Gamma = 1.0;
-        }
+      /**
+       * @brief Default contrunctor
+       *
+       * Set parameters with default value.
+       */
+      myFunctionParam(void) {
+        Degree = Coef0 = 0.0; Gamma = 1.0;
+      }
 
-        /**
-        * @brief Instance with specific value
-        */
-        myFunctionParam(double degree, double gamma, double coef0) {
-            Degree = degree; Gamma = gamma; Coef0 = coef0;
-        }
+      /**
+       * @brief Instance with specific value
+       */
+      myFunctionParam(double degree, double gamma, double coef0) {
+        Degree = degree; Gamma = gamma; Coef0 = coef0;
+      }
     };
 
-private:    // private attribute
-    // ------------------------set SVM attributes---------------------------
+  private:    // private attribute
+      // ------------------------set SVM attributes---------------------------
 
-    /**
-     * SVM type will determine how to do classification.
-     * the value can be C_SVC, NU_SVC,  etc...
-     */
+      /**
+       * SVM type will determine how to do classification.
+       * the value can be C_SVC, NU_SVC,  etc...
+       */
     static const int SVM_Type = cv::ml::SVM::C_SVC;
 
     /**
@@ -123,7 +126,7 @@ private:    // private attribute
     /// the maximum training cycle count
     static const int ITERATION_COUNT = 100000;
 
-    /** 
+    /**
      * The system is converge when diffrence less than it.
      * initialize in cpp file
      */
@@ -131,7 +134,7 @@ private:    // private attribute
 
     // ------------------------end SVM attributes---------------------------
 
-public:     //public method
+  public:     //public method
     /// Create a svm with default parameter
     mySVM(void);
 
@@ -149,7 +152,7 @@ public:     //public method
      * @param sFilePath The destination xml file path.
      */
     mySVM(const std::string& sFilePath) {
-        Load(sFilePath);
+      Load(sFilePath);
     }
 
     virtual ~mySVM(void);
@@ -160,9 +163,9 @@ public:     //public method
      * @param sFilePath The XML file path for reading.
      */
     void Load(const std::string& sFilePath) override {
-        m_poClassifier = cv::ml::StatModel::load<cv::ml::SVM>(sFilePath);
+      m_poClassifier = cv::ml::StatModel::load<cv::ml::SVM>(sFilePath);
     }
-    
+
     /**
      * @brief Warp the OpenCV SVM function.
      *
@@ -172,16 +175,16 @@ public:     //public method
      * classcv_1_1ml_1_1SVM.html#ae612bc05c2e3e6b21fdff95279d32a73">Link</a>
      */
     bool TrainAuto(
-        int kFold = 10,
-        ParamGrid   Cgrid       = SVM::getDefaultGrid(SVM::C),
-        ParamGrid   gammaGrid   = SVM::getDefaultGrid(SVM::GAMMA),
-        ParamGrid   pGrid       = SVM::getDefaultGrid(SVM::P),
-        ParamGrid   nuGrid      = SVM::getDefaultGrid(SVM::NU),
-        ParamGrid   coeffGrid   = SVM::getDefaultGrid(SVM::COEF),
-        ParamGrid   degreeGrid  = SVM::getDefaultGrid(SVM::DEGREE),
-        bool        balanced    = false);
+      int kFold = 10,
+      ParamGrid   Cgrid = SVM::getDefaultGrid(SVM::C),
+      ParamGrid   gammaGrid = SVM::getDefaultGrid(SVM::GAMMA),
+      ParamGrid   pGrid = SVM::getDefaultGrid(SVM::P),
+      ParamGrid   nuGrid = SVM::getDefaultGrid(SVM::NU),
+      ParamGrid   coeffGrid = SVM::getDefaultGrid(SVM::COEF),
+      ParamGrid   degreeGrid = SVM::getDefaultGrid(SVM::DEGREE),
+      bool        balanced = false);
 
-private:    // private method
+  private:    // private method
     /// Initialize method
     void Init(void);
 
@@ -199,6 +202,7 @@ private:    // private method
      */
     void SetFunctionParam(myFunctionParam Param);
 
-};
+  };
 
+};
 #endif // !_MY_SVM_H_

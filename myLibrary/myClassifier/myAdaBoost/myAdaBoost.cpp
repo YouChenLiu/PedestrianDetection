@@ -1,8 +1,10 @@
 #include "myAdaBoost.h"
 
-const double myAdaBoost::TRIM_RATE = 0.95;
+namespace Classifier {
 
-myAdaBoost::myAdaBoost(unsigned int iWeakCount) {
+  const double myAdaBoost::TRIM_RATE = 0.95;
+
+  myAdaBoost::myAdaBoost(unsigned int iWeakCount) {
     // create adaboost
     auto pBoost = cv::ml::Boost::create();
     m_poClassifier = pBoost;
@@ -11,6 +13,8 @@ myAdaBoost::myAdaBoost(unsigned int iWeakCount) {
     pBoost->setBoostType(myAdaBoost::BOOST_TYPE);
     pBoost->setWeightTrimRate(myAdaBoost::TRIM_RATE);
     pBoost->setWeakCount(iWeakCount);
-}
+  }
 
-myAdaBoost::~myAdaBoost(void) {}
+  myAdaBoost::~myAdaBoost(void) {}
+
+};
