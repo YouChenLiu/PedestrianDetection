@@ -17,17 +17,14 @@ int main(void) {
     const bool bTrainingL2 = true;
     const bool bTesting = true;
 
-    Classifier::mySupervisedClassifier* oL2Classifier = new Classifier::mySVM;
-    const std::string sL2Model = "SVM_L2.xml";
-
     const cv::Size2i ImgSize(64, 128);
     const cv::Size2i BlockSize(8, 8);
     const int iCollectorCount = (((ImgSize.height - 2 * BlockSize.height) / 8) *
                                  ((ImgSize.width - 2 * BlockSize.width) / 8));
     myLBPIndexer oIndexr(BlockSize);
-    myFeatureExtractor oExtractor(cv::Mat(), BlockSize);
+    Descriptor::myBlockDescriptor oExtractor(cv::Mat(), BlockSize);
     const std::vector<int> viFeature = {
-        Descriptor::myBlockDescriptor::Feature::HOG_SINGLE_CELL | Descriptor::myBlockDescriptor::Feature::L1_NORM,
+        Descriptor::myBlockDescriptor::Feature::HOG_STANDARD | Descriptor::myBlockDescriptor::Feature::L2_NORM,
         Descriptor::myBlockDescriptor::Feature::LBP_8_1_UNIFORM
     };
     for (auto feature : viFeature) {
@@ -49,7 +46,7 @@ int main(void) {
         std::cout << "Reading models : " << i << " / " << iModelsCount - 1 << "\r";
     }
     std::cout << std::endl;
-    mySupervisedClassifier* oL2Classifier = new myAdaBoost(70);
+    Classifier::mySupervisedClassifier* oL2Classifier = new Classifier::myAdaBoost(70);
     oL2Classifier->Load("../TwoLayersDetection/A_L2_70.xml");
 
     const std::string sRoot("D:/Database/02/Night/");
