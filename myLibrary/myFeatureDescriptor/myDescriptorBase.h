@@ -132,6 +132,20 @@ namespace Descriptor {
      */
     const int GetFeatureType(void) const { return m_iFeatureType; }
 
+    /**
+     * @brief Check the feature need normalize or not.
+     */
+    const bool IsNorm(void) const {
+      return (m_iFeatureType & NORMALIZATION_FLAG) ? true : false;
+    }
+
+    /**
+     * @brief Get the norm type of feature.
+     */
+    const int GetNormType(void) {
+      return m_iFeatureType & NORM_MASK | NORMALIZATION_FLAG;
+    }
+
   protected:  // protectd method
 
   private:    // private method

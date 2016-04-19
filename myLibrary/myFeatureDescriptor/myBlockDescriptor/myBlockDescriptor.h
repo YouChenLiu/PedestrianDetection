@@ -33,7 +33,7 @@ namespace Descriptor {
 
   private:
     /// The vector of extractors.
-    std::vector<std::unique_ptr<Descriptor::myDescriptorBase>> m_vpoUsedDescriptor;
+    std::vector<std::unique_ptr<myDescriptorBase>> m_vpoUsedDescriptor;
 
     /// This value uses to enlarge the feature value after nomalization
     static const int m_iMagnifyingFactor = 100;
@@ -48,7 +48,8 @@ namespace Descriptor {
      * @param mImage A image for computing feature.
      * @param BlockSize A region size for computing feature.
      */
-    myBlockDescriptor(const cv::Mat& mImage, cv::Size2i BlockSize = cv::Size2i(8, 8));
+    myBlockDescriptor(const cv::Mat& mImage,
+                      cv::Size2i BlockSize = cv::Size2i(8, 8));
 
     /**
      * @brief Create with a IplImage.
@@ -56,10 +57,12 @@ namespace Descriptor {
      * @param pImage A image for computing feature.
      * @param BlockSize A region size for computing feature.
      */
-    myBlockDescriptor(IplImage* pImage, CvSize BlockSize = cvSize(8, 8));
+    myBlockDescriptor(IplImage* pImage,
+                      CvSize BlockSize = cvSize(8, 8));
     ~myBlockDescriptor(void);
 
-    void Describe(cv::Point2i Position, std::vector<float>& vfFeature) const;
+    void Describe(cv::Point2i Position,
+                  std::vector<float>& vfFeature) const;
 
     /**
      * @brief Add new extractor for extracting feature.
@@ -81,13 +84,17 @@ namespace Descriptor {
      * @param Width The width in new blick size.
      * @param Height The height in new block size.
      */
-    void SetBlockSize(int Width, int Height) { SetBlockSize(cv::Size2i(Width, Height)); }
+    void SetBlockSize(int Width,
+                      int Height) {
+      SetBlockSize(cv::Size2i(Width, Height));
+    }
 
     void SetImage(const cv::Mat& mImg) override;
 
   private:
     void Init(void);
-    void Normalize(int iNormMethod, std::vector<float>& vfFeature) const;
+    void Normalize(int iNormMethod,
+                   std::vector<float>& vfFeature) const;
   };
 
 };
