@@ -96,6 +96,12 @@
     <ClInclude Include="myModelIndexer\myLBPIndexer\mylbpindexer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="myScanner\myScanner.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="myClassifier.h">
+      <Filter>Header Files\Classifier</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="myImageSequence\myImageSequence.cpp">

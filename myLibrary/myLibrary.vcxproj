@@ -80,6 +80,7 @@
   <ItemGroup>
     <ClInclude Include="common.h" />
     <ClInclude Include="DIPKernel\DIPKernel.h" />
+    <ClInclude Include="myClassifier.h" />
     <ClInclude Include="myClassifier\myAdaBoost\myAdaBoost.h" />
     <ClInclude Include="myClassifier\myClassifierBase.h" />
     <ClInclude Include="myClassifier\mySupervisedClassifier\mySupervisedClassifier.h" />
@@ -99,6 +100,7 @@
     <ClInclude Include="myModelIndexer\myModelIndexerBase.h" />
     <ClInclude Include="myResultDumper\myResultDumper.h" />
     <ClInclude Include="myResultVerifier\myResultVerifier.h" />
+    <ClInclude Include="myScanner\myScanner.h" />
     <ClInclude Include="tinyxml2\tinyxml2.h" />
   </ItemGroup>
   <ItemGroup>
