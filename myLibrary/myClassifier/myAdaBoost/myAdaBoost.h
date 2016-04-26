@@ -25,6 +25,10 @@ namespace Classifier {
      */
     myAdaBoost(unsigned int iWeakCount);
 
+    myAdaBoost(const std::string& sFilePath) {
+      Load(sFilePath);
+    }
+
     virtual ~myAdaBoost(void);
 
     /**
