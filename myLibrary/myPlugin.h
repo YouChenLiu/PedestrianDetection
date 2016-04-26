@@ -6,7 +6,8 @@
 #ifndef _MY_PLUGIN_H_
 #define _MY_PLUGIN_H_
 
-#include "myPosition\myPosition.h"
+#include "myPosition/myPosition.h"
+#include "myScanner/myScanner.h"
 
 /**
  * @brief some convenience tiny tool
