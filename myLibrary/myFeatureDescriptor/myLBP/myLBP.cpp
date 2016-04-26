@@ -30,7 +30,7 @@ namespace Descriptor {
       SetSamplingPoints();
       for (unsigned int iLength = 8; iLength <= myLBP::MAX_LENGTH; iLength += 8) {
         auto iUniformMapIndex = iLength / 8 - 1;
-        myLBP::m_avbUniformMap.at(iUniformMapIndex).resize(1U << iLength);
+        myLBP::m_avbUniformMap.at(iUniformMapIndex).resize(UINT64_C(1) << iLength);
         for (unsigned int j = 0; j < m_avbUniformMap.at(iUniformMapIndex).size(); ++j) {
           myLBP::m_avbUniformMap.at(iUniformMapIndex).at(j) = IsUniform(j, iLength);
         }
