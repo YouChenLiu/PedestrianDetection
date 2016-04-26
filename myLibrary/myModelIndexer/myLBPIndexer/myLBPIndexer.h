@@ -20,29 +20,28 @@ public:     // public attribute
 protected:  // protected attribute
 
 private:    // private attribute
-    /// The index for mapping bin number.
-    static std::array<unsigned int, 256> m_aiUniformIndex;
+  /// The index for mapping bin number.
+  static std::array<unsigned int, 256> m_aiMappingIndex;
+
+  cv::Size2i m_ImgSize;
 
 public:     // public method
-    /**
-     * @brief Default Constructor.
-     *
-     * @param BlockSize 
-     */
-    myLBPIndexer(cv::Size2i BlockSize = cv::Size2i(8, 8));
-    virtual ~myLBPIndexer(void);
+  /**
+   * @brief Default Constructor.
+   */
+  myLBPIndexer();
+  virtual ~myLBPIndexer(void);
 
-    unsigned int GetNumOfBins(void) const override { return 59u; }
+  unsigned int GetNumOfBins(void) const override { return 59u; }
 
-    unsigned int GetBinNumber(const cv::Mat& mImage,
-                              const cv::Point2i Position) const override;
+  unsigned int GetBinNumber(const cv::Mat& mImage,
+                            const cv::Rect2i Region) const;
 
 protected:  // protected method
 
 private:    // private method
-    
-
-    void Init(void);
+  void Init(void);
+  cv::Rect2i CalRegion(const cv::Point2i ptStart, const cv::Size2i Size) const;
 };
 
 #endif // !_MY_LBP_INDEXER_H_

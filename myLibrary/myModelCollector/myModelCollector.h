@@ -37,6 +37,10 @@ public:     // public method
      */
     myModelCollector(void);
 
+    myModelCollector(const myModelCollector&) = delete;
+
+    myModelCollector& operator=(const myModelCollector&) = delete;
+
     /**
      * @brief Constructor.
      *
