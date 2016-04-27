@@ -10,10 +10,16 @@ int main(void) {
   
   std::vector<cv::Rect2i> vRect;
   Plugin::myScanner scanner(cv::Point2i(8, 8), cv::Point2i(56, 120));
-  scanner.CalRect(vRect, cv::Size2i(32, 64), cv::Point2i(8, 8));
+  for (int h = 8; h <= 64; h += 8) {
+    for (int w = 8; w <= 32; w += 8) {
+      scanner.CalRect(vRect, cv::Size2i(w, h), cv::Point2i(8, 8));
+    }
+  }
+  
   cv::Mat mImg = cv::Mat::zeros(128, 64, CV_8UC1);
   for (const auto& r : vRect) {
-    cv::rectangle(mImg, r, cv::Scalar::all(255));
+    //cv::rectangle(mImg, r, cv::Scalar::all(255));
+    Indexer.GetBinNumber(mImg, r);
   }
   cv::imshow("", mImg);
   cv::waitKey(0);
