@@ -64,6 +64,13 @@ namespace Descriptor {
     void Describe(cv::Point2i Position,
                   std::vector<float>& vfFeature) const;
 
+    void Describe(cv::Rect2i Region, std::vector<float>& vfFeature) {
+      if (m_BlockSize != Region.size()) {
+        SetBlockSize(Region.size());
+      }
+      Describe(Region.tl(), vfFeature);
+    }
+
     /**
      * @brief Add new extractor for extracting feature.
      *
