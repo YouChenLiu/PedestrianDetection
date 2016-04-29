@@ -119,6 +119,8 @@ public:     // public method
         return m_vpoModel.at(iBinNumber)->Predict(vfSample);
     }
 
+    void Clear(void);
+
 protected:  // protected method
 
 private:    // private method
