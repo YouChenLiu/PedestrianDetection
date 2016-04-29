@@ -29,9 +29,6 @@ namespace Classifier {
     /// The openCV smart pointer to point classifier.
     cv::Ptr<cv::ml::StatModel> m_poClassifier;
 
-    /// The openCV smart pointer to point training data.
-    cv::Ptr<cv::ml::TrainData> m_poTrainingData;
-
   public:     // public method
     /**
      * @brief Default constructor
@@ -84,7 +81,7 @@ namespace Classifier {
      * Tranform labels and features to opencv matrix
      * and create opencv training data for training classifier.
      */
-    void MakeTrainingData(void);
+    cv::Ptr<cv::ml::TrainData> MakeTrainingData(void);
 
   private:    // private method
     /**
@@ -96,5 +93,5 @@ namespace Classifier {
     void AddSample(int iLabel, const std::string& sLineOfString);
   };
 
-};
+} // namespace
 #endif // !_MY_SUPERVISED_CLASSIFIER_H_
