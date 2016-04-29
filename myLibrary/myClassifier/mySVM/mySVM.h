@@ -124,7 +124,7 @@ namespace Classifier {
                                      cv::TermCriteria::EPS;
 
     /// the maximum training cycle count
-    static const int ITERATION_COUNT = 100000;
+    static const int ITERATION_COUNT = 1000000;
 
     /**
      * The system is converge when diffrence less than it.
