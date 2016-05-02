@@ -27,7 +27,7 @@ void myModelCollector::Resize(unsigned int iCount) {
 
 void myModelCollector::TrainModels(void) {
   for (size_t i = 0; i < m_vpoModel.size(); ++i) {
-    std::cout << "\rClassifier: " << i << " / " << m_vpoModel.size() - 1;
+    std::cout << "\tClassifier: " << i << " / " << m_vpoModel.size() - 1 << "\r";
     m_vpoModel.at(i)->Train();
   }
 }
