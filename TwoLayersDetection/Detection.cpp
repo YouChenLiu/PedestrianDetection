@@ -16,31 +16,35 @@ int main(void) {
   // root path for training samples
   const string sTrainingSamplesRoot = "D:/Database/01/";
   // root path for testing samples
-  const string sTestingSamplesRoot = "D:/Database/01/";
+  const string sTestingSamplesRoot = "D:/Database/02/";
   // determind do training or testing
   const bool bLoadingFeature = false;
-  const bool bTrainingL1 = true;
+  const bool bTrainingL1 = false;
   const bool bTrainingL2 = true;
   const bool bTesting = true;
+  const bool bSaving = false;
   
-  const cv::Size2i ImgSize(64, 128);
-  const cv::Size2i BlockSize(8, 8);
-
   std::vector<cv::Rect2i> vRect;
   {
     Plugin::myScanner scanner(cv::Point2i(8, 8), cv::Point2i(56, 120));
     for (int h = 8; h <= 32; h += 8) {
       for (int w = 8; w <= 16; w += 8) {
         scanner.CalRect(vRect, cv::Size2i(w, h), cv::Point2i(8, 8));
-      }
-    }
+      } // for w
+    } // for h
   }
 
-  Classifier::mySupervisedClassifier* oL2Classifier = new Classifier::myAdaBoost(50);
-  const string sL2Model = "A_L2_GENERAL_50.xml";
+  const unsigned int uiWeakCount = 150;
+  Classifier::mySupervisedClassifier* oL2Classifier = new Classifier::myAdaBoost(uiWeakCount);
+  string sL2Model = "A_L2_GENERAL_";
+  {
+    std::stringstream ss;
+    ss << uiWeakCount;
+    string sWeakCount = ss.str();
+    sL2Model += sWeakCount + ".xml";
+  }
   const string sModelName = "GENERAL_TEST_Model_1";
 
-  const bool bSaving = false;
   myLBPIndexer oIndexr;
   // vector of collectors
   vector<myModelCollector> voCollector(vRect.size());
@@ -61,7 +65,7 @@ int main(void) {
   };
   
   // feature extractor
-  Descriptor::myBlockDescriptor oExtractor(cv::Mat(), BlockSize);
+  Descriptor::myBlockDescriptor oExtractor(cv::Mat(), cv::Size2i(8, 8));
   for (auto feature : viFeature) {
     oExtractor.EnableFeature(feature);
   }
@@ -112,17 +116,6 @@ int main(void) {
               auto iIndex = oIndexr.GetBinNumber(mImg, vRect.at(iPos));
               voCollector.at(iPos).AddSample(iIndex, viAnswer.at(i), vfFeature);
             } //for
-            /*
-            for (int y = BlockSize.height, iPos = 0; y < mImg.rows - BlockSize.height; y += BlockSize.height) {
-              for (int x = BlockSize.width; x < mImg.cols - BlockSize.width; x += BlockSize.width, ++iPos) {
-                vector<float> vfFeature;
-                cv::Point2i Position(x, y);
-                oExtractor.Describe(Position, vfFeature);
-                auto iIndex = oIndexr.GetBinNumber(mImg, Position);
-                voCollector.at(iPos).AddSample(iIndex, viAnswer.at(i), vfFeature);
-              }
-            }
-            */
           } // while
           std::cout << std::endl;
         } // for
@@ -133,13 +126,14 @@ int main(void) {
     std::ofstream ModelList(sModelName + ".txt");
     ModelList << voCollector.size() << std::endl;
     for (std::size_t i = 0; i < voCollector.size(); ++i) {
-      std::cout << "\nTraining model collector : " << i << " / " << vRect.size() - 1 << std::endl;
+      std::cout << "Training model collector : " << i << " / " << vRect.size() - 1 << std::endl;
       voCollector.at(i).TrainModels();
       ModelList << voCollector.at(i).SaveModels(sModelName) << std::endl;
+      std::cout << std::endl;
       //voCollector.at(i).Clear();
     }
   } else {
-    std::cout << "Reading saved models" << std::endl;
+    std::cout << "Reading saved layer 1 models" << std::endl;
     std::ifstream ModelList(sModelName + ".txt");
     int iModelsCount = 0;
     ModelList >> iModelsCount;
@@ -172,23 +166,10 @@ int main(void) {
             if (fResult == NAN) {
               fResult = -1.0f;
             }
+            vfResult.at(iPos) = fResult;
           }
-          /*
-          for (int y = BlockSize.height, iPos = 0; y < mImg.rows - BlockSize.height; y += BlockSize.height) {
-            for (int x = BlockSize.width; x < mImg.cols - BlockSize.width; x += BlockSize.width, ++iPos) {
-              vector<float> vfFeature;
-              cv::Point2i Position(x, y);
-              oExtractor.Describe(Position, vfFeature);
-              auto iIndex = oIndexr.GetBinNumber(mImg, Position);
-              auto fResult = voCollector.at(iPos).Predict(iIndex, vfFeature);
-              if (fResult == NAN) {
-                fResult = -1.0f;
-              }
-              vfResult.at(iPos) = fResult;
-            }
-          }
-          */
           oL2Classifier->AddSample(viAnswer.at(i), vfResult);
+          
         }
         std::cout << std::endl;
       }
@@ -214,26 +195,14 @@ int main(void) {
           std::cout << "\rReading " + sTime + "-" + vsPosNeg.at(i) + ":" + oReader.GetSequenceNumberString();
           oExtractor.SetImage(mImg);
           vector<float> vfResult(vRect.size(), 0.0f);
-          for (size_t iPos = 0; iPos < vRect.size(); ++iPos) {
+          for (size_t i = 0; i < vRect.size(); ++i) {
             vector<float> vfFeature;
             vfFeature.reserve(68);
-            oExtractor.Describe(vRect.at(iPos), vfFeature);
-            auto iIndex = oIndexr.GetBinNumber(mImg, vRect.at(iPos));
-            auto fResult = voCollector.at(iPos).Predict(iIndex, vfFeature);
-            vfResult.at(iPos) = fResult;
+            oExtractor.Describe(vRect.at(i), vfFeature);
+            auto iIndex = oIndexr.GetBinNumber(mImg, vRect.at(i));
+            auto fResult = voCollector.at(i).Predict(iIndex, vfFeature);
+            vfResult.at(i) = fResult;
           }
-          /*
-          for (int y = BlockSize.height, iPos = 0; y < mImg.rows - BlockSize.height; y += BlockSize.height) {
-            for (int x = BlockSize.width; x < mImg.cols - BlockSize.width; x += BlockSize.width, ++iPos) {
-              vector<float> vfFeature;
-              cv::Point2i Position(x, y);
-              oExtractor.Describe(Position, vfFeature);
-              auto iIndex = oIndexr.GetBinNumber(mImg, Position);
-              auto fResult = voCollector.at(iPos).Predict(iIndex, vfFeature);
-              vfResult.at(iPos) = fResult;
-            }
-          }
-          */
           auto DetectingResult = oL2Classifier->Predict(vfResult);
           string sResult = "\n";
           if (DetectingResult >= 0 && viAnswer.at(i) >= 0) {        // true positive
