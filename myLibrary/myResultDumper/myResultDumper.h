@@ -50,6 +50,10 @@ public:     // public method
     void AddRectangle(int x, int y, int iWidth, int iHeight) {
         AddNewRecord(myLabel::Shapes::RECTANGLE, x, y, iWidth, iHeight);
     }
+
+    void AddRectangle(const cv::Rect2i Region) {
+      AddRectangle(Region.x, Region.y, Region.width, Region.height);
+    }
     
     /**
      * @brief Add new ellipse to XML file.
