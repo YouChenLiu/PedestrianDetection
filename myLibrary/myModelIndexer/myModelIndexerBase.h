@@ -1,3 +1,8 @@
+/**
+ * @file myModelIndexerBase.h
+ * @brief Model Indexer Base class definnition.
+ */
+
 #ifndef _MY_MODEL_INDEXER_BASE_H_
 #define _MY_MODEL_INDEXER_BASE_H_
 
@@ -32,7 +37,7 @@ public:     // public methid
     * @param Position A left-top point for description feature.
     */
     virtual unsigned int GetBinNumber(const cv::Mat& mImage, 
-                                      const cv::Point2i Position) const = 0;
+                                      const cv::Rect2i Region) const = 0;
 
 protected:  // protected method
 

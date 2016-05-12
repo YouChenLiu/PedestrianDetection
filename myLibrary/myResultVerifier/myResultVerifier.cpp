@@ -1,5 +1,5 @@
 #include "myResultVerifier.h"
-#include "../myXMLLabel/myXMLLabel.h"
+#include "../myLabel/myLabel.h"
 
 myResultVerifier::myResultVerifier(const std::string sDetctionResult, const std::string sGroundTruth) {
     Init();
@@ -51,12 +51,12 @@ void myResultVerifier::CompareXMLResult(void) {
 bool myResultVerifier::CalculateDetectionRatePerFrame(int iFrameNumber) {
     using namespace tinyxml2;
 
-    XMLElement* poDetectionDataSet = m_poDetectionResultXMLFile->RootElement()->FirstChildElement(myXMLLabel::GetTagString(myXMLLabel::Tags::DATA_SET).c_str());
-    XMLElement* poGroundTruthDataSet = m_poGroundTruthXMLFile->RootElement()->FirstChildElement(myXMLLabel::GetTagString(myXMLLabel::Tags::DATA_SET).c_str());
+    XMLElement* poDetectionDataSet = m_poDetectionResultXMLFile->RootElement()->FirstChildElement(myLabel::GetLabel(myLabel::Tags::DATA_SET).c_str());
+    XMLElement* poGroundTruthDataSet = m_poGroundTruthXMLFile->RootElement()->FirstChildElement(myLabel::GetLabel(myLabel::Tags::DATA_SET).c_str());
 
-    XMLElement* poDetectionHeader = poDetectionDataSet->FirstChildElement(myXMLLabel::GetTagString(myXMLLabel::Tags::HEADER).c_str());
+    XMLElement* poDetectionHeader = poDetectionDataSet->FirstChildElement(myLabel::GetLabel(myLabel::Tags::HEADER).c_str());
     while (poDetectionHeader != nullptr) {
-        int iFrame = poDetectionHeader->IntAttribute(myXMLLabel::GetAttributeString(myXMLLabel::Attributes::FRAME_NUMBER).c_str());
+        int iFrame = poDetectionHeader->IntAttribute(myLabel::GetLabel(myLabel::Attributes::FRAME_NUMBER).c_str());
         if (iFrame >= iFrameNumber) {
             if (iFrame != iFrameNumber) {
                 poDetectionHeader = nullptr;
@@ -66,9 +66,9 @@ bool myResultVerifier::CalculateDetectionRatePerFrame(int iFrameNumber) {
         poDetectionHeader = poDetectionHeader->NextSiblingElement();
     }
     
-    XMLElement* poGroundTruthHeader = poGroundTruthDataSet->FirstChildElement(myXMLLabel::GetTagString(myXMLLabel::Tags::HEADER).c_str());
+    XMLElement* poGroundTruthHeader = poGroundTruthDataSet->FirstChildElement(myLabel::GetLabel(myLabel::Tags::HEADER).c_str());
     while (poGroundTruthHeader != nullptr) {
-        int iFrame = poGroundTruthHeader->IntAttribute(myXMLLabel::GetAttributeString(myXMLLabel::Attributes::FRAME_NUMBER).c_str());
+        int iFrame = poGroundTruthHeader->IntAttribute(myLabel::GetLabel(myLabel::Attributes::FRAME_NUMBER).c_str());
         if (iFrame >= iFrameNumber) {
             if (iFrame != iFrameNumber) {
                 poDetectionHeader = nullptr;
@@ -120,16 +120,16 @@ void myResultVerifier::TakeOutBoundingBox(tinyxml2::XMLElement* poHeader, std::v
 
     voBoundingBoxes.clear();
 
-    XMLElement* poRecord = poHeader->FirstChildElement(myXMLLabel::GetTagString(myXMLLabel::Tags::RECORD).c_str());
+    XMLElement* poRecord = poHeader->FirstChildElement(myLabel::GetLabel(myLabel::Tags::RECORD).c_str());
     while (poRecord != nullptr) {
-        const std::string s = myXMLLabel::GetTagString(myXMLLabel::Tags::START_POINT);
-        XMLElement* Element = poRecord->FirstChildElement(myXMLLabel::GetTagString(myXMLLabel::Tags::START_POINT).c_str());
+        const std::string s = myLabel::GetLabel(myLabel::Tags::START_POINT);
+        XMLElement* Element = poRecord->FirstChildElement(myLabel::GetLabel(myLabel::Tags::START_POINT).c_str());
         const std::string sStartPoint = Element->GetText();
         const int iCommaIndex = static_cast<int>(sStartPoint.find(", "));
         const int x = stoi(sStartPoint.substr(0, iCommaIndex));
         const int y = stoi(sStartPoint.substr(iCommaIndex + 1, sStartPoint.size()));
-        const int iWidth = std::stoi(poRecord->FirstChildElement(myXMLLabel::GetTagString(myXMLLabel::Tags::WIDTH).c_str())->GetText());
-        const int iHeight = std::stoi(poRecord->FirstChildElement(myXMLLabel::GetTagString(myXMLLabel::Tags::HEIGHT).c_str())->GetText());
+        const int iWidth = std::stoi(poRecord->FirstChildElement(myLabel::GetLabel(myLabel::Tags::WIDTH).c_str())->GetText());
+        const int iHeight = std::stoi(poRecord->FirstChildElement(myLabel::GetLabel(myLabel::Tags::HEIGHT).c_str())->GetText());
 
         const myBoundingBox box = { x, y, iWidth, iHeight };
         voBoundingBoxes.push_back(box);

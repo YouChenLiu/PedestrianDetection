@@ -1,3 +1,8 @@
+/**
+ * @file myModelCollector.h
+ * @brief Model Collector class definition.
+ */
+
 #ifndef _MY_MODEL_COLLECTOR_H_
 #define _MY_MODEL_COLLECTOR_H_
 
@@ -24,13 +29,17 @@ private:    // private attribute
     bool m_bCreatingFromFile;
 
     /// array for saving models such as svm
-    std::vector<std::unique_ptr<mySVM>> m_vpoModel;
+    std::vector<std::unique_ptr<Classifier::mySVM>> m_vpoModel;
 
 public:     // public method
     /**
      * @brief Deafult Constructor.
      */
     myModelCollector(void);
+
+    myModelCollector(const myModelCollector&) = delete;
+
+    myModelCollector& operator=(const myModelCollector&) = delete;
 
     /**
      * @brief Constructor.
@@ -109,6 +118,8 @@ public:     // public method
     float Predict(unsigned int iBinNumber, std::vector<float>& vfSample) const {
         return m_vpoModel.at(iBinNumber)->Predict(vfSample);
     }
+
+    void Clear(void);
 
 protected:  // protected method
 

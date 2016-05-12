@@ -1,3 +1,8 @@
+/**
+ * @file myResultVerifier.h
+ * @brief Result Verifier class definition.
+ */
+
 #ifndef _MY_RESULT_VERIFIER_H_
 #define _MY_RESULT_VERIFIER_H_
 

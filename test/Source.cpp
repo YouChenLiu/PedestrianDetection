@@ -1,139 +1,91 @@
-#include "../myLibrary/myClassifier/mySVM/mySVM.h"
+#include "../myLibrary/myPlugin.h"
+#include "../myLibrary/myClassifier.h"
 #include "../myLibrary/myModelCollector/myModelCollector.h"
-#include "../myLibrary/myFeatureExtractor/myFeatureExtractor.h"
-#include "../myLibrary/myModelIndexer/myLBPIndexer/myLBPIndexer.h"
+#include "../myLibrary/myFeatureDescriptor/myBlockDescriptor/myBlockDescriptor.h"
 #include "../myLibrary/myImageSequence/myImageSequence.h"
+#include "../myLibrary/myModelIndexer/myLBPIndexer/mylbpindexer.h"
+#include <opencv2/highgui.hpp>
+#include <opencv2/imgproc.hpp>
+#include <sstream>
 #include <iomanip>
 
-int main(void) {
-    const cv::Size2i ImgSize(64, 128);
-    const cv::Size2i BlockSize(8, 8);
-    const int iCollectorCount = (((ImgSize.height - 2 * BlockSize.height) / 8) *
-                                 ((ImgSize.width - 2 * BlockSize.width) / 8));
-    const std::string sRootPath = "D:/Backup/Thermal/night/";
-    const std::string sSubFolder = "Morning-Noon/";
-
-    std::vector<myModelCollector> voCollector(iCollectorCount);
-    for (auto& o : voCollector) {
-        o.Resize(59);
+void DrawRect(std::vector<cv::Mat>& vmDrawing, const std::string& sFilePath) {
+  std::vector<int> viResult;
+  {
+    std::ifstream File(sFilePath);
+    std::string s;
+    while (std::getline(File, s)) {
+      std::stringstream ss(s);
+      int i = 0;
+      ss >> i;
+      viResult.push_back(i);
     }
+  }
+  std::vector<cv::Rect2i> vRect;
+  std::vector<size_t> viScanSize;
+  {
+    Plugin::myScanner scanner(cv::Point2i(8, 8), cv::Point2i(56, 120));
+    for (int h = 8, i = 0; h <= 32; h += 8) {
+      for (int w = 8; w <= 16; w += 8, ++i) {
+        scanner.CalRect(vRect, cv::Size2i(w, h), cv::Point2i(8, 8));
+        viScanSize.push_back(vRect.size() - 1);
+      } // for w
+    } // for h
+  }
 
-    myLBPIndexer oIndexr(BlockSize);
-
-    myImageSequence oPosReader(sRootPath + "Positive/", "", "bmp", false);
-    oPosReader.SetAttribute(myImageSequence::Attribute::PADDING_LENGTH, 6);
-    myImageSequence oNegReader(sRootPath + "Negative/", "", "bmp", false);
-    oNegReader.SetAttribute(myImageSequence::Attribute::PADDING_LENGTH, 6);
+  {
     
-    cv::Mat mPosImg;
-    cv::Mat mNegImg;
-    /*
-    std::cout << "Reading Positive Samples" << std::endl;
-    while (oPosReader >> mPosImg) {
-        myFeatureExtractor oExtractor(mPosImg, BlockSize);
-        oExtractor.EnableFeature(myFeatureExtractor::Features::HOG_WITH_L2_NORM);
-        oExtractor.EnableFeature(myFeatureExtractor::Features::LBP_8_1_UNIFORM);
-        
-        for (int y = BlockSize.height, iPos = 0; y < mPosImg.rows - BlockSize.height; y += BlockSize.height) {
-            for (int x = BlockSize.width; x < mPosImg.cols - BlockSize.width; x += BlockSize.width, ++iPos) {
-                std::vector<float> vfFeature;
-                cv::Point2i Position(x, y);
-                oExtractor.Describe(Position, vfFeature);
-                auto iIndex = oIndexr.GetBinNumber(mPosImg, Position);
-                voCollector.at(iPos).AddSample(iIndex, +1, vfFeature);
-            }
-        }
+    vmDrawing.reserve(viScanSize.size());
+    for (size_t i = 0; i < viScanSize.size(); ++i) {
+      cv::Size2i Size = vRect.at(viScanSize.at(i)).size();
+      std::stringstream ss;
+      ss << Size.width << "x" << Size.height;
+      cv::Mat mTemp = cv::Mat::zeros(128, 64, CV_8UC1);
+      cv::putText(mTemp, ss.str(), cv::Point2i(10, 10), cv::FONT_HERSHEY_PLAIN, 1, cv::Scalar::all(255));
+      vmDrawing.push_back(mTemp.clone());
     }
-    std::cout << oPosReader.GetSequenceNumber() - 1 << "Samples" << std::endl;
-
-    std::cout << "Reading Negative Samples" << std::endl;
-    while (oNegReader >> mNegImg) {
-        myFeatureExtractor oExtractor(mNegImg, BlockSize);
-        oExtractor.EnableFeature(myFeatureExtractor::Features::HOG_WITH_L2_NORM);
-        oExtractor.EnableFeature(myFeatureExtractor::Features::LBP_8_1_UNIFORM);
-
-        for (int y = BlockSize.height, iPos = 0; y < mNegImg.rows - BlockSize.height; y += BlockSize.height) {
-            for (int x = BlockSize.width; x < mNegImg.cols - BlockSize.width; x += BlockSize.width, ++iPos) {
-                std::vector<float> vfFeature;
-                cv::Point2i Position(x, y);
-                oExtractor.Describe(Position, vfFeature);
-                auto iIndex = oIndexr.GetBinNumber(mNegImg, Position);
-                voCollector.at(iPos).AddSample(iIndex, -1, vfFeature);
-            }
-        }
+  }
+  for (auto RectIdx : viResult) {
+    size_t iIndex = 0;
+    for (auto idx : viScanSize) {
+      if (idx < RectIdx) {
+        ++iIndex;
+      }
     }
-    std::cout << oNegReader.GetSequenceNumber() - 1 << "Samples" << std::endl;
+    cv::rectangle(vmDrawing.at(iIndex), vRect.at(RectIdx), cv::Scalar::all(255));
+  }
+}
 
-    std::ofstream FeatureList("feature.txt");
-    FeatureList << voCollector.size() << std::endl;
-    for (std::size_t i = 0; i < voCollector.size(); ++i) {
-        FeatureList << voCollector.at(i).SaveFeatures("Features") << std::endl;
-    }
-    
-    std::ofstream ModelList("models.txt");
-    ModelList << voCollector.size() << std::endl;
-    for (std::size_t i = 0; i < voCollector.size(); ++i) {
-        voCollector.at(i).TrainModels();
-        ModelList << voCollector.at(i).SaveModels("Models") << std::endl;
-    }
-    */
+void MergeResult(const std::string& sName) {
+  cv::VideoCapture Dense(sName + "_Dense.avi");
+  cv::VideoCapture Mine(sName + "_Mine.avi");
+  cv::VideoWriter Merging(sName + ".avi", CV_FOURCC('F', 'M', 'P', '4'), 15, cv::Size2i(1280, 480));
 
-    std::ifstream ModelList("models.txt");
-    int iModelsCount = 0;
-    ModelList >> iModelsCount;
-    for (std::size_t i = 0; i < iModelsCount; ++i) {
-        std::string sPath;
-        ModelList >> sPath;
-        voCollector.at(i).LoadModels(sPath);
+  cv::Mat mDense;
+  cv::Mat mMine;
+  cv::Mat mImg = cv::Mat::zeros(cv::Size2i(1280, 480), CV_8UC3);
+
+  while (true) {
+    Dense >> mDense;
+    Mine >> mMine;
+    if (mDense.empty() | mMine.empty()) {
+      break;
     }
 
-    std::cout << "Testing Positive Samples" << std::endl;
-    myImageSequence oPosWriter(sSubFolder + "Positive/", "", "jpg");
-    oPosWriter.SetAttribute(myImageSequence::Attribute::PADDING_LENGTH, 6);
-    while (oPosReader >> mPosImg) {
-        myFeatureExtractor oExtractor(mPosImg, BlockSize);
-        oExtractor.EnableFeature(myFeatureExtractor::Features::HOG_WITH_L2_NORM);
-        oExtractor.EnableFeature(myFeatureExtractor::Features::LBP_8_1_UNIFORM);
+    mDense.copyTo(mImg(cv::Rect2i(0, 0, 640, 480)));
+    mMine.copyTo(mImg(cv::Rect2i(640, 0, 640, 480)));
+    Merging << mImg;
+  }
+}
 
-        //cv::Mat mPosResult = cv::Mat::ones(mPosImg.size(), CV_8UC1) * 127;
-        cv::Mat mPosResult = cv::Mat::ones(cv::Size2i(ImgSize.width * 2, ImgSize.height), CV_8UC1) * 127;
-        for (int y = BlockSize.height, iPos = 0; y < mPosImg.rows - BlockSize.height; y += BlockSize.height) {
-            for (int x = BlockSize.width; x < mPosImg.cols - BlockSize.width; x += BlockSize.width, ++iPos) {
-                std::vector<float> vfFeature;
-                cv::Point2i Position(x, y);
-                oExtractor.Describe(Position, vfFeature);
-                auto iIndex = oIndexr.GetBinNumber(mPosImg, Position);
-                auto fResult = voCollector.at(iPos).Predict(iIndex, vfFeature);
-                unsigned char uc = (fResult == +1) ? 255u : (fResult == -1) ? 0u : 127u;
-                mPosResult(cv::Rect2i(cv::Point2i(64 + x, y), BlockSize)) = cv::Scalar::all(uc);
-            }
-        }
-        mPosImg.copyTo(mPosResult(cv::Rect2i(cv::Point2i(0, 0), cv::Size2i(64, 128))));
-        oPosWriter << mPosResult;
-    }
-
-    std::cout << "Testing Negative Samples" << std::endl;
-    myImageSequence oNegWriter(sSubFolder + "Negative/", "", "jpg");
-    oNegWriter.SetAttribute(myImageSequence::Attribute::PADDING_LENGTH, 6);
-    while (oNegReader >> mNegImg) {
-        myFeatureExtractor oExtractor(mNegImg, BlockSize);
-        oExtractor.EnableFeature(myFeatureExtractor::Features::HOG_WITH_L2_NORM);
-        oExtractor.EnableFeature(myFeatureExtractor::Features::LBP_8_1_UNIFORM);
-
-        cv::Mat mNegResult = cv::Mat::ones(cv::Size2i(ImgSize.width * 2, ImgSize.height), CV_8UC1) * 127;
-        for (int y = BlockSize.height, iPos = 0; y < mNegImg.rows - BlockSize.height; y += BlockSize.height) {
-            for (int x = BlockSize.width; x < mNegImg.cols - BlockSize.width; x += BlockSize.width, ++iPos) {
-                std::vector<float> vfFeature;
-                cv::Point2i Position(x, y);
-                oExtractor.Describe(Position, vfFeature);
-                auto iIndex = oIndexr.GetBinNumber(mNegImg, Position);
-                auto fResult = voCollector.at(iPos).Predict(iIndex, vfFeature);
-                unsigned char uc = (fResult == +1) ? 255u : (fResult == -1) ? 0u : 127u;
-                mNegResult(cv::Rect2i(cv::Point2i(64 + x, y), BlockSize)) = cv::Scalar::all(uc);
-            }
-        }
-        mNegImg.copyTo(mNegResult(cv::Rect2i(cv::Point2i(0, 0), cv::Size2i(64, 128))));
-        oNegWriter << mNegResult;
-    }
-    return 0;
+int main(int argc, char* argv[]) {
+  // find the all selected number in OpenCV AdaBoost xml file
+  std::vector<cv::Mat> vmDrawing;
+  DrawRect(vmDrawing, "A_L2_GENERAL_100_selection.txt");
+  for (size_t i = 0; i < vmDrawing.size(); ++i) {
+    std::stringstream ss;
+    ss << i << ".jpg";
+    cv::imwrite(ss.str(), vmDrawing.at(i));
+  }
+  return 0;
 }

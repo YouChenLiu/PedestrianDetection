@@ -21,14 +21,15 @@ void myModelCollector::Resize(unsigned int iCount) {
     m_vpoModel.clear();
     m_vpoModel.reserve(iCount);
     for (size_t i = 0; i < iCount; ++i) {
-        m_vpoModel.push_back(std::make_unique<mySVM>());
+        m_vpoModel.push_back(std::make_unique<Classifier::mySVM>());
     }
 }
 
 void myModelCollector::TrainModels(void) {
-    for (const auto& model : m_vpoModel) {
-        model->Train();
-    }
+  for (size_t i = 0; i < m_vpoModel.size(); ++i) {
+    std::cout << "\tClassifier: " << i << " / " << m_vpoModel.size() - 1 << "\r";
+    m_vpoModel.at(i)->Train();
+  }
 }
 
 std::string myModelCollector::SaveModels(const std::string& sRootPath) const {
@@ -47,7 +48,7 @@ std::string myModelCollector::SaveModels(const std::string& sRootPath) const {
     for (std::size_t i = 0; i < m_vpoModel.size(); i++) {
         // buffer for xml file name
         std::stringstream ssXMLFileName;
-        ssXMLFileName << std::setfill('0') << std::setw(3) << i << ".xml";
+        ssXMLFileName << std::setfill('0') << std::setw(4) << i << ".xml";
 
         // create the path for saving model
         std::stringstream ssXMLPath;
@@ -164,6 +165,11 @@ void myModelCollector::AddSample(unsigned int iBinNumber,
                                  int iLabel,
                                  const std::vector<float>& vfFeature) {
     m_vpoModel.at(iBinNumber)->AddSample(iLabel, vfFeature);
+}
+
+void myModelCollector::Clear(void) {
+  m_vpoModel.clear();
+  m_vpoModel.shrink_to_fit();
 }
 
 void myModelCollector::Init(void) {

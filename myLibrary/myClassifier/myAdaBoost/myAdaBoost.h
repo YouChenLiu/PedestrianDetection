@@ -1,22 +1,33 @@
+/**
+ * @file myAdaboost.h
+ * @brief AdaBoost class definition
+ */
+
 #ifndef _MY_ADABOOST_H_
 #define _MY_ADABOOST_H_
 
 #include "../mySupervisedClassifier/mySupervisedClassifier.h"
 
-/**
- * @brief AdaBoost classifier
- *
- * myAdaBoost is a warped class.
- * Let's use opencv boosting more convenience.
- */
-class myAdaBoost final : public mySupervisedClassifier {
-public:
+namespace Classifier {
+
+  /**
+   * @brief AdaBoost classifier
+   *
+   * myAdaBoost is a warped class.
+   * Let's use opencv boosting more convenience.
+   */
+  class myAdaBoost final : public mySupervisedClassifier {
+  public:
     /**
      * @brief Create classifier with specify weak classifier count.
      *
      * @param iWeakCount The weak classifiers count
      */
     myAdaBoost(unsigned int iWeakCount);
+
+    myAdaBoost(const std::string& sFilePath) {
+      Load(sFilePath);
+    }
 
     virtual ~myAdaBoost(void);
 
@@ -26,10 +37,10 @@ public:
      * @param sFilePath The XML file path for reading.
      */
     void Load(const std::string& sFilePath) override {
-        m_poClassifier = cv::ml::StatModel::load<cv::ml::Boost>(sFilePath);
+      m_poClassifier = cv::ml::StatModel::load<cv::ml::Boost>(sFilePath);
     }
 
-private:
+  private:
     /**
      * @brief AdaBoost types.
      *
@@ -47,7 +58,9 @@ private:
      */
     static const double TRIM_RATE;
 
-private:
+  private:
+
+  };
 
 };
 
