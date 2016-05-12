@@ -17,4 +17,10 @@ namespace Classifier {
 
   myAdaBoost::~myAdaBoost(void) {}
 
+  float myAdaBoost::GetWeightedSum(const cv::Mat & mSample) {
+    cv::Mat result;
+    auto Sum = m_poClassifier->predict(mSample, result, cv::ml::StatModel::RAW_OUTPUT);
+    return Sum;
+  }
+
 };

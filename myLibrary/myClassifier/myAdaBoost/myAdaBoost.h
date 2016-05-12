@@ -40,6 +40,12 @@ namespace Classifier {
       m_poClassifier = cv::ml::StatModel::load<cv::ml::Boost>(sFilePath);
     }
 
+    float GetWeightedSum(const cv::Mat& mSample);
+
+    float GetWeightedSum(const std::vector<float>& vfSample) {
+      return GetWeightedSum(ConvertVec2Mat(vfSample));
+    }
+
   private:
     /**
      * @brief AdaBoost types.
@@ -47,7 +53,7 @@ namespace Classifier {
      * It can be the one of following values
      * DISCRETE, REAL(default), LOGIT or GENTLE.
      */
-    static const int BOOST_TYPE = cv::ml::Boost::Types::REAL;
+    static const int BOOST_TYPE = cv::ml::Boost::Types::DISCRETE;
 
     /**
      * @brief A threshold for trim.
