@@ -25,6 +25,9 @@
     <Filter Include="Source Files\Classifier">
       <UniqueIdentifier>{c6a7adbc-68be-474e-b005-93b1e7aaa0a8}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Plugin">
+      <UniqueIdentifier>{2e0b11e0-cd97-499e-b62e-b6ffa78ee25b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />
@@ -96,11 +99,14 @@
     <ClInclude Include="myModelIndexer\myLBPIndexer\mylbpindexer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="myScanner\myScanner.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="myClassifier.h">
       <Filter>Header Files\Classifier</Filter>
+    </ClInclude>
+    <ClInclude Include="myPosition\myPosition.h">
+      <Filter>Header Files\Plugin</Filter>
+    </ClInclude>
+    <ClInclude Include="myScanner\myScanner.h">
+      <Filter>Header Files\Plugin</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -13,10 +13,8 @@
 using std::vector;
 using std::string;
 
-const cv::Size2i SampleSize(64, 128);
-const cv::Size2i BlockSize(8, 8);
 // feature extractor setting
-Descriptor::myBlockDescriptor oMyDetector(cv::Mat(), BlockSize);
+Descriptor::myBlockDescriptor oMyDetector(cv::Mat(), cv::Size2i(8, 8));
 
 // vector for my method feature set
 const vector<int> viTwoLayerFeature = {
@@ -24,7 +22,7 @@ const vector<int> viTwoLayerFeature = {
     Descriptor::myBlockDescriptor::Feature::L2_NORM,
     Descriptor::myBlockDescriptor::Feature::LBP_8_1_UNIFORM
 };
-Descriptor::myBlockDescriptor oDenseDetector(cv::Mat(), BlockSize);
+Descriptor::myBlockDescriptor oDenseDetector(cv::Mat(), cv::Size2i(8, 8));
 const vector<int> viDenseFeature = {
     Descriptor::myBlockDescriptor::Feature::HOG_STANDARD |
     Descriptor::myBlockDescriptor::Feature::L2_NORM,
@@ -32,27 +30,23 @@ const vector<int> viDenseFeature = {
 };
 
 // classifier setting
-const int iCollectorCount = (((SampleSize.height - 2 * BlockSize.height) / 8) *
-                             ((SampleSize.width - 2 * BlockSize.width) / 8));
-vector<myModelCollector> voCollector(iCollectorCount);
+  
+vector<myModelCollector> voCollector;
 std::unique_ptr<Classifier::myAdaBoost> pL2Classifier = nullptr;
 std::unique_ptr<Classifier::mySVM> pDenseClassifier = nullptr;
 
 // the positions of feature extraction left-top points
-vector<cv::Point2i> vptMinePos;
-vector<cv::Point2i> vptDensePos;
+vector<cv::Rect2i> vrMine;
+vector<cv::Rect2i> vrDense;
 
 float DetectByMine(const cv::Mat& mImg) {
-  cv::Mat mSample;
-  cv::resize(mImg, mSample, SampleSize);
-  oMyDetector.SetImage(mSample);
+  oMyDetector.SetImage(mImg);
   vector<float> vfResult(voCollector.size(), -1.0f);
-  myLBPIndexer oIndexr(BlockSize);
-  for (size_t i = 0; i < vptMinePos.size(); ++i) {
-    vector<float> vfFeature;
-    auto Position = vptMinePos.at(i);
-    oMyDetector.Describe(Position, vfFeature);
-    auto iIndex = oIndexr.GetBinNumber(mSample, Position);
+  myLBPIndexer oIndexr;
+  for (size_t i = 0; i < vrMine.size(); ++i) {
+    vector<float> vfFeature(68, -1.0f);
+    oMyDetector.Describe(vrMine.at(i), vfFeature);
+    auto iIndex = oIndexr.GetBinNumber(mImg, vrMine.at(i));
     auto fResult = voCollector.at(i).Predict(iIndex, vfFeature);
     vfResult.at(i) = fResult;
   }
@@ -61,13 +55,11 @@ float DetectByMine(const cv::Mat& mImg) {
 }
 
 float DetectByDense(const cv::Mat& mImg) {
-  cv::Mat mSample;
-  cv::resize(mImg, mSample, SampleSize);
-  oDenseDetector.SetImage(mSample);
+  oDenseDetector.SetImage(mImg);
   vector<float> vfCascade;
-  for (size_t i = 0; i < vptDensePos.size(); ++i) {
+  for (size_t i = 0; i < vrDense.size(); ++i) {
     vector<float> vfFeature;
-    oDenseDetector.Describe(vptDensePos.at(i), vfFeature);
+    oDenseDetector.Describe(vrDense.at(i), vfFeature);
     for (auto f : vfFeature) {
       vfCascade.push_back(f);
     }
@@ -77,24 +69,50 @@ float DetectByDense(const cv::Mat& mImg) {
 }
 
 int main(void) {
-  const string sTestingImgRoot = "C:/Users/youch/Desktop/Waiting/";
+  const string sTestingImgRoot = "C:/Users/youch/Desktop/02/";
 
-  vector<string> vsFolder = {
-    "2015-1006_1335-1345_06/",
-    "2015-1005_2120-2130_07/",
-    "2015-1015_1715-1725_04/",
-    "2015-1007_2120-2130_02/"
+  struct NameNumber {
+    string sFolderName;
+    int iFirstNum;
   };
-  vector<int> viFirstNum = {
-    6184,
-    8258,
-    6669,
-    2302
+
+  vector<NameNumber> vnnPairs = {
+    { "2015-1007_0900-0910_01", 0 },
+    { "2015-1007_0900-0910_02", 6614 },
+    { "2015-1007_0900-0910_03", 9374 },
+    { "2015-1007_0900-0910_04", 11953 },
+    { "2015-1007_0900-0910_05", 14305 },
+    { "2015-1007_2120-2130_01", 1250 },
+    { "2015-1007_2120-2130_02", 2302 },
+    { "2015-1007_2120-2130_03", 3970 },
+    { "2015-1007_2120-2130_04", 5686 },
+    { "2015-1007_2120-2130_05", 10800 },
+    { "2015-1015_1715-1725_01", 5105 },
+    { "2015-1015_1715-1725_02", 6111 },
+    { "2015-1015_1715-1725_03", 6669 },
+    { "2015-1015_1715-1725_04", 12165 },
+    { "2015-1015_1715-1725_05", 13966 }
   };
+
   // root path for testing samples
-  const string sL2Model = "A_L2_60_SingleCell.xml";
-  const string sModelName = "SingleCell_Models";
+  const string sL2Model = "A_L2_GENERAL_100.xml";
+  const string sModelName = "GENERAL_TEST_Model_1";
   const string sDenseModel = "Dense.xml";
+
+  // claculate the rect for my extractor
+  {
+    Plugin::myScanner scanner(cv::Point2i(8, 8), cv::Point2i(56, 120));
+    for (int h = 8; h <= 32; h += 8) {
+      for (int w = 8; w <= 16; w += 8) {
+        scanner.CalRect(vrMine, cv::Size2i(w, h), cv::Point2i(8, 8));
+      } // for w
+    } // for h
+  }
+  // claculate the rect for dense extractor
+  {
+    Plugin::myScanner scanner(cv::Point2i(0, 0), cv::Point2i(64, 128));
+    scanner.CalRect(vrDense, cv::Size2i(8, 8), cv::Point2i(8, 8));
+  }
 
   cv::Scalar MineColor(0, 255, 0);
   cv::Scalar DenseColor(0, 0, 255);
@@ -110,21 +128,16 @@ int main(void) {
       oDenseDetector.EnableFeature(feature);
     }
   }
-  vector<cv::Rect2i> vWindow;
-  {
-    cv::Size2i ImgSize(640, 480);
-    cv::Size2i RectSize(32, 90);
-    cv::Point2i Interval(8, 16);
-    myScanner scanner(ImgSize, RectSize);
-    scanner.CalRect(vWindow, cv::Point2i(0, 200), cv::Point2i(640, 480), Interval);
-  }
+  
   // read trained models
   {
+    
     // build mine classifier
     std::cout << "Reading saved L1 models" << std::endl;
     std::ifstream ModelList(sModelName + ".txt");
     int iModelsCount = 0;
     ModelList >> iModelsCount;
+    voCollector = vector<myModelCollector>(vrMine.size());
     for (std::size_t i = 0; i < iModelsCount; ++i) {
       std::string sPath;
       ModelList >> sPath;
@@ -138,55 +151,73 @@ int main(void) {
     // build dense classifier
     std::cout << "Reading dense models" << std::endl;
     pDenseClassifier = std::make_unique<Classifier::mySVM>(sDenseModel);
-    //pDenseClassifier->Load(sDenseModel);
-  }
-  
-  // claculate the position for my extractor
-  {
-    cv::Point2i ptStart(BlockSize.width, BlockSize.height);
-    cv::Point2i ptEnd(SampleSize.width - BlockSize.width,
-                      SampleSize.height - BlockSize.height);
-    cv::Point2i ptStep(BlockSize.width, BlockSize.height);
-    Plugin::myPosition(ptStart, ptEnd).CalPositions(vptMinePos, ptStep);
-  }
-  // claculate the position for my extractor
-  {
-    cv::Point2i ptStart(0, 0);
-    cv::Point2i ptEnd(SampleSize.width, SampleSize.height);
-    cv::Point2i ptStep(BlockSize.width, BlockSize.height);
-    Plugin::myPosition(ptStart, ptEnd).CalPositions(vptDensePos, ptStep);
+    
   }
 
-  for (size_t i = 0; i < vsFolder.size(); ++i) {
-    string sFolder = vsFolder.at(i);
-    sFolder.resize(sFolder.size() - 1);
-    cv::VideoWriter DenseWriter(sFolder + "_Dense.avi", CV_FOURCC('F', 'M', 'P', '4'), 30, cv::Size2i(640, 480));
-    cv::VideoWriter MineWriter(sFolder + "_Mine.avi", CV_FOURCC('F', 'M', 'P', '4'), 30, cv::Size2i(640, 480));
-    myImageSequence oReader(sTestingImgRoot + vsFolder.at(i), "", "bmp", false);
-    oReader.SetAttribute(myImageSequence::Attribute::FIRST_NUMBER, viFirstNum.at(i));
+  for (const auto nn : vnnPairs) {
+    string sFolder = nn.sFolderName;
+    cv::VideoWriter oWriter(sFolder + ".avi", CV_FOURCC('F', 'M', 'P', '4'), 10, cv::Size2i(1280, 480));
+    myImageSequence oReader(sTestingImgRoot + sFolder + "/", "", "bmp", false);
+    oReader.SetAttribute(myImageSequence::Attribute::FIRST_NUMBER, nn.iFirstNum);
     cv::Mat mImg;
     while (oReader >> mImg) {
+      std::cout << "\rProcessing...\t" << sFolder << "/" << oReader.GetSequenceNumberString();
       vector<cv::Mat> vImg(3, mImg);
       cv::Mat mMineResult;
       cv::merge(vImg, mMineResult);
       cv::Mat mDenseResult = mMineResult.clone();
-      for (auto r : vWindow) {
-        auto fMineResult = DetectByMine(mImg(r));
-        if (fMineResult >= 0) {
-          cv::rectangle(mMineResult, r, MineColor);
+      // scaling the img
+      for (float fRatio = 1.0f; fRatio <= 2.5f; fRatio *= 1.2f) {
+        cv::Size2i NewSize;
+        {
+          cv::Size2i Size = mImg.size();
+          auto iNewWidth = static_cast<int>(Size.width * fRatio);
+          auto iNewHeight = static_cast<int>(Size.height * fRatio);
+          NewSize = cv::Size2i(iNewWidth, iNewHeight);
         }
-        auto fDenseResult = DetectByDense(mImg(r));
-        if (fDenseResult >= 0) {
-          cv::rectangle(mDenseResult, r, DenseColor);
+        cv::Mat mRescale;
+        cv::resize(mImg, mRescale, NewSize);
+
+        vector<cv::Rect2i> vScanningWindow;
+        {
+          cv::Size2i RectSize(64, 128);
+          cv::Point2i Interval(32, 64);
+          cv::Point2i ptRB(NewSize.width, NewSize.height);
+          Plugin::myScanner scanner(cv::Point2i(0, NewSize.height / 4), ptRB);
+          scanner.CalRect(vScanningWindow, RectSize, Interval);
         }
-      }
-      cv::imshow("Mine", mMineResult);
-      MineWriter << mMineResult;
-      cv::imshow("Dense", mDenseResult);
-      DenseWriter << mDenseResult;
+        
+        for (auto r : vScanningWindow) {
+          cv::Rect2i OriginalRect;
+          {
+            auto NewX = static_cast<int>(r.x / fRatio);
+            auto NewY = static_cast<int>(r.y / fRatio);
+            auto NewWidth = static_cast<int>(r.width / fRatio);
+            auto NewHeight = static_cast<int>(r.height / fRatio);
+            OriginalRect = cv::Rect2i(NewX, NewY, NewWidth, NewHeight);
+          }
+          
+          auto fMineResult = DetectByMine(mRescale(r));
+          if (fMineResult >= 0) {
+            cv::rectangle(mMineResult, OriginalRect, MineColor);
+          }
+          auto fDenseResult = DetectByDense(mRescale(r));
+          if (fDenseResult >= 0) {
+            cv::rectangle(mDenseResult, OriginalRect, DenseColor);
+          }
+          
+        }
+      } // for fRatio
+      // draw the result
+      cv::Mat mResult = cv::Mat::zeros(480, 1280, CV_8UC3);
+      mDenseResult.copyTo(mResult(cv::Rect2i(0, 0, 640, 480)));
+      mMineResult.copyTo(mResult(cv::Rect2i(640, 0, 640, 480)));
+      cv::imshow("Result", mResult);
+      oWriter << mResult;
       cv::waitKey(1);
-    }
+    } // while
     cv::destroyAllWindows();
-  }
+    std::cout << "\rProcessing...\t" << sFolder << "\tFinish" << std::endl;
+  } // for vnnPairs
   return 0;
 }

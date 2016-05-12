@@ -37,6 +37,10 @@ public:     // public method
      */
     myModelCollector(void);
 
+    myModelCollector(const myModelCollector&) = delete;
+
+    myModelCollector& operator=(const myModelCollector&) = delete;
+
     /**
      * @brief Constructor.
      *
@@ -114,6 +118,8 @@ public:     // public method
     float Predict(unsigned int iBinNumber, std::vector<float>& vfSample) const {
         return m_vpoModel.at(iBinNumber)->Predict(vfSample);
     }
+
+    void Clear(void);
 
 protected:  // protected method
 

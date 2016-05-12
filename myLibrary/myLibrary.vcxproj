@@ -98,6 +98,7 @@
     <ClInclude Include="myModelCollector\myModelCollectorBase.h" />
     <ClInclude Include="myModelIndexer\myLBPIndexer\mylbpindexer.h" />
     <ClInclude Include="myModelIndexer\myModelIndexerBase.h" />
+    <ClInclude Include="myPosition\myPosition.h" />
     <ClInclude Include="myResultDumper\myResultDumper.h" />
     <ClInclude Include="myResultVerifier\myResultVerifier.h" />
     <ClInclude Include="myScanner\myScanner.h" />

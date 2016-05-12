@@ -1,106 +1,91 @@
-#include "../myLibrary/myClassifier/mySVM/mySVM.h"
-#include "../myLibrary/myClassifier/myAdaBoost/myAdaBoost.h"
+#include "../myLibrary/myPlugin.h"
+#include "../myLibrary/myClassifier.h"
 #include "../myLibrary/myModelCollector/myModelCollector.h"
 #include "../myLibrary/myFeatureDescriptor/myBlockDescriptor/myBlockDescriptor.h"
-#include "../myLibrary/myModelIndexer/myLBPIndexer/myLBPIndexer.h"
-#include <fstream>
+#include "../myLibrary/myImageSequence/myImageSequence.h"
+#include "../myLibrary/myModelIndexer/myLBPIndexer/mylbpindexer.h"
 #include <opencv2/highgui.hpp>
 #include <opencv2/imgproc.hpp>
+#include <sstream>
+#include <iomanip>
 
-int main(void) {
-    // root path for training samples
-    const std::string sTrainingSamplesRoot = "D:/Database/01/";
-    // root path for testing samples
-    const std::string sTestingSamplesRoot = "D:/Database/01/";
-    // determind do training or testing
-    const bool bTrainingL1 = false;
-    const bool bTrainingL2 = true;
-    const bool bTesting = true;
-
-    const cv::Size2i ImgSize(64, 128);
-    const cv::Size2i BlockSize(8, 8);
-    const int iCollectorCount = (((ImgSize.height - 2 * BlockSize.height) / 8) *
-                                 ((ImgSize.width - 2 * BlockSize.width) / 8));
-    myLBPIndexer oIndexr(BlockSize);
-    Descriptor::myBlockDescriptor oExtractor(cv::Mat(), BlockSize);
-    const std::vector<int> viFeature = {
-        Descriptor::myBlockDescriptor::Feature::HOG_STANDARD | Descriptor::myBlockDescriptor::Feature::L2_NORM,
-        Descriptor::myBlockDescriptor::Feature::LBP_8_1_UNIFORM
-    };
-    for (auto feature : viFeature) {
-        oExtractor.EnableFeature(feature);
+void DrawRect(std::vector<cv::Mat>& vmDrawing, const std::string& sFilePath) {
+  std::vector<int> viResult;
+  {
+    std::ifstream File(sFilePath);
+    std::string s;
+    while (std::getline(File, s)) {
+      std::stringstream ss(s);
+      int i = 0;
+      ss >> i;
+      viResult.push_back(i);
     }
-    std::cout << "Reading saved models" << std::endl;
-    std::ifstream ModelList("../TwoLayersDetection/LIN_Models.txt");
-    // vector of collectors
-    std::vector<myModelCollector> voCollector(84);
-    for (auto& o : voCollector) {
-        o.Resize(59);
+  }
+  std::vector<cv::Rect2i> vRect;
+  std::vector<size_t> viScanSize;
+  {
+    Plugin::myScanner scanner(cv::Point2i(8, 8), cv::Point2i(56, 120));
+    for (int h = 8, i = 0; h <= 32; h += 8) {
+      for (int w = 8; w <= 16; w += 8, ++i) {
+        scanner.CalRect(vRect, cv::Size2i(w, h), cv::Point2i(8, 8));
+        viScanSize.push_back(vRect.size() - 1);
+      } // for w
+    } // for h
+  }
+
+  {
+    
+    vmDrawing.reserve(viScanSize.size());
+    for (size_t i = 0; i < viScanSize.size(); ++i) {
+      cv::Size2i Size = vRect.at(viScanSize.at(i)).size();
+      std::stringstream ss;
+      ss << Size.width << "x" << Size.height;
+      cv::Mat mTemp = cv::Mat::zeros(128, 64, CV_8UC1);
+      cv::putText(mTemp, ss.str(), cv::Point2i(10, 10), cv::FONT_HERSHEY_PLAIN, 1, cv::Scalar::all(255));
+      vmDrawing.push_back(mTemp.clone());
     }
-    int iModelsCount = 0;
-    ModelList >> iModelsCount;
-    for (std::size_t i = 0; i < iModelsCount; ++i) {
-        std::string sPath;
-        ModelList >> sPath;
-        voCollector.at(i).LoadModels("../TwoLayersDetection/" + sPath);
-        std::cout << "Reading models : " << i << " / " << iModelsCount - 1 << "\r";
+  }
+  for (auto RectIdx : viResult) {
+    size_t iIndex = 0;
+    for (auto idx : viScanSize) {
+      if (idx < RectIdx) {
+        ++iIndex;
+      }
     }
-    std::cout << std::endl;
-    Classifier::mySupervisedClassifier* oL2Classifier = new Classifier::myAdaBoost(70);
-    oL2Classifier->Load("../TwoLayersDetection/A_L2_70.xml");
+    cv::rectangle(vmDrawing.at(iIndex), vRect.at(RectIdx), cv::Scalar::all(255));
+  }
+}
 
-    const std::string sRoot("D:/Database/02/Night/");
-    std::ifstream List("Dense.txt");
-    std::string str;
+void MergeResult(const std::string& sName) {
+  cv::VideoCapture Dense(sName + "_Dense.avi");
+  cv::VideoCapture Mine(sName + "_Mine.avi");
+  cv::VideoWriter Merging(sName + ".avi", CV_FOURCC('F', 'M', 'P', '4'), 15, cv::Size2i(1280, 480));
 
-    while (std::getline(List, str)) {
-        if (str.length() == 0) {
-            continue;
-        }
+  cv::Mat mDense;
+  cv::Mat mMine;
+  cv::Mat mImg = cv::Mat::zeros(cv::Size2i(1280, 480), CV_8UC3);
 
-        std::string sFileName;
-        std::string sPN = str.substr(0, 3);
-        if (str.substr(0, 3).compare("pos") == 0) {
-            sFileName = "Positive/" + str.substr(3, 6) + ".bmp";
-        } else {
-            sFileName = "Negative/" + str.substr(3, 6) + ".bmp";
-        }
-
-        std::string sPath = sRoot + sFileName;
-        cv::Mat mImg = cv::imread(sPath, cv::IMREAD_GRAYSCALE);
-        
-        cv::Mat mDistribution = cv::Mat::ones(ImgSize, CV_8UC1) * 127;
-        oExtractor.SetImage(mImg);
-        std::vector<float> vfResult(iCollectorCount, 0.0f);
-        for (int y = BlockSize.height, iPos = 0; y < mImg.rows - BlockSize.height; y += BlockSize.height) {
-            for (int x = BlockSize.width; x < mImg.cols - BlockSize.width; x += BlockSize.width, ++iPos) {
-                std::vector<float> vfFeature;
-                cv::Point2i Position(x, y);
-                oExtractor.Describe(Position, vfFeature);
-                auto iIndex = oIndexr.GetBinNumber(mImg, Position);
-                auto fResult = voCollector.at(iPos).Predict(iIndex, vfFeature);
-                vfResult.at(iPos) = fResult;
-                auto Color = (fResult == -1) ? cv::Scalar::all(0) :
-                    ((fResult == 1) ? cv::Scalar::all(255) :
-                     cv::Scalar::all(127));
-                
-                auto Region = cv::Rect2i(Position, BlockSize);
-                mDistribution(Region).setTo(Color);
-                
-            }
-        }
-        
-        cv::Mat mResult = cv::Mat::zeros(cv::Size2i(128, 128), CV_8UC1);
-        mImg.copyTo(mResult(cv::Rect2i(0, 0, 64, 128)));
-        mDistribution.copyTo(mResult(cv::Rect2i(64, 0, 64, 128)));
-        auto DetectingResult = oL2Classifier->Predict(vfResult);
-        cv::putText(mResult,
-                    (DetectingResult == -1) ? "-" : "+",
-                    cv::Point2i(30, 60),
-                    cv::FONT_HERSHEY_PLAIN,
-                    1.0,
-                    cv::Scalar::all(0));
-        cv::imwrite("Image/" + str + ".jpg", mResult);
+  while (true) {
+    Dense >> mDense;
+    Mine >> mMine;
+    if (mDense.empty() | mMine.empty()) {
+      break;
     }
-    return 0;
+
+    mDense.copyTo(mImg(cv::Rect2i(0, 0, 640, 480)));
+    mMine.copyTo(mImg(cv::Rect2i(640, 0, 640, 480)));
+    Merging << mImg;
+  }
+}
+
+int main(int argc, char* argv[]) {
+  // find the all selected number in OpenCV AdaBoost xml file
+  std::vector<cv::Mat> vmDrawing;
+  DrawRect(vmDrawing, "A_L2_GENERAL_100_selection.txt");
+  for (size_t i = 0; i < vmDrawing.size(); ++i) {
+    std::stringstream ss;
+    ss << i << ".jpg";
+    cv::imwrite(ss.str(), vmDrawing.at(i));
+  }
+  return 0;
 }

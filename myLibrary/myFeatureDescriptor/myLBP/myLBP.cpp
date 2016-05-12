@@ -10,7 +10,9 @@ namespace Descriptor {
   std::array<std::vector<bool>, myLBP::MAX_LENGTH / 8> myLBP::m_avbUniformMap = {};
   std::array<std::vector<cv::Point2i>, myLBP::NUMBER_OF_PATTERNS> myLBP::m_SamplingPoints = {};
 
-  myLBP::myLBP(void) : myBlockDescriptorBase() {}
+  myLBP::myLBP(void) : myBlockDescriptorBase() {
+    Init();
+  }
 
   myLBP::myLBP(const cv::Mat& mImage, int Pattern, cv::Size2i BlockSize) :
     myBlockDescriptorBase(mImage, BlockSize) {
@@ -22,9 +24,9 @@ namespace Descriptor {
   myLBP::~myLBP(void) {}
 
   void myLBP::Init(void) {
-    m_bIsUniform = false;
-    m_iRadius = 0;
-    m_iLength = 0;
+    m_bIsUniform = true;
+    m_iRadius = 1;
+    m_iLength = 8;
 
     if (m_SamplingPoints.at(0).empty() == true) {
       SetSamplingPoints();
