@@ -31,7 +31,7 @@ void myVerifierBase::CompareByFrames(int iStart, int iEnd) {
 
 void myVerifierBase::CompareAllFrames(void) {
   auto iFirstFrame = m_oDetectionBB.GetFirstFrameNum();
-  auto iEndFrame = m_oGroundTruthBB.GetEndFrameNum();
+  auto iEndFrame = m_oDetectionBB.GetEndFrameNum();
   CompareByFrames(iFirstFrame, iEndFrame);
 }
 
