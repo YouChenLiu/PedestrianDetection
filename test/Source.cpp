@@ -4,10 +4,12 @@
 #include "myFeatureDescriptor/myBlockDescriptor/myBlockDescriptor.h"
 #include "myImageSequence/myImageSequence.h"
 #include "myModelIndexer/myLBPIndexer/mylbpindexer.h"
+#include "myPlugin/myBBReader/myBBReader.h"
 #include <opencv2/highgui.hpp>
 #include <opencv2/imgproc.hpp>
 #include <sstream>
 #include <iomanip>
+#include "myVerifier/myFPPW/myFPPW.h"
 
 void DrawRect(std::vector<cv::Mat>& vmDrawing, const std::string& sFilePath) {
   std::vector<int> viResult;
@@ -80,6 +82,7 @@ void MergeResult(const std::string& sName) {
 
 int main(int argc, char* argv[]) {
   // find the all selected number in OpenCV AdaBoost xml file
+  /*
   std::vector<cv::Mat> vmDrawing;
   DrawRect(vmDrawing, "A_L2_GENERAL_100_selection.txt");
   for (size_t i = 0; i < vmDrawing.size(); ++i) {
@@ -87,5 +90,12 @@ int main(int argc, char* argv[]) {
     ss << i << ".jpg";
     cv::imwrite(ss.str(), vmDrawing.at(i));
   }
+  */
+
+  Plugin::myBBReader gt("2015-1015_1715-1725_03.xml");
+  Verifier::myFPPW fppw(105, "2015-1015_1715-1725_03.xml", "2015-1015_1715-1725_03.xml");
+  fppw.CompareByFrames(0, 9);
+  std::cout << fppw.GetResult() << std::endl;
+
   return 0;
 }
