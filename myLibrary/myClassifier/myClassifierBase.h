@@ -5,7 +5,7 @@
 #ifndef _MY_CLASSIFIER_BASE_H_
 #define _MY_CLASSIFIER_BASE_H_
 
-#include "../common.h"
+#include "common.h"
 #include <fstream>
 #include <sstream>
 
@@ -65,8 +65,8 @@ public:     // public method
    * @return The classifcation result.
    * @retval NAN The classifier is empty.
    */
-  float Predict(const std::vector<float>& vfSample) const {
-    return Predict(ConvertVec2Mat(vfSample));
+  virtual float Predict(const std::vector<float>& vfSample) const {
+    return Predict(ConvertVecToMat(vfSample));
   }
 
   /**
@@ -144,7 +144,7 @@ protected:  // protected method
    */
   void WriteOutFile(const std::string& sDstPath);
 
-  cv::Mat ConvertVec2Mat(const std::vector<float>& Vec) const;
+  cv::Mat ConvertVecToMat(const std::vector<float>& vec) const;
 
 private:    // private method
 

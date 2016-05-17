@@ -1,10 +1,9 @@
-#include "../myLibrary/myClassifier/mySVM/mySVM.h"
-#include "../myLibrary/myClassifier/myAdaBoost/myAdaBoost.h"
-#include "../myLibrary/myModelCollector/myModelCollector.h"
-#include "../myLibrary/myFeatureDescriptor/myBlockDescriptor/myBlockDescriptor.h"
-#include "../myLibrary/myModelIndexer/myLBPIndexer/myLBPIndexer.h"
-#include "../myLibrary/myImageSequence/myImageSequence.h"
-#include "../myLibrary/myScanner/myScanner.h"
+#include "myClassifier.h"
+#include "myModelCollector/myModelCollector.h"
+#include "myFeatureDescriptor/myBlockDescriptor/myBlockDescriptor.h"
+#include "myModelIndexer/myLBPIndexer/myLBPIndexer.h"
+#include "myImageSequence/myImageSequence.h"
+#include "myPlugin/myScanner/myScanner.h"
 #include <opencv2/highgui.hpp>
 #include <fstream>
 #include <iomanip>

@@ -1,26 +1,27 @@
-#include "myResultVerifier.h"
-#include "../myLabel/myLabel.h"
+#include "GYVerifier.h"
 
-myResultVerifier::myResultVerifier(const std::string sDetctionResult, const std::string sGroundTruth) {
+namespace Verifier {
+
+GYVerifier::GYVerifier(const std::string sDetctionResult, const std::string sGroundTruth) {
   Init();
   LoadXMLFile(sDetctionResult, sGroundTruth);
 }
 
-myResultVerifier::~myResultVerifier(void) {}
+GYVerifier::~GYVerifier(void) {}
 
-void myResultVerifier::Init(void) {
+void GYVerifier::Init(void) {
   m_poDetectionResultXMLFile = std::make_unique<tinyxml2::XMLDocument>();
   m_poGroundTruthXMLFile = std::make_unique<tinyxml2::XMLDocument>();
   m_fTruePositiveScore = m_fFalsePositiveScore = m_fTrueNegativeScore = m_fFalseNegativeScore = 0.0f;
   m_iTotalFrames = 0;
 }
 
-void myResultVerifier::LoadXMLFile(const std::string sDetctionResult, const std::string sGroundTruth) {
+void GYVerifier::LoadXMLFile(const std::string sDetctionResult, const std::string sGroundTruth) {
   m_poDetectionResultXMLFile->LoadFile(sDetctionResult.c_str());
   m_poGroundTruthXMLFile->LoadFile(sGroundTruth.c_str());
 }
 
-float myResultVerifier::GetDetectionRate(void) {
+float GYVerifier::GetDetectionRate(void) {
   float fDetectionRate = 0.0f;
 
   if ((m_fTruePositiveScore + m_fFalsePositiveScore + m_fTrueNegativeScore + m_fFalseNegativeScore) == 0.0f) {
@@ -32,7 +33,7 @@ float myResultVerifier::GetDetectionRate(void) {
   return fDetectionRate;
 }
 
-void myResultVerifier::CompareXMLResult(void) {
+void GYVerifier::CompareXMLResult(void) {
   while (CalculateDetectionRatePerFrame(m_iTotalFrames) == true) {
     ++m_iTotalFrames;
   }
@@ -48,15 +49,15 @@ void myResultVerifier::CompareXMLResult(void) {
 # endif
 }
 
-bool myResultVerifier::CalculateDetectionRatePerFrame(int iFrameNumber) {
+bool GYVerifier::CalculateDetectionRatePerFrame(int iFrameNumber) {
   using namespace tinyxml2;
+  using namespace Plugin;
+  auto poDetectionData = m_poDetectionResultXMLFile->RootElement()->FirstChildElement(GetLabel(Tags::DATA_SET).c_str());
+  auto poGTData = m_poGroundTruthXMLFile->RootElement()->FirstChildElement(GetLabel(Tags::DATA_SET).c_str());
 
-  auto poDetectionData = m_poDetectionResultXMLFile->RootElement()->FirstChildElement(myLabel::GetLabel(myLabel::Tags::DATA_SET).c_str());
-  auto poGTData = m_poGroundTruthXMLFile->RootElement()->FirstChildElement(myLabel::GetLabel(myLabel::Tags::DATA_SET).c_str());
-
-  auto poDetectionHeader = poDetectionData->FirstChildElement(myLabel::GetLabel(myLabel::Tags::HEADER).c_str());
+  auto poDetectionHeader = poDetectionData->FirstChildElement(GetLabel(Tags::HEADER).c_str());
   while (poDetectionHeader != nullptr) {
-    int iFrame = poDetectionHeader->IntAttribute(myLabel::GetLabel(myLabel::Attributes::FRAME_NUMBER).c_str());
+    int iFrame = poDetectionHeader->IntAttribute(GetLabel(Attributes::FRAME_NUMBER).c_str());
     if (iFrame >= iFrameNumber) {
       if (iFrame != iFrameNumber) {
         poDetectionHeader = nullptr;
@@ -66,9 +67,9 @@ bool myResultVerifier::CalculateDetectionRatePerFrame(int iFrameNumber) {
     poDetectionHeader = poDetectionHeader->NextSiblingElement();
   }
 
-  auto poGTHeader = poGTData->FirstChildElement(myLabel::GetLabel(myLabel::Tags::HEADER).c_str());
+  auto poGTHeader = poGTData->FirstChildElement(GetLabel(Tags::HEADER).c_str());
   while (poGTHeader != nullptr) {
-    int iFrame = poGTHeader->IntAttribute(myLabel::GetLabel(myLabel::Attributes::FRAME_NUMBER).c_str());
+    int iFrame = poGTHeader->IntAttribute(GetLabel(Attributes::FRAME_NUMBER).c_str());
     if (iFrame >= iFrameNumber) {
       if (iFrame != iFrameNumber) {
         poDetectionHeader = nullptr;
@@ -114,21 +115,21 @@ bool myResultVerifier::CalculateDetectionRatePerFrame(int iFrameNumber) {
   return true;
 }
 
-void myResultVerifier::TakeOutBoundingBox(tinyxml2::XMLElement* poHeader, std::vector<cv::Rect2i>& voBoundingBoxes) const {
+void GYVerifier::TakeOutBoundingBox(tinyxml2::XMLElement* poHeader, std::vector<cv::Rect2i>& voBoundingBoxes) const {
   using namespace tinyxml2;
-
+  using namespace Plugin;
   voBoundingBoxes.clear();
 
-  XMLElement* poRecord = poHeader->FirstChildElement(myLabel::GetLabel(myLabel::Tags::RECORD).c_str());
+  XMLElement* poRecord = poHeader->FirstChildElement(GetLabel(Tags::RECORD).c_str());
   while (poRecord != nullptr) {
-    const std::string s = myLabel::GetLabel(myLabel::Tags::START_POINT);
-    XMLElement* Element = poRecord->FirstChildElement(myLabel::GetLabel(myLabel::Tags::START_POINT).c_str());
+    const std::string s = GetLabel(Tags::START_POINT);
+    XMLElement* Element = poRecord->FirstChildElement(GetLabel(Tags::START_POINT).c_str());
     const std::string sStartPoint = Element->GetText();
     const int iCommaIndex = static_cast<int>(sStartPoint.find(", "));
     const int x = stoi(sStartPoint.substr(0, iCommaIndex));
     const int y = stoi(sStartPoint.substr(iCommaIndex + 1, sStartPoint.size()));
-    const int iWidth = std::stoi(poRecord->FirstChildElement(myLabel::GetLabel(myLabel::Tags::WIDTH).c_str())->GetText());
-    const int iHeight = std::stoi(poRecord->FirstChildElement(myLabel::GetLabel(myLabel::Tags::HEIGHT).c_str())->GetText());
+    const int iWidth = std::stoi(poRecord->FirstChildElement(GetLabel(Tags::WIDTH).c_str())->GetText());
+    const int iHeight = std::stoi(poRecord->FirstChildElement(GetLabel(Tags::HEIGHT).c_str())->GetText());
 
     const cv::Rect2i box(x, y, iWidth, iHeight);
     voBoundingBoxes.push_back(box);
@@ -136,10 +137,10 @@ void myResultVerifier::TakeOutBoundingBox(tinyxml2::XMLElement* poHeader, std::v
   }
 }
 
-float myResultVerifier::CalculateOverlapRatio(cv::Rect2i Detection, cv::Rect2i GroundTruth) {
+float GYVerifier::CalculateOverlapRatio(cv::Rect2i Detection, cv::Rect2i GroundTruth) {
   const auto iDetectionArea = Detection.area();
   const auto iGroundTruthArea = GroundTruth.area();
-  
+
   int iOverlapArea = 0;
   for (int y = Detection.y; y < Detection.y + Detection.height; ++y) {
     for (int x = Detection.x; x < Detection.x + Detection.width; ++x) {
@@ -152,3 +153,5 @@ float myResultVerifier::CalculateOverlapRatio(cv::Rect2i Detection, cv::Rect2i G
 
   return static_cast<float>(iOverlapArea) / (iDetectionArea + iGroundTruthArea - iOverlapArea);
 }
+
+} // namespase

@@ -63,9 +63,9 @@ public:     // public method
     return m_poClassifier->empty() ? NAN : m_poClassifier->predict(mSample);
   }
 
-  float Predict(const std::vector<float>& vfSample) const {
-    return myClassifierBase::Predict(vfSample);
-  }
+    float Predict(const std::vector<float>& vfSample) const {
+      return Predict(ConvertVecToMat(vfSample));
+    }
 
   bool Save(const std::string& sDstPath) const override;
 

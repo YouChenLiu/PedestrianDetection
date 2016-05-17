@@ -1,14 +1,13 @@
 #include <memory>
 #include <opencv2/imgproc.hpp>
 #include <opencv2/highgui.hpp>
-#include "../myLibrary/common.h"
-#include "../myLibrary/myImageSequence/myImageSequence.h"
-#include "../myLibrary/myFeatureDescriptor/myBlockDescriptor/myBlockDescriptor.h"
-#include "../myLibrary/myScanner/myScanner.h"
-#include "../myLibrary/myClassifier.h"
-#include "../myLibrary/myPosition/myPosition.h"
-#include "../myLibrary/myModelCollector/myModelCollector.h"
-#include "../myLibrary/myModelIndexer/myLBPIndexer/myLBPIndexer.h"
+#include "common.h"
+#include "myImageSequence/myImageSequence.h"
+#include "myFeatureDescriptor/myBlockDescriptor/myBlockDescriptor.h"
+#include "myClassifier.h"
+#include "myPlugin.h"
+#include "myModelCollector/myModelCollector.h"
+#include "myModelIndexer/myLBPIndexer/myLBPIndexer.h"
 
 using std::vector;
 using std::string;

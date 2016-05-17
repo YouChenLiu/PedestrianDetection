@@ -28,18 +28,21 @@
     <Filter Include="Header Files\Plugin">
       <UniqueIdentifier>{2e0b11e0-cd97-499e-b62e-b6ffa78ee25b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Verifier">
+      <UniqueIdentifier>{51029524-e242-4295-939e-d37e9296684e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Verifier">
+      <UniqueIdentifier>{03f94b43-d520-4ffb-ade1-04e3cb52e17e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Plugin">
+      <UniqueIdentifier>{16ccd298-3dae-4dc4-9cc8-e14c072b6bf3}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="myImageSequence\myImageSequence.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="myResultVerifier\myResultVerifier.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="myResultDumper\myResultDumper.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="tinyxml2\tinyxml2.h">
@@ -58,9 +61,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="myHistoAnalyzer\myHistoAnalyzer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="myLabel\myLabel.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="myFeatureDescriptor\myHOG\myHOG.h">
@@ -102,11 +102,35 @@
     <ClInclude Include="myClassifier.h">
       <Filter>Header Files\Classifier</Filter>
     </ClInclude>
-    <ClInclude Include="myPosition\myPosition.h">
+    <ClInclude Include="myPlugin\myLabel\myLabel.h">
       <Filter>Header Files\Plugin</Filter>
     </ClInclude>
-    <ClInclude Include="myScanner\myScanner.h">
+    <ClInclude Include="myPlugin\myScanner\myScanner.h">
       <Filter>Header Files\Plugin</Filter>
+    </ClInclude>
+    <ClInclude Include="myPlugin\myPosition\myPosition.h">
+      <Filter>Header Files\Plugin</Filter>
+    </ClInclude>
+    <ClInclude Include="myPlugin.h">
+      <Filter>Header Files\Plugin</Filter>
+    </ClInclude>
+    <ClInclude Include="myPlugin\myBBDumper\myBBDumper.h">
+      <Filter>Header Files\Plugin</Filter>
+    </ClInclude>
+    <ClInclude Include="myPlugin\myBBReader\myBBReader.h">
+      <Filter>Header Files\Plugin</Filter>
+    </ClInclude>
+    <ClInclude Include="myVerifier\myVerifierBase.h">
+      <Filter>Header Files\Verifier</Filter>
+    </ClInclude>
+    <ClInclude Include="myVerifier\GY\GYVerifier.h">
+      <Filter>Header Files\Verifier</Filter>
+    </ClInclude>
+    <ClInclude Include="myVerifier\myFPPW\myFPPW.h">
+      <Filter>Header Files\Verifier</Filter>
+    </ClInclude>
+    <ClInclude Include="myVerifier\BBComputation.h">
+      <Filter>Header Files\Verifier</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -116,19 +140,10 @@
     <ClCompile Include="tinyxml2\tinyxml2.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="myResultVerifier\myResultVerifier.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="myResultDumper\myResultDumper.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="myModelCollector\myModelCollector.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="myHistoanalyzer\myHistoAnalyzer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="myLabel\myLabel.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="myFeatureDescriptor\myLBP\myLBP.cpp">
@@ -156,6 +171,21 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="myModelIndexer\myLBPIndexer\myLBPIndexer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="myPlugin\myBBDumper\myBBDumper.cpp">
+      <Filter>Source Files\Plugin</Filter>
+    </ClCompile>
+    <ClCompile Include="myPlugin\myBBReader\myBBReader.cpp">
+      <Filter>Source Files\Plugin</Filter>
+    </ClCompile>
+    <ClCompile Include="myVerifier\GY\GYVerifier.cpp">
+      <Filter>Source Files\Verifier</Filter>
+    </ClCompile>
+    <ClCompile Include="myVerifier\myVerifierBase.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="myVerifier\myFPPW\myFPPW.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

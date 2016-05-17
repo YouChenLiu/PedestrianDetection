@@ -89,24 +89,10 @@ void myClassifierBase::WriteOutFile(const std::string & sDstPath) {
   FileBuffer.clear();
 }
 
-cv::Mat myClassifierBase::ConvertVec2Mat(const std::vector<float>& Vec) const {
-  /*
-  cv::Mat m(Vec);
+cv::Mat myClassifierBase::ConvertVecToMat(const std::vector<float>& vec) const {
+  cv::Mat m(vec);
   cv::transpose(m, m);
   return m;
-  */
-  // get the feature length of sample
-  auto iFeatureLength = static_cast<int>(Vec.size());
-
-  // create matrix for saving feature
-  cv::Mat mSample = cv::Mat::zeros(cv::Size2i(iFeatureLength, 1), CV_32FC1);
-
-  // copy feature data to matrix
-  for (int x = 0; x < iFeatureLength; x++) {
-    mSample.at<float>(0, x) = Vec.at(x);
-  }
-
-  return mSample;
 }
 
 }
