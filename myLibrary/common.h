@@ -10,6 +10,7 @@
 #include <array>
 #include <vector>
 #include <string>
+#include <memory>
 #include <opencv2/core.hpp>
 
 #endif // !_COMMON_H_
