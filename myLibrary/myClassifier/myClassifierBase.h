@@ -65,7 +65,9 @@ public:     // public method
    * @return The classifcation result.
    * @retval NAN The classifier is empty.
    */
-  virtual float Predict(const std::vector<float>& vfSample) const = 0;
+  virtual float Predict(const std::vector<float>& vfSample) const {
+    return Predict(ConvertVecToMat(vfSample));
+  }
 
   /**
    * @brief Save the trained classifier to an xml file.
@@ -141,6 +143,8 @@ protected:  // protected method
    * @param sDstPath The destination path for saving data.
    */
   void WriteOutFile(const std::string& sDstPath);
+
+  cv::Mat ConvertVecToMat(const std::vector<float>& vec) const;
 
 private:    // private method
 
