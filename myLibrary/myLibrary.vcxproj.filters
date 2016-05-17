@@ -182,11 +182,11 @@
     <ClCompile Include="myVerifier\GY\GYVerifier.cpp">
       <Filter>Source Files\Verifier</Filter>
     </ClCompile>
-    <ClCompile Include="myVerifier\myVerifierBase.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="myVerifier\myFPPW\myFPPW.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\Verifier</Filter>
+    </ClCompile>
+    <ClCompile Include="myVerifier\myVerifierBase.cpp">
+      <Filter>Source Files\Verifier</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
