@@ -83,7 +83,7 @@ void mySupervisedClassifier::Train(void) {
 
   m_poClassifier->train(MakeTrainingData());
 }
-
+/*
 float mySupervisedClassifier::Predict(const std::vector<float>& vfSample) const {
   // get the feature length of sample
   auto iFeatureLength = static_cast<int>(vfSample.size());
@@ -99,7 +99,7 @@ float mySupervisedClassifier::Predict(const std::vector<float>& vfSample) const 
   // return the result by calling another method
   return Predict(mSample);
 }
-
+*/
 bool mySupervisedClassifier::Save(const std::string & sDstPath) const {
   if (!m_poClassifier->empty()) {
     m_poClassifier->save(sDstPath);

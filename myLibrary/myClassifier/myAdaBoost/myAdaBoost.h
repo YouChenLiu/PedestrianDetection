@@ -40,10 +40,10 @@ namespace Classifier {
       m_poClassifier = cv::ml::StatModel::load<cv::ml::Boost>(sFilePath);
     }
 
-    float GetWeightedSum(const cv::Mat& mSample);
+    float GetWeightedSum(const cv::Mat& mSample) const;
 
-    float GetWeightedSum(const std::vector<float>& vfSample) {
-      return GetWeightedSum(ConvertVec2Mat(vfSample));
+    float GetWeightedSum(const std::vector<float>& vfSample) const {
+      return GetWeightedSum(ConvertVecToMat(vfSample));
     }
 
   private:
@@ -53,7 +53,7 @@ namespace Classifier {
      * It can be the one of following values
      * DISCRETE, REAL(default), LOGIT or GENTLE.
      */
-    static const int BOOST_TYPE = cv::ml::Boost::Types::DISCRETE;
+    static const int BOOST_TYPE = cv::ml::Boost::Types::REAL;
 
     /**
      * @brief A threshold for trim.
