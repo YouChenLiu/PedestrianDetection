@@ -1,4 +1,3 @@
-#include <memory>
 #include <opencv2/imgproc.hpp>
 #include <opencv2/highgui.hpp>
 #include "common.h"
@@ -158,6 +157,8 @@ int main(void) {
     cv::VideoWriter oWriter(sFolder + ".avi", CV_FOURCC('F', 'M', 'P', '4'), 10, cv::Size2i(1280, 480));
     myImageSequence oReader(sTestingImgRoot + sFolder + "/", "", "bmp", false);
     oReader.SetAttribute(myImageSequence::Attribute::FIRST_NUMBER, nn.iFirstNum);
+    Plugin::myBBDumper oMineDumper(nn.iFirstNum);
+    Plugin::myBBDumper oDenseDumper(nn.iFirstNum);
     cv::Mat mImg;
     while (oReader >> mImg) {
       std::cout << "\rProcessing...\t" << sFolder << "/" << oReader.GetSequenceNumberString();
@@ -199,12 +200,13 @@ int main(void) {
           auto fMineResult = DetectByMine(mRescale(r));
           if (fMineResult >= 0) {
             cv::rectangle(mMineResult, OriginalRect, MineColor);
+            oMineDumper.AddRectangle(OriginalRect);
           }
           auto fDenseResult = DetectByDense(mRescale(r));
           if (fDenseResult >= 0) {
             cv::rectangle(mDenseResult, OriginalRect, DenseColor);
+            oDenseDumper.AddRectangle(OriginalRect);
           }
-          
         }
       } // for fRatio
       // draw the result
@@ -214,9 +216,13 @@ int main(void) {
       cv::imshow("Result", mResult);
       oWriter << mResult;
       cv::waitKey(1);
+      oMineDumper.GoNextFrame();
+      oDenseDumper.GoNextFrame();
     } // while
     cv::destroyAllWindows();
-    std::cout << "\rProcessing...\t" << sFolder << "\tFinish" << std::endl;
+    std::cout << "\r" << sFolder << "\tFinish" << std::endl;
+    oMineDumper.Save(sFolder + "_Mine.xml");
+    oDenseDumper.Save(sFolder + "_Dense.xml");
   } // for vnnPairs
   return 0;
 }
