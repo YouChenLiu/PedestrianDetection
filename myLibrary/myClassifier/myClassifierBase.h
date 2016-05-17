@@ -5,7 +5,7 @@
 #ifndef _MY_CLASSIFIER_BASE_H_
 #define _MY_CLASSIFIER_BASE_H_
 
-#include "../common.h"
+#include "common.h"
 #include <fstream>
 #include <sstream>
 

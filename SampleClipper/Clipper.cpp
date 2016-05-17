@@ -1,6 +1,6 @@
-#include "../myLibrary/myImageSequence/myImageSequence.h"
-#include "../myLibrary/myLabel/myLabel.h"
-#include "../myLibrary/tinyxml2/tinyxml2.h"
+#include "myImageSequence/myImageSequence.h"
+#include "myPlugin/myLabel/myLabel.h"
+#include "tinyxml2/tinyxml2.h"
 #include <opencv2/highgui.hpp>
 #include <opencv2/imgproc.hpp>
 #include <ctime>

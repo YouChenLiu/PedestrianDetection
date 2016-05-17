@@ -1,9 +1,9 @@
-#include "../myLibrary/myPlugin.h"
-#include "../myLibrary/myClassifier.h"
-#include "../myLibrary/myModelCollector/myModelCollector.h"
-#include "../myLibrary/myFeatureDescriptor/myBlockDescriptor/myBlockDescriptor.h"
-#include "../myLibrary/myImageSequence/myImageSequence.h"
-#include "../myLibrary/myModelIndexer/myLBPIndexer/mylbpindexer.h"
+#include "myPlugin.h"
+#include "myClassifier.h"
+#include "myModelCollector/myModelCollector.h"
+#include "myFeatureDescriptor/myBlockDescriptor/myBlockDescriptor.h"
+#include "myImageSequence/myImageSequence.h"
+#include "myModelIndexer/myLBPIndexer/mylbpindexer.h"
 #include <opencv2/highgui.hpp>
 #include <opencv2/imgproc.hpp>
 #include <sstream>
