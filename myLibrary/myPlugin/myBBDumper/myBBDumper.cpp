@@ -1,9 +1,22 @@
 #include "myBBDumper.h"
+#include <sstream>
 
 namespace Plugin {
 
-myDumper::myDumper(void) {
+myBBDumper::myBBDumper(int iFrameNum) {
   Init();
+  CreateXMLFile();
+  AddNewHeader(iFrameNum);
+}
+
+myBBDumper::~myBBDumper(void) {}
+
+void myBBDumper::Init(void) {
+  m_iTotalRecord = 0;
+  m_poCurrentHeader = nullptr;
+}
+
+void myBBDumper::CreateXMLFile(void) {
   m_poXMLDocument = std::make_unique<tinyxml2::XMLDocument>();
   m_poXMLDocument->SetBOM(true);
   m_poXMLDocument->InsertFirstChild(m_poXMLDocument->NewDeclaration());
@@ -16,68 +29,61 @@ myDumper::myDumper(void) {
 
   poRootElement->InsertEndChild(poDataSetElement);
   m_poXMLDocument->InsertEndChild(poRootElement);
-  AddNewHeader();
 }
 
-myDumper::~myDumper(void) {}
-
-void myDumper::Init(void) {
-  m_iFrameNumber = -1;
+void myBBDumper::AddNewHeader(int iFrameNum) {
   m_iTotalRecord = 0;
-  m_poCurrentHeader = nullptr;
-}
+  auto& psTag = GetLabel(Tags::HEADER);
+  auto poHeader = m_poXMLDocument->NewElement(psTag.c_str());
 
-void myDumper::AddNewHeader(void) {
-  ++m_iFrameNumber;
-  m_iTotalRecord = 0;
-  using namespace Plugin;
-  auto pcTag = GetLabel(Tags::HEADER).c_str();
-  auto poHeader = m_poXMLDocument->NewElement(pcTag);
+  psTag = GetLabel(Attributes::FRAME_NUMBER);
+  poHeader->SetAttribute(psTag.c_str(), iFrameNum);
 
-  pcTag = GetLabel(Attributes::FRAME_NUMBER).c_str();
-  poHeader->SetAttribute(pcTag, m_iFrameNumber);
+  psTag = GetLabel(Attributes::TOTAL_RECORD);
+  poHeader->SetAttribute(psTag.c_str(), m_iTotalRecord);
 
-  pcTag = GetLabel(Attributes::TOTAL_RECORD).c_str();
-  poHeader->SetAttribute(pcTag, m_iTotalRecord);
-
-  pcTag = GetLabel(Tags::DATA_SET).c_str();
-  auto poDataSetElement = m_poXMLDocument->RootElement()->FirstChildElement(pcTag);
+  psTag = GetLabel(Tags::DATA_SET);
+  auto poDataSetElement = m_poXMLDocument->RootElement()->FirstChildElement(psTag.c_str());
   poDataSetElement->InsertEndChild(poHeader);
-
+  
   m_poCurrentHeader = poHeader;
 }
 
-void myDumper::AddNewRecord(Plugin::Shapes shape, int x, int y, int iWidth, int iHeight) {
-  using namespace Plugin;
+void myBBDumper::AddNewRecord(Shapes shape, int x, int y, int iWidth, int iHeight) {
   auto poRecord = m_poXMLDocument->NewElement(GetLabel(Tags::RECORD).c_str());
   poRecord->SetAttribute(GetLabel(Attributes::SERIAL_NUMBER).c_str(),
                          m_iTotalRecord);
 
-  auto poShape = m_poXMLDocument->NewElement(GetLabel(Tags::SHAPE).c_str());
-  poShape->SetText(GetLabel(shape).c_str());
-  poRecord->InsertEndChild(poShape);
+  auto pcShape = m_poXMLDocument->NewElement(GetLabel(Tags::SHAPE).c_str());
+  pcShape->SetText(GetLabel(shape).c_str());
+  poRecord->InsertEndChild(pcShape);
 
-  auto poStartPoint = m_poXMLDocument->NewElement(GetLabel(Tags::START_POINT).c_str());
-  poStartPoint->SetText((std::to_string(x) + ", " + std::to_string(y)).c_str());
-  poRecord->InsertEndChild(poStartPoint);
+  auto pcSP = m_poXMLDocument->NewElement(GetLabel(Tags::START_POINT).c_str());
+  std::stringstream ss;
+  ss << x << ", " << y;
+  pcSP->SetText(ss.str().c_str());
+  poRecord->InsertEndChild(pcSP);
 
-  auto poHeight = m_poXMLDocument->NewElement(GetLabel(Tags::HEIGHT).c_str());
-  poHeight->SetText(std::to_string(iHeight).c_str());
-  poRecord->InsertEndChild(poHeight);
+  auto pcHeight = m_poXMLDocument->NewElement(GetLabel(Tags::HEIGHT).c_str());
+  pcHeight->SetText(std::to_string(iHeight).c_str());
+  poRecord->InsertEndChild(pcHeight);
 
-  auto poWidth = m_poXMLDocument->NewElement(GetLabel(Tags::WIDTH).c_str());
-  poWidth->SetText(std::to_string(iWidth).c_str());
-  poRecord->InsertEndChild(poWidth);
+  auto pcWidth = m_poXMLDocument->NewElement(GetLabel(Tags::WIDTH).c_str());
+  pcWidth->SetText(std::to_string(iWidth).c_str());
+  poRecord->InsertEndChild(pcWidth);
 
   m_poCurrentHeader->InsertEndChild(poRecord);
-  m_poCurrentHeader->SetAttribute(GetLabel(Attributes::TOTAL_RECORD).c_str(), ++m_iTotalRecord);
+  m_poCurrentHeader->SetAttribute(GetLabel(Attributes::TOTAL_RECORD).c_str(),
+                                  ++m_iTotalRecord);
 }
 
-void myDumper::GoNextFrame(void) {
-  AddNewHeader();
+void myBBDumper::GoNextFrame(void) {
+  auto tag = GetLabel(Attributes::FRAME_NUMBER);
+  auto currentFrameNum = m_poCurrentHeader->IntAttribute(tag.c_str());
+  AddNewHeader(currentFrameNum + 1);
 }
 
-void myDumper::Save(const std::string& sFileName) const {
+void myBBDumper::Save(const std::string& sFileName) const {
   m_poXMLDocument->SaveFile(sFileName.c_str());
 }
 
