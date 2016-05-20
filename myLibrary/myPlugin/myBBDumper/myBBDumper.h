@@ -17,7 +17,7 @@ namespace Plugin {
 /**
  * @brief write out the bounding box infomation to XML file.
  */
-class myBBDumper {
+class myBBDumper final {
 public:     // public attribute
 
 protected:  // protected attribute
@@ -31,13 +31,13 @@ public:     // public method
   /**
    * @brief Default constructor.
    */
-  myBBDumper(int iFrameNum = 0);
+  myBBDumper(void);
   ~myBBDumper(void);
 
   /**
    * @brief Add new feame in XML file.
    */
-  void GoNextFrame(void);
+  void AddFrame(int iFrameNum);
 
   /**
    * @brief Add new rectangle to XML file.

@@ -23,6 +23,8 @@ private:    // private attribute
   int m_iWindowsPerFrame;
   int m_iFalsePositive;
   int m_iTotalWindow;
+  int m_iFalseNegative;
+  int m_iTotalPositive;
 
   static const float m_fTHRESHOLD;
 
@@ -46,6 +48,8 @@ public:     // public method
   virtual void CompareByFrame(int iFrameNum) override;
 
   virtual float GetResult(void) const override;
+
+  float GetMissRate(void) const;
 
 protected:  // protected method
 

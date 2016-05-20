@@ -3,10 +3,9 @@
 
 namespace Plugin {
 
-myBBDumper::myBBDumper(int iFrameNum) {
+myBBDumper::myBBDumper(void) {
   Init();
   CreateXMLFile();
-  AddNewHeader(iFrameNum);
 }
 
 myBBDumper::~myBBDumper(void) {}
@@ -77,10 +76,8 @@ void myBBDumper::AddNewRecord(Shapes shape, int x, int y, int iWidth, int iHeigh
                                   ++m_iTotalRecord);
 }
 
-void myBBDumper::GoNextFrame(void) {
-  auto tag = GetLabel(Attributes::FRAME_NUMBER);
-  auto currentFrameNum = m_poCurrentHeader->IntAttribute(tag.c_str());
-  AddNewHeader(currentFrameNum + 1);
+void myBBDumper::AddFrame(int iFrameNum) {
+  AddNewHeader(iFrameNum);
 }
 
 void myBBDumper::Save(const std::string& sFileName) const {
