@@ -92,10 +92,78 @@ int main(int argc, char* argv[]) {
   }
   */
 
-  Plugin::myBBReader gt("2015-1015_1715-1725_03.xml");
-  Verifier::myFPPW fppw(105, "2015-1015_1715-1725_03.xml", "2015-1015_1715-1725_03.xml");
-  fppw.CompareByFrames(0, 9);
-  std::cout << fppw.GetResult() << std::endl;
+  struct NameNumber {
+    std::string sFolderName;
+    int iFirstNum;
+  };
 
+  std::vector<NameNumber> vnnPairs = {
+    { "2015-1007_0900-0910_01", 0 },
+    { "2015-1007_0900-0910_02", 6614 },
+    /*
+    { "2015-1007_0900-0910_03", 9374 },
+    { "2015-1007_0900-0910_04", 11953 },
+    { "2015-1007_0900-0910_05", 14305 },
+    { "2015-1007_2120-2130_01", 1250 },
+    { "2015-1007_2120-2130_02", 2302 },
+    { "2015-1007_2120-2130_03", 3970 },
+    { "2015-1007_2120-2130_04", 5686 },
+    { "2015-1007_2120-2130_05", 10800 },
+    { "2015-1015_1715-1725_01", 5105 },
+    { "2015-1015_1715-1725_02", 6111 },
+    { "2015-1015_1715-1725_03", 6669 },
+    { "2015-1015_1715-1725_04", 12165 },
+    { "2015-1015_1715-1725_05", 13966 }
+    */
+  };
+  /*
+  for (const auto& nn : vnnPairs) {
+    std::cout << nn.sFolderName << std::endl;
+    Verifier::myFPPW mine(1668, nn.sFolderName + ".xml", nn.sFolderName + "_Mine.xml");
+    mine.CompareAllFrames();
+    std::cout << "Mine: " << mine.GetResult() << std::endl;
+
+    Verifier::myFPPW dense(1668, nn.sFolderName + ".xml", nn.sFolderName + "_Dense.xml");
+    dense.CompareAllFrames();
+    std::cout << "Dense" << dense.GetResult() << std::endl;
+  }
+  */
+  /*
+  Verifier::myFPPW fppw(1668, "2015-1007_0900-0910_01.xml", "2015-1007_0900-0910_01_Mine_TH0.5.xml");
+  fppw.CompareAllFrames();
+  std::cout << "Mine: " << fppw.GetResult() << std::endl;
+  */
+  
+  std::ofstream ROCText("ROC.txt");
+  std::vector<float> vfThreshold;
+  for (float f = -10.0f; f <= 10.0f; f += 0.5f) {
+    vfThreshold.push_back(f);
+  }
+  for (const auto& nn : vnnPairs) {
+    ROCText << nn.sFolderName << std::endl;
+    ROCText << "Dense" << std::endl
+      << "Th\tFPPW\t\tMissRate" << std::endl;
+    Verifier::myFPPW fppw(1668, "Result/" + nn.sFolderName + ".xml",
+                          "Result/" + nn.sFolderName + "_Dense.xml");
+    fppw.CompareAllFrames();
+    ROCText << 0 << "\t"
+      << fppw.GetResult() << "\t"
+      << fppw.GetMissRate() << std::endl;
+
+    ROCText << "Mine" << std::endl
+      << "Th\tFPPW\t\tMissRate" << std::endl;
+    for (size_t i = 0; i < vfThreshold.size(); ++i) {
+      std::stringstream ss;
+      ss << "Result/" << nn.sFolderName << "_Mine_"
+        << std::fixed << std::setprecision(1) << vfThreshold.at(i)
+        << ".xml";
+
+      Verifier::myFPPW fppw(1668, "Result/" + nn.sFolderName + ".xml", ss.str());
+      fppw.CompareAllFrames();
+      ROCText << vfThreshold.at(i) << "\t"
+        << fppw.GetResult() << "\t"
+        << fppw.GetMissRate() << std::endl;
+    }
+  }
   return 0;
 }
