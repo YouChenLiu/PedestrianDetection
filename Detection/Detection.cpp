@@ -129,7 +129,6 @@ int main(void) {
   
   // read trained models
   {
-    
     // build mine classifier
     std::cout << "Reading saved L1 models" << std::endl;
     std::ifstream ModelList(sModelName + ".txt");
@@ -157,11 +156,13 @@ int main(void) {
     cv::VideoWriter oWriter(sFolder + ".avi", CV_FOURCC('F', 'M', 'P', '4'), 10, cv::Size2i(1280, 480));
     myImageSequence oReader(sTestingImgRoot + sFolder + "/", "", "bmp", false);
     oReader.SetAttribute(myImageSequence::Attribute::FIRST_NUMBER, nn.iFirstNum);
-    Plugin::myBBDumper oMineDumper(nn.iFirstNum);
-    Plugin::myBBDumper oDenseDumper(nn.iFirstNum);
+    Plugin::myBBDumper oMineDumper;
+    Plugin::myBBDumper oDenseDumper;
     cv::Mat mImg;
     while (oReader >> mImg) {
       std::cout << "\rProcessing...\t" << sFolder << "/" << oReader.GetSequenceNumberString();
+      oMineDumper.AddFrame(oReader.GetSequenceNumber());
+      oDenseDumper.AddFrame(oReader.GetSequenceNumber());
       vector<cv::Mat> vImg(3, mImg);
       cv::Mat mMineResult;
       cv::merge(vImg, mMineResult);
@@ -216,8 +217,6 @@ int main(void) {
       cv::imshow("Result", mResult);
       oWriter << mResult;
       cv::waitKey(1);
-      oMineDumper.GoNextFrame();
-      oDenseDumper.GoNextFrame();
     } // while
     cv::destroyAllWindows();
     std::cout << "\r" << sFolder << "\tFinish" << std::endl;
