@@ -184,8 +184,20 @@ public:     //public method
     ParamGrid   degreeGrid = SVM::getDefaultGrid(SVM::DEGREE),
     bool        balanced = false);
 
+  /**
+   * @brief calculate the raw value
+   *
+   * @param mSample A sample saved in cv::Mat
+   * @return Distance between sample and hyper plane
+   */
   float GetDistance(const cv::Mat& mSample) const;
 
+  /**
+   * @brief calculate the raw value
+   *
+   * @param vfSample A sample saved in std::vector
+   * @return Distance between sample and hyper plane
+   */
   float GetDistance(const std::vector<float>& vfSample) const {
     return GetDistance(ConvertVecToMat(vfSample));
   }

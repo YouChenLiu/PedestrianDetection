@@ -49,6 +49,11 @@ public:     // public method
 
   virtual float GetResult(void) const override;
 
+  /**
+   * @brief Get the miss rate by calculating FPPW
+   *
+   * @return The miss rate: FN / TP
+   */
   float GetMissRate(void) const;
 
 protected:  // protected method

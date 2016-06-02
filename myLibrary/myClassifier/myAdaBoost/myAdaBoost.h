@@ -25,6 +25,11 @@ namespace Classifier {
      */
     myAdaBoost(unsigned int iWeakCount);
 
+    /**
+     * @brief Create classifier by saved xml file.
+     *
+     * @param sFilePath File path for xml.
+     */
     myAdaBoost(const std::string& sFilePath) {
       Load(sFilePath);
     }
@@ -40,8 +45,18 @@ namespace Classifier {
       m_poClassifier = cv::ml::StatModel::load<cv::ml::Boost>(sFilePath);
     }
 
+    /**
+     * @brief Get the AdaBoost raw value
+     *
+     * @param mSample A Sample saved in cv::Mat which want to predict
+     */
     float GetWeightedSum(const cv::Mat& mSample) const;
 
+    /**
+     * @brief Get the AdaBoost raw value
+     *
+     * @param vfSample A Sample saved in std::vector which want to predict
+     */
     float GetWeightedSum(const std::vector<float>& vfSample) const {
       return GetWeightedSum(ConvertVecToMat(vfSample));
     }

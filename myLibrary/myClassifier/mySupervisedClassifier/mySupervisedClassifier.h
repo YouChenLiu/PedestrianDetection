@@ -69,6 +69,9 @@ public:     // public method
 
   bool Save(const std::string& sDstPath) const override;
 
+  /**
+   * @brief Test the classifier is empty or not.
+   */
   const bool IsEmpty(void) const {
     return m_poClassifier->empty();
   }

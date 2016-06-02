@@ -144,6 +144,12 @@ protected:  // protected method
    */
   void WriteOutFile(const std::string& sDstPath);
 
+  /**
+   * @brief convert the feature vector in std::vector to cv::Mat format
+   *
+   * @param vec The vector want to convert
+   * @return A single row cv::Mat
+   */
   cv::Mat ConvertVecToMat(const std::vector<float>& vec) const;
 
 private:    // private method
