@@ -1,28 +1,24 @@
 /**
- * @file myResultVerifier.h
- * @brief Result Verifier class definition.
+ * @file GYVerifier.h
+ * @brief Gyun-Yuan's result verifier class definition.
  */
 
 #ifndef _MY_RESULT_VERIFIER_H_
 #define _MY_RESULT_VERIFIER_H_
 
-#include "../common.h"
-#include "../tinyxml2/tinyxml2.h"
-#include <map>
+#include "common.h"
+#include "../myVerifierBase.h"
+#include "tinyxml2/tinyxml2.h"
 #include <memory>
+
+namespace Verifier {
 
 /**
  * @brief compares the bounding box and computes overlap rate.
  */
-class myResultVerifier {
+class GYVerifier : public myVerifierBase {
 public:     // public attribute
-  /**
-   * @brief 
-   */
-  enum class Method {
-    GYC,
-    FPPW
-  };
+
 protected:  // protected attribute
 
 private:    // private attribute
@@ -38,7 +34,7 @@ public:     // public method
   /**
    * @brief Default constructor.
    */
-  myResultVerifier(void) { Init(); }
+  GYVerifier(void) { Init(); }
 
   /**
    * @brief Create by two XML file
@@ -46,9 +42,9 @@ public:     // public method
    * @param sDetctionResultPath The XML file want to compare.
    * @param sGroundTruthPath The XML file saves the ground-truth.
    */
-  myResultVerifier(const std::string sDetctionResultPath,
+  GYVerifier(const std::string sDetctionResultPath,
                    const std::string sGroundTruthPath);
-  ~myResultVerifier(void);
+  ~GYVerifier(void);
 
   /**
    * @brief Load two XML file after create.
@@ -69,37 +65,15 @@ public:     // public method
    */
   float GetDetectionRate(void);
 
-# ifndef NDEBUG
-  /**
-   * @brief Get true positive score
-   */
-  float GetTruePositiveScore(void) const { return m_fTruePositiveScore; }
-
-  /**
-   * @brief Get false positive score
-   */
-  float GetFalsePositiveScore(void) const { return m_fFalsePositiveScore; }
-
-  /**
-   * @brief Get true negative score
-   */
-  float GetTrueNegativeScore(void) const { return m_fTrueNegativeScore; }
-
-  /**
-   * @brief Get false negative score
-   */
-  float GetFalseNegativeScore(void) const { return m_fFalseNegativeScore; }
-# endif
-
 protected:  // protected method
 
 private:    // private method
   void Init(void);
-  float CalculateOverlapRatio(cv::Rect2i Detection,
-                              cv::Rect2i GroundTruth);
+  float CalculateOverlapRatio(cv::Rect2i Detection, cv::Rect2i GroundTruth);
   bool CalculateDetectionRatePerFrame(int iFrameNumber);
   void TakeOutBoundingBox(tinyxml2::XMLElement* poHeader,
                           std::vector<cv::Rect2i>& voBoundingBoxes) const;
-};
+};  // class
 
+} // namespase
 #endif

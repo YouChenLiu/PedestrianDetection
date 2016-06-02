@@ -40,6 +40,12 @@ namespace Classifier {
       m_poClassifier = cv::ml::StatModel::load<cv::ml::Boost>(sFilePath);
     }
 
+    float GetWeightedSum(const cv::Mat& mSample) const;
+
+    float GetWeightedSum(const std::vector<float>& vfSample) const {
+      return GetWeightedSum(ConvertVecToMat(vfSample));
+    }
+
   private:
     /**
      * @brief AdaBoost types.

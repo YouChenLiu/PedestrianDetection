@@ -1,16 +1,29 @@
+/**
+ * @file myScanner.h
+ * @brief myScanner class definition
+ */
 #ifndef _MY_SCANNER_H_
 #define _MY_SCANNER_H_
 
-#include "../common.h"
+#include "common.h"
 
 namespace Plugin {
 
+/**
+ * @brief region calculator
+ */
 class myScanner {
 private:
   cv::Point2i m_ptLT;
   cv::Point2i m_ptRB;
 
 public:
+  /**
+   * @brief
+   *
+   * @param ptLeftTop
+   * @param ptRightButtom
+   */
   myScanner(const cv::Point2i ptLeftTop, const cv::Point2i ptRightButtom) {
     m_ptLT = ptLeftTop;
     m_ptRB = ptRightButtom;
@@ -18,6 +31,13 @@ public:
 
   ~myScanner(void) {}
 
+  /**
+   * @brief 
+   *
+   * @param vRect
+   * @param BlockSize
+   * @param ptStep
+   */
   void CalRect(std::vector<cv::Rect2i>& vRect,
                cv::Size2i BlockSize,
                cv::Point2i ptStep) {

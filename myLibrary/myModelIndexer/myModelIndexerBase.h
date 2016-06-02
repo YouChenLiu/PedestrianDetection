@@ -34,7 +34,7 @@ public:     // public methid
     * @brief Calculate the bin number with specific position.
     *
     * @param mImage The image for calculating index.
-    * @param Position A left-top point for description feature.
+    * @param Region A region for description feature.
     */
     virtual unsigned int GetBinNumber(const cv::Mat& mImage, 
                                       const cv::Rect2i Region) const = 0;
