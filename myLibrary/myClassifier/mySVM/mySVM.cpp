@@ -28,6 +28,12 @@ bool mySVM::TrainAuto(int kFold, ParamGrid Cgrid, ParamGrid gammaGrid,
                          nuGrid, coeffGrid, degreeGrid, balanced);
 }
 
+float mySVM::GetDistance(const cv::Mat& mSample) const {
+  using cv::ml::SVM;
+  auto Model = GetClassifier().dynamicCast<SVM>();
+  return Model->predict(mSample, cv::noArray(), SVM::RAW_OUTPUT);
+}
+
 void mySVM::Init(void) {
   // create SVM
   auto pSVM = cv::ml::SVM::create();
