@@ -99,7 +99,7 @@ std::string GetLabel(T Label);
  */
 template<> inline
 std::string GetLabel(Attributes Attribute) {
-  return m_sAttributeStrings[Attribute];
+  return m_sAttributeStrings.at(Attribute);
 }
 
 /**
@@ -109,7 +109,7 @@ std::string GetLabel(Attributes Attribute) {
  */
 template<> inline
 std::string GetLabel(Shapes Shape) {
-  return m_sShapeStrings[Shape];
+  return m_sShapeStrings.at(Shape);
 }
 
 /**
@@ -119,7 +119,7 @@ std::string GetLabel(Shapes Shape) {
  */
 template<> inline
 std::string GetLabel(Tags Tag) {
-  return m_sTagStrings[Tag];
+  return m_sTagStrings.at(Tag);
 }
 
 } // namespace Plugin

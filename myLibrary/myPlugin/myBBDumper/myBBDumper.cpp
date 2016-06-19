@@ -8,7 +8,9 @@ myBBDumper::myBBDumper(void) {
   CreateXMLFile();
 }
 
-myBBDumper::~myBBDumper(void) {}
+myBBDumper::~myBBDumper(void) {
+  m_poXMLDocument.release();
+}
 
 void myBBDumper::Init(void) {
   m_iTotalRecord = 0;
