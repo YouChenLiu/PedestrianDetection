@@ -128,7 +128,7 @@ int main(void) {
     for (std::size_t i = 0; i < voCollector.size(); ++i) {
       std::cout << "Training model collector : " << i << " / " << vRect.size() - 1 << std::endl;
       voCollector.at(i).TrainModels();
-      ModelList << voCollector.at(i).SaveModels(sModelRoot + sModelName) << std::endl;
+      ModelList << voCollector.at(i).SaveModels(sModelName, sModelRoot) << std::endl;
       std::cout << std::endl;
       //voCollector.at(i).Clear();
     }
