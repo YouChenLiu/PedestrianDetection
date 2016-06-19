@@ -108,7 +108,6 @@
     <ClInclude Include="myPlugin\myPosition\myPosition.h" />
     <ClInclude Include="myPlugin\myScanner\myScanner.h" />
     <ClInclude Include="myVerifier\BBComputation.h" />
-    <ClInclude Include="myVerifier\GY\GYVerifier.h" />
     <ClInclude Include="myVerifier\myFPPW\myFPPW.h" />
     <ClInclude Include="myVerifier\myVerifierBase.h" />
     <ClInclude Include="tinyxml2\tinyxml2.h" />
@@ -128,7 +127,6 @@
     <ClCompile Include="myModelIndexer\myLBPIndexer\myLBPIndexer.cpp" />
     <ClCompile Include="myPlugin\myBBDumper\myBBDumper.cpp" />
     <ClCompile Include="myPlugin\myBBReader\myBBReader.cpp" />
-    <ClCompile Include="myVerifier\GY\GYVerifier.cpp" />
     <ClCompile Include="myVerifier\myFPPW\myFPPW.cpp" />
     <ClCompile Include="myVerifier\myVerifierBase.cpp" />
     <ClCompile Include="tinyxml2\tinyxml2.cpp" />

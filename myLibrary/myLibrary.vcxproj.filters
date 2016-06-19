@@ -123,9 +123,6 @@
     <ClInclude Include="myVerifier\myVerifierBase.h">
       <Filter>Header Files\Verifier</Filter>
     </ClInclude>
-    <ClInclude Include="myVerifier\GY\GYVerifier.h">
-      <Filter>Header Files\Verifier</Filter>
-    </ClInclude>
     <ClInclude Include="myVerifier\myFPPW\myFPPW.h">
       <Filter>Header Files\Verifier</Filter>
     </ClInclude>
@@ -178,9 +175,6 @@
     </ClCompile>
     <ClCompile Include="myPlugin\myBBReader\myBBReader.cpp">
       <Filter>Source Files\Plugin</Filter>
-    </ClCompile>
-    <ClCompile Include="myVerifier\GY\GYVerifier.cpp">
-      <Filter>Source Files\Verifier</Filter>
     </ClCompile>
     <ClCompile Include="myVerifier\myFPPW\myFPPW.cpp">
       <Filter>Source Files\Verifier</Filter>
