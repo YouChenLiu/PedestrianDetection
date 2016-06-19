@@ -22,4 +22,16 @@ float myAdaBoost::GetWeightedSum(const cv::Mat& mSample) const {
   return DTree->predict(mSample, cv::noArray(), cv::ml::DTrees::Flags::PREDICT_SUM);
 }
 
+std::vector<int> myAdaBoost::GetIndicate(void) const {
+  auto DTree = GetClassifier().dynamicCast<cv::ml::DTrees>();
+  auto splits = DTree->getSplits();
+  std::vector<int> viIndicate;
+  viIndicate.reserve(splits.size());
+  for (const auto& split : splits) {
+    viIndicate.push_back(split.varIdx);
+  }
+  
+  return viIndicate;
+}
+  
 }
