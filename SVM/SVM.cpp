@@ -11,18 +11,17 @@ int main(void) {
   using std::vector;
 
   // root path for training samples
-  const string sTrainingSamplesRoot = "D:/Database/Sample/01/All/";
+  const string sTrainingSamplesRoot = "D:/Database/Sample/01/";
   // root path for testing samples
-  const string sTestingSamplesRoot = "D:/Database/Sample/01/All/";
+  const string sTestingSamplesRoot = "D:/Database/Sample/01/";
   // svm model file
-  const string sModelFile = "../Models/Dense.xml";
+  const string sModelFile = "../Models/HOG_LBP_ev+ni.xml";
   const bool bTraining = false;
   const bool bTesting = true;
   Descriptor::myBlockDescriptor oDenseDetector(cv::Mat(), cv::Size2i(8, 8));
   {
     const vector<int> viDenseFeature = {
-      Descriptor::myBlockDescriptor::Feature::HOG_STANDARD |
-      Descriptor::myBlockDescriptor::Feature::L2_NORM,
+      Descriptor::myBlockDescriptor::Feature::HOG_STANDARD,
       Descriptor::myBlockDescriptor::Feature::LBP_8_1_UNIFORM
     };
     // setting dense detector
@@ -42,27 +41,34 @@ int main(void) {
   // array saves Pos and Neg string
   const std::array<string, 2> vsPosNeg = { "Positive", "Negative" };
   const std::map<string, int> Labels = { {"Positive", +1}, {"Negative", -1} };
+  // define time intervals strings
+  const vector<string> vsTimeInterval = { "Morning", "Noon"/*, "Evening", "Night"*/ };
 
   if (bTraining) {
-    std::cout << "Start SVM Trianing" << std::endl;
-    for (const auto& sPN : vsPosNeg) {
-      cv::Mat mImg;
-      myImageSequence oReader(sTrainingSamplesRoot + sPN, "", "bmp", false);
-      while (oReader >> mImg) {
-        oDenseDetector.SetImage(mImg);
-        vector<float> vfCascade;
-        for (const auto& r : vrDense) {
-          vector<float> vfFeature;
-          oDenseDetector.Describe(r, vfFeature);
-          for (auto f : vfFeature) {
-            vfCascade.push_back(f);
+    for (const auto& sTime : vsTimeInterval) {
+      for (const auto& sPN : vsPosNeg) {
+        cv::Mat mImg;
+        auto SamplesRoot = sTrainingSamplesRoot + sTime + "/" + sPN + "/";
+        myImageSequence oReader(SamplesRoot, "", "bmp", false);
+        while (oReader >> mImg) {
+          std::cout << "\rReading " << SamplesRoot << oReader.GetSequenceNumberString();
+          oDenseDetector.SetImage(mImg);
+          vector<float> vfCascade;
+          for (const auto& r : vrDense) {
+            vector<float> vfFeature;
+            oDenseDetector.Describe(r, vfFeature);
+            for (auto f : vfFeature) {
+              vfCascade.push_back(f);
+            }
           }
+          oSVM.AddSample(Labels.at(sPN), vfCascade);
         }
-        oSVM.AddSample(Labels.at(sPN), vfCascade);
+        std::cout << std::endl;
       }
     }
-
+    std::cout << "Start SVM Trianing" << std::endl;
     oSVM.Train();
+    oSVM.Save(sModelFile);
   } else {
     oSVM.Load(sModelFile);
   }
@@ -83,37 +89,39 @@ int main(void) {
 
     std::ofstream File("Distance.txt");
 
-    for (const auto& sPN : vsPosNeg) {
-      cv::Mat mImg;
-      auto SamplesRoot = sTestingSamplesRoot + sPN + "/";
-      myImageSequence oReader(SamplesRoot, "", "bmp", false);
-      while (oReader >> mImg) {
-        std::cout << "\rReading " << SamplesRoot + oReader.GetSequenceNumberString();
-        oDenseDetector.SetImage(mImg);
-        vector<float> vfCascade;
-        for (const auto& r : vrDense) {
-          vector<float> vfFeature;
-          oDenseDetector.Describe(r, vfFeature);
-          for (auto f : vfFeature) {
-            vfCascade.push_back(f);
+    for (const auto& sTime : vsTimeInterval) {
+      for (const auto& sPN : vsPosNeg) {
+        cv::Mat mImg;
+        auto SamplesRoot = sTrainingSamplesRoot + sTime + "/" + sPN + "/";
+        myImageSequence oReader(SamplesRoot, "", "bmp", false);
+        while (oReader >> mImg) {
+          std::cout << "\rReading " << SamplesRoot + oReader.GetSequenceNumberString();
+          oDenseDetector.SetImage(mImg);
+          vector<float> vfCascade;
+          for (const auto& r : vrDense) {
+            vector<float> vfFeature;
+            oDenseDetector.Describe(r, vfFeature);
+            for (auto f : vfFeature) {
+              vfCascade.push_back(f);
+            }
+          }
+          auto Label = oSVM.Predict(vfCascade);
+          auto Distance = oSVM.GetDistance(vfCascade);
+          File << Label << ", " << Distance << std::endl;
+
+          if (Labels.at(sPN) >= 0 && Label >= 0) {
+            ++score.TruePositive;
+          } else if (Labels.at(sPN) < 0 && Label >= 0) {
+            ++score.FalsePositive;
+          } else if (Labels.at(sPN) >= 0 && Label < 0) {
+            ++score.FalseNegative;
+          } else {
+            ++score.TrueNegative;
           }
         }
-        auto Label = oSVM.Predict(vfCascade);
-        auto Distance = oSVM.GetDistance(vfCascade);
-        File << Label << ", " << Distance << std::endl;
 
-        if (Labels.at(sPN) >= 0 && Label >= 0) {
-          ++score.TruePositive;
-        } else if (Labels.at(sPN) < 0 && Label >= 0) {
-          ++score.FalsePositive;
-        } else if (Labels.at(sPN) >= 0 && Label < 0) {
-          ++score.FalseNegative;
-        } else {
-          ++score.TrueNegative;
-        }
+        std::cout << std::endl << "Finish " << sPN << std::endl;
       }
-
-      std::cout << std::endl << "Finish " << sPN << std::endl;
     }
 
     std::cout << "TP: " << std::setw(7) << score.TruePositive << std::endl
