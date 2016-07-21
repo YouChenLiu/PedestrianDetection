@@ -20,8 +20,11 @@ myModelCollector::~myModelCollector(void) {
 void myModelCollector::Resize(unsigned int iCount) {
   m_vpoModel.clear();
   m_vpoModel.reserve(iCount);
+  using Classifier::mySVM;
   for (size_t i = 0; i < iCount; ++i) {
-    m_vpoModel.push_back(std::make_unique<Classifier::mySVM>());
+    auto Param = mySVM::myOptimalParam();
+    auto Model = std::make_unique<mySVM>(Param);
+    m_vpoModel.push_back(std::move(Model));
   }
 }
 
@@ -34,13 +37,13 @@ void myModelCollector::TrainModels(void) {
 
 std::string myModelCollector::SaveModels(const std::string& sModelName,
                                           const std::string& sRootPath) const {
-  std::string sSubFolder = CreateFolder(sRootPath);
+  std::string sSubFolder = CreateFolder(sRootPath + sModelName);
 
   // string for list file path
-  std::string sListFilePath = sRootPath + "/" + sSubFolder + "/models.txt";
+  std::string sListFilePath = sModelName + "/" + sSubFolder + "/models.txt";
 
   // open the file list in the sub folder, then write out the xml file path
-  std::ofstream ListFile(sListFilePath);
+  std::ofstream ListFile(sRootPath + sListFilePath);
 
   // write out the count of models
   ListFile << m_vpoModel.size() << std::endl;
@@ -53,7 +56,8 @@ std::string myModelCollector::SaveModels(const std::string& sModelName,
 
     // create the path for saving model
     std::stringstream ssXMLPath;
-    ssXMLPath << sRootPath << "/"
+    ssXMLPath << sRootPath
+      << sModelName << "/"
       << sSubFolder << "/"
       << ssXMLFileName.str();
 
