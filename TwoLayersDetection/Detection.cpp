@@ -19,7 +19,7 @@ int main(void) {
   const string sModelRoot = "../Models/";
   // determind do training or testing
   const bool bLoadingFeature = false;
-  const bool bTrainingL1 = false;
+  const bool bTrainingL1 = true;
   const bool bTrainingL2 = true;
   const bool bTesting = true;
   const bool bSaving = false;
@@ -34,16 +34,16 @@ int main(void) {
     } // for h
   }
 
-  const unsigned int uiWeakCount = 140;
-  Classifier::mySupervisedClassifier* oL2Classifier = new Classifier::myAdaBoost(uiWeakCount);
-  string sL2Model = "A_L2_GENERAL_";
+  const unsigned int uiWeakCount = 50;
+  Classifier::myAdaBoost* oL2Classifier = new Classifier::myAdaBoost(uiWeakCount);
+  const string sModelName = "SYM";
+  string sL2Model = sModelName;
   {
     std::stringstream ss;
-    ss << uiWeakCount;
-    string sWeakCount = ss.str();
-    sL2Model += sWeakCount + ".xml";
+    ss << sL2Model << "_" << uiWeakCount << ".xml";
+    sL2Model = ss.str();
   }
-  const string sModelName = "GENERAL_TEST_Model_1";
+  
 
   myLBPIndexer oIndexr;
   // vector of collectors
@@ -53,7 +53,8 @@ int main(void) {
   }
 
   // define time intervals strings
-  const vector<string> vsTimeInterval = { "Morning", "Noon", "Evening", "Night" };
+  const vector<string> vsTrainingTime = { /*"Morning", "Noon",*/ "Evening", "Night" };
+  const vector<string> vsTestingTime = { "Morning", "Noon"/*, "Evening", "Night"*/ };
   // array saves Pos and Neg string
   const std::array<string, 2> vsPosNeg = { "Positive", "Negative" };
   // array saves labels for pos and neg
@@ -100,7 +101,7 @@ int main(void) {
       }
       std::cout << std::endl;
     } else {
-      for (auto sTime : vsTimeInterval) {
+      for (auto sTime : vsTrainingTime) {
         for (const auto& sPN : vsPosNeg) {
           string sSamplePath = sTrainingSamplesRoot + sTime + "/" + sPN + "/";
           myImageSequence oReader(sSamplePath, "", "bmp", false);
@@ -148,7 +149,7 @@ int main(void) {
 
   if (bTrainingL2) {
     std::cout << std::endl << "Training Layer 2 Classifier" << std::endl;
-    for (auto sTime : vsTimeInterval) {
+    for (auto sTime : vsTrainingTime) {
       for (const auto& sPN : vsPosNeg) {
         std::string sSamplePath = sTrainingSamplesRoot + sTime + "/" + sPN + "/";
         myImageSequence oReader(sSamplePath, "", "bmp", false);
@@ -163,7 +164,7 @@ int main(void) {
             oExtractor.Describe(vRect.at(iPos), vfFeature);
             auto iIndex = oIndexr.GetBinNumber(mImg, vRect.at(iPos));
             auto fResult = voCollector.at(iPos).Predict(iIndex, vfFeature);
-            if (fResult == NAN) {
+            if (isnan(fResult)) {
               fResult = -1.0f;
             }
             vfResult.at(iPos) = fResult;
@@ -185,9 +186,8 @@ int main(void) {
   }
 
   if (bTesting) {
-    system("mkdir \"Wrong\"");
-    std::ofstream ListFile(sModelName + "_WRONG.txt");
-    for (auto sTime : vsTimeInterval) {
+    auto Indicates = oL2Classifier->GetIndicate();
+    for (auto sTime : vsTestingTime) {
       for (const auto& sPN : vsPosNeg) {
         string sSamplePath = sTestingSamplesRoot + sTime + "/" + sPN + "/";
         myImageSequence oReader(sSamplePath, "", "bmp", false);
@@ -196,12 +196,15 @@ int main(void) {
           std::cout << "\rReading " + sTime + "-" + sPN + ":" + oReader.GetSequenceNumberString();
           oExtractor.SetImage(mImg);
           vector<float> vfResult(vRect.size(), 0.0f);
-          for (size_t i = 0; i < vRect.size(); ++i) {
+          for (auto i : Indicates) {
             vector<float> vfFeature;
             vfFeature.reserve(68);
             oExtractor.Describe(vRect.at(i), vfFeature);
             auto iIndex = oIndexr.GetBinNumber(mImg, vRect.at(i));
             auto fResult = voCollector.at(i).Predict(iIndex, vfFeature);
+            if (isnan(fResult)) {
+              fResult = -1.0f;
+            }
             vfResult.at(i) = fResult;
           }
           auto DetectingResult = oL2Classifier->Predict(vfResult);
