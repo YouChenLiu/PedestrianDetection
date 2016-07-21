@@ -17,6 +17,12 @@ mySVM::mySVM(myFunctionParam FParam, myOptimalParam OParam) {
   SetFunctionParam(FParam);
 }
 
+mySVM::mySVM(myOptimalParam OParam) {
+  Init();
+  SetOptimalParam(OParam);
+  SetFunctionParam(myFunctionParam());
+}
+
 mySVM::~mySVM() {}
 
 bool mySVM::TrainAuto(int kFold, ParamGrid Cgrid, ParamGrid gammaGrid,
@@ -30,8 +36,10 @@ bool mySVM::TrainAuto(int kFold, ParamGrid Cgrid, ParamGrid gammaGrid,
 
 float mySVM::GetDistance(const cv::Mat& mSample) const {
   using cv::ml::SVM;
-  auto Model = GetClassifier().dynamicCast<SVM>();
-  return Model->predict(mSample, cv::noArray(), SVM::RAW_OUTPUT);
+  const auto Model = GetClassifier().dynamicCast<SVM>();
+  const auto SupportVector = Model->getSupportVectors();
+  auto DotProduct = SupportVector.dot(mSample);
+  return DotProduct;
 }
 
 void mySVM::Init(void) {

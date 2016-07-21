@@ -41,9 +41,7 @@ public:
    *
    * @param sFilePath The XML file path for reading.
    */
-  void Load(const std::string& sFilePath) override {
-    m_poClassifier = cv::ml::StatModel::load<cv::ml::Boost>(sFilePath);
-  }
+  void Load(const std::string& sFilePath) override;
 
   /**
    * @brief Get the AdaBoost raw value
@@ -65,6 +63,15 @@ public:
    * @brief Get indicate of the weak classifiers
    */
   std::vector<int> GetIndicate(void) const;
+
+  /**
+   * @brief Set the number of weak classifiers
+   *
+   * @param iWeakCount weak classifiers count
+   */
+  void SetWeakCount(int iWeakCount) {
+    m_poClassifier.dynamicCast<cv::ml::Boost>()->setWeakCount(iWeakCount);
+  }
 
 private:
   /**

@@ -45,18 +45,13 @@ public:     //public attribute
 
   public: // public method
     /**
-     * @brief Default contrunctor.
-     *
-     * Set parameters with default value.
-     */
-    myOptimalParam(void) {
-      C = 1.0; Nu = P = 0.0;
-    }
-
-    /**
      * @brief Instance with specific value
+     *
+     * @param c
+     * @param nu
+     * @param p
      */
-    myOptimalParam(double c, double nu, double p) {
+    myOptimalParam(double c = 1.0, double nu = 0.0, double p = 0.0) {
       C = c; Nu = nu; P = p;
     }
   };
@@ -83,18 +78,9 @@ public:     //public attribute
 
   public:
     /**
-     * @brief Default contrunctor
-     *
-     * Set parameters with default value.
-     */
-    myFunctionParam(void) {
-      Degree = Coef0 = 0.0; Gamma = 1.0;
-    }
-
-    /**
      * @brief Instance with specific value
      */
-    myFunctionParam(double degree, double gamma, double coef0) {
+    myFunctionParam(double degree = 0.0, double gamma = 1.0, double coef0 = 0.0) {
       Degree = degree; Gamma = gamma; Coef0 = coef0;
     }
   };
@@ -145,6 +131,8 @@ public:     //public method
    * @param OParam The SVM attribute for optimization problem.
    */
   mySVM(myFunctionParam FParam, myOptimalParam OParam);
+
+  mySVM(myOptimalParam OParam);
 
   /**
    * @brief Create a SVM from xml file.

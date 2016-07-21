@@ -83,6 +83,11 @@ void mySupervisedClassifier::Train(void) {
 
   m_poClassifier->train(MakeTrainingData());
 }
+float mySupervisedClassifier::Predict(const cv::Mat & mSample) const {
+  if (m_poClassifier == nullptr) return NAN;
+  if (!m_poClassifier->isTrained()) return NAN;
+  return m_poClassifier->empty() ? NAN : m_poClassifier->predict(mSample);
+}
 /*
 float mySupervisedClassifier::Predict(const std::vector<float>& vfSample) const {
   // get the feature length of sample
