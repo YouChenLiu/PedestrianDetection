@@ -147,7 +147,7 @@ namespace Descriptor {
   bool myLBP::IsUniform(unsigned int iBinNumber, unsigned int iLength) {
     bool bResult = true;
 
-    int iChangeTime = 0;
+    unsigned int iChangeTime = 0;
     unsigned int iMaskBit = 0x00000001;
     unsigned int iCheckBit = iBinNumber & iMaskBit;
 
