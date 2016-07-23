@@ -34,7 +34,7 @@ void myBBDumper::CreateXMLFile(void) {
 
 void myBBDumper::AddNewHeader(int iFrameNum) {
   m_iTotalRecord = 0;
-  auto& psTag = GetLabel(Tags::HEADER);
+  auto psTag = GetLabel(Tags::HEADER);
   auto poHeader = m_poXMLDocument->NewElement(psTag.c_str());
 
   psTag = GetLabel(Attributes::FRAME_NUMBER);

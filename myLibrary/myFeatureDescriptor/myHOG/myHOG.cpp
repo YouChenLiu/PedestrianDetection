@@ -1,5 +1,5 @@
 #include "myHOG.h"
-#include "DIPKernel\DIPKernel.h"
+#include "DIPKernel/DIPKernel.h"
 
 namespace Descriptor {
 
