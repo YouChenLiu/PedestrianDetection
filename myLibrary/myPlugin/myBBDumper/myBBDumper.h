@@ -23,7 +23,7 @@ public:     // public attribute
 protected:  // protected attribute
 
 private:    // private attribute
-  std::unique_ptr<tinyxml2::XMLDocument> m_poXMLDocument;
+  tinyxml2::XMLDocument* m_poXMLDocument;
   int m_iTotalRecord;
   tinyxml2::XMLElement* m_poCurrentHeader;
 

@@ -9,7 +9,7 @@ myBBDumper::myBBDumper(void) {
 }
 
 myBBDumper::~myBBDumper(void) {
-  m_poXMLDocument.release();
+  delete m_poXMLDocument;
 }
 
 void myBBDumper::Init(void) {
@@ -18,7 +18,7 @@ void myBBDumper::Init(void) {
 }
 
 void myBBDumper::CreateXMLFile(void) {
-  m_poXMLDocument = std::make_unique<tinyxml2::XMLDocument>();
+  m_poXMLDocument = new tinyxml2::XMLDocument();
   m_poXMLDocument->SetBOM(true);
   m_poXMLDocument->InsertFirstChild(m_poXMLDocument->NewDeclaration());
   using namespace Plugin;
