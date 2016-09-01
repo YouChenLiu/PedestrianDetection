@@ -1,90 +1,72 @@
-//#define _VIDEO_
-
-#ifndef _VIDEO_
-#   define _SEQUENCE_
-#endif
-
-#include <stdlib.h>
-#include <Windows.h>
 #include <iostream>
 #include <vector>
-#include <opencv2/core.hpp>
 #include <opencv2/highgui.hpp>
 #include <opencv2/objdetect.hpp>
 #include <opencv2/imgproc.hpp>
-#include <opencv2/ml.hpp>
-#include "../myLibrary/myImageSequence/myImageSequence.h"
+#include <Windows.h>
 #include <mmsystem.h>
-#pragma comment(lib, "winmm.lib")
+#pragma comment(lib, "winmm.lib")   // link libaray
 
-const int iFirstNum = 0;
-const cv::Size2i BlockSize(8, 8);
 int main(void) {
-    std::string sCascadePath = "data/cascade.xml";
-    cv::CascadeClassifier oCascadeClassifier;
-    if (!oCascadeClassifier.load(sCascadePath)) {
-        std::cout << "Loading Cascade Classifier Faild!" << std::endl;
-        exit(EXIT_FAILURE);
-    }
+  const std::string sCascadePath = "data/cascade.xml";
+  cv::CascadeClassifier oCascadeClassifier;
+  if (!oCascadeClassifier.load(sCascadePath)) {
+    std::cout << "Loading Cascade Classifier XML File Faild!!" << std::endl;
+    exit(EXIT_FAILURE);
+  }
 
-#   ifdef _SEQUENCE_
-    std::string sName = "2015-1005_0900-0915/01";
-        myImageSequence oReader(std::string("D:/Database/spilt/") + sName + "/", "", "bmp");
-        oReader.SetAttribute(myImageSequence::Attribute::FIRST_NUMBER, 4253);
-        oReader.SetAttribute(myImageSequence::Attribute::PADDING_LENGTH, 6);
-#   else
-        cv::VideoCapture oReader(1);
-        if (!oReader.isOpened()) {
-            std::cout << "Open Camera" << std::endl;
-        }
-#   endif
+  cv::VideoCapture Video("TestVideo.avi");
+  if (!Video.isOpened()) {
+    std::cout << "Loading Video File Faild!!" << std::endl;
+    exit(EXIT_FAILURE);
+  }
 
-    cv::VideoWriter oOutput(sName + ".avi", CV_FOURCC('F', 'M', 'P', '4'), 60, cv::Size2i(384, 288));
+  // region of intresting
+  // the detector will process only this range
+  const cv::Rect ROIRect(0, 100, 640, 320);
+  
+  while (true) {
     cv::Mat mImg;
-    int i = iFirstNum;
-    //const cv::Rect ROIRect(0, 90, 640, 205);
-    const cv::Rect ROIRect(0, 0, 640, 480);
-    while (true) {
-#       ifdef _VIDEO_
-            oReader.read(mImg);
-#       else
-            oReader >> mImg;
-#       endif
-        if (mImg.empty()) {
-            std::cout << "Reading Image!" << std::endl;
-            break;
-        }
-        cv::Mat mROI = mImg(ROIRect);
-        
-        std::vector<cv::Rect> vPedestrian;
-        oCascadeClassifier.detectMultiScale(mROI, vPedestrian, 1.5, 5, 0);
-        
-        int iPedestranNum = 0;
-        for (auto p : vPedestrian) {
-            //cv::Mat mHypothesis = mROI(p);
-            ++iPedestranNum;
-            p.y += ROIRect.y;
-            cv::rectangle(mImg, p, cv::Scalar::all(255));
-        }
-        
-        if (iPedestranNum > 3) {
-            //PlaySound(L"beep.wav", NULL, SND_ASYNC);
-        }
-        
-        cv::line(mImg, cv::Point2i(ROIRect.x, ROIRect.y), cv::Point2i(ROIRect.width, ROIRect.y), cv::Scalar::all(255));
-        cv::line(mImg, cv::Point2i(ROIRect.x, ROIRect.y + ROIRect.height), cv::Point2i(ROIRect.width, ROIRect.y + ROIRect.height), cv::Scalar::all(255));
-
-        //cv::putText(mImg, std::to_string(i), cv::Point2i(30, 30), cv::FONT_HERSHEY_SIMPLEX, 1, cv::Scalar(255, 255, 255, 0));
-        //oOutput << mImg;
-        
-        cv::imshow("result", mImg);
-        
-        if (cv::waitKey(1) == 'c') {
-            break;
-        }
-        
+    Video.read(mImg);
+    if (mImg.empty()) {
+      std::cout << "Reading Image ERROR!!" << std::endl;
+      break;
     }
 
-    //oOutput.release();
-    return 0;
+    // setting ROI
+    cv::Mat mROI = mImg(ROIRect);
+    // vector for saving detected result
+    std::vector<cv::Rect> vPedestrian;
+    // dectect by cascade
+    oCascadeClassifier.detectMultiScale(mROI,                 // detected image
+                                        vPedestrian,          // output the result
+                                        1.05,                 // scaling factor
+                                        1,                    // minNeighbors
+                                        0,                    // flag
+                                        cv::Size2i(30, 40));  // minSize
+
+    // draw bounding box
+    for (auto p : vPedestrian) {
+      p.y += ROIRect.y;
+      cv::rectangle(mImg, p, cv::Scalar::all(255));
+    }
+
+    // play sound if deteced
+    if (vPedestrian.size() > 3) {
+      PlaySound(L"beep.wav", NULL, SND_ASYNC);
+    }
+
+    // draw ROI
+    cv::rectangle(mImg, ROIRect, cv::Scalar::all(255));
+
+    // show image
+    cv::imshow("result", mImg);
+
+    // press Esc
+    if (cv::waitKey(1) == 27) {
+      break;
+    }
+  }
+
+  return 0;
 }

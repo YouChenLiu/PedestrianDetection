@@ -49,6 +49,7 @@ void myBBReader::OpenFile(const std::string& sFilePath) {
     m_pXML.release();
     m_pXML = nullptr;
     std::cout << "myBBReader::Open file ERROR!!\t"
+              << "File: " << sFilePath << "\t"
               << "Error code = " << code
               << std::endl;
   }

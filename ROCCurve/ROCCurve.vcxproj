@@ -11,9 +11,9 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{064CFF10-6F88-4D63-967A-52B3BCCEF83D}</ProjectGuid>
+    <ProjectGuid>{74FAC99B-E2AE-4854-8FDC-5F23270110FD}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
-    <RootNamespace>SVMTest</RootNamespace>
+    <RootNamespace>ROCCurve</RootNamespace>
     <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -85,12 +85,12 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="ROC.cpp" />
+  </ItemGroup>
+  <ItemGroup>
     <ProjectReference Include="..\myLibrary\myLibrary.vcxproj">
       <Project>{f0766d92-6b77-4d7f-bf4f-1b849c015b15}</Project>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="SVMTest.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

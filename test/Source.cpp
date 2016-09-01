@@ -92,10 +92,88 @@ int main(int argc, char* argv[]) {
   }
   */
 
-  Plugin::myBBReader gt("2015-1015_1715-1725_03.xml");
-  Verifier::myFPPW fppw(105, "2015-1015_1715-1725_03.xml", "2015-1015_1715-1725_03.xml");
-  fppw.CompareByFrames(0, 9);
-  std::cout << fppw.GetResult() << std::endl;
+  // calculate ROC
+  /*
+  struct NameNumber {
+    std::string sFolderName;
+    int iFirstNum;
+  };
 
+  std::vector<NameNumber> vnnPairs = {
+    { "2015-1007_0900-0910_01", 0 },
+    { "2015-1007_0900-0910_02", 6614 },
+    { "2015-1007_0900-0910_03", 9374 },
+    { "2015-1007_0900-0910_04", 11953 },
+    { "2015-1007_0900-0910_05", 14305 },
+    { "2015-1007_2120-2130_01", 1250 },
+    { "2015-1007_2120-2130_02", 2302 },
+    { "2015-1007_2120-2130_03", 3970 },
+    { "2015-1007_2120-2130_04", 5686 },
+    { "2015-1007_2120-2130_05", 10800 },
+    { "2015-1015_1715-1725_01", 5105 },
+    { "2015-1015_1715-1725_02", 6111 },
+    { "2015-1015_1715-1725_03", 6669 },
+    { "2015-1015_1715-1725_04", 12165 },
+    { "2015-1015_1715-1725_05", 13966 }
+  };
+  
+  std::vector<float> vfThreshold;
+  for (float f = -10.0f; f <= 20.0f; f += 0.5f) {
+    vfThreshold.push_back(f);
+  }
+  for (const auto& nn : vnnPairs) {
+    // create file for writing computation result
+    std::ofstream ROCText(nn.sFolderName + ".txt");
+    ROCText << nn.sFolderName << std::endl;
+    ROCText << "Dense" << std::endl
+      << "Th\tFPPW\t\tMissRate" << std::endl;
+    Verifier::myFPPW fppw(1668, "../ClassificationResult/" + nn.sFolderName + ".xml",
+                          "Result/" + nn.sFolderName + "_Dense.xml");
+    fppw.CompareAllFrames();
+    ROCText << 0 << "\t"
+      << fppw.GetResult() << "\t"
+      << fppw.GetMissRate() << std::endl;
+    
+    ROCText << "Th\tFPPW\t\tMissRate" << std::endl;
+    for (size_t i = 0; i < vfThreshold.size(); ++i) {
+      std::stringstream ss;
+      ss << "../ClassificationResult/" << nn.sFolderName << "_Mine_"
+        << std::fixed << std::setprecision(1) << vfThreshold.at(i)
+        << ".xml";
+
+      Verifier::myFPPW fppw(1668, "../GroundTruth/" + nn.sFolderName + ".xml", ss.str());
+      fppw.CompareAllFrames();
+      ROCText << vfThreshold.at(i) << "\t"
+        << fppw.GetResult() << "\t"
+        << fppw.GetMissRate() << std::endl;
+    }
+  }
+  */
+  
+  // test the SVM
+  srand(time(0));
+  Classifier::mySVM oSVM;
+  for (int i = 0; i < 10000; ++i) {
+    std::vector<float> vfPos;
+    std::vector<float> vfNeg;
+    for (int j = 0; j < 100; ++j) {
+      vfPos.push_back(+(rand() % 20) + 5);
+      vfNeg.push_back(-(rand() % 20) - 5);
+    }
+    oSVM.AddSample(+1, vfPos);
+    oSVM.AddSample(-1, vfNeg);
+  }
+  
+  oSVM.Train();
+
+  for (int i = 0; i < 30; ++i) {
+    std::vector<float> vfFeature;
+    for (int j = 0; j < 100; ++j) {
+      vfFeature.push_back(+(rand() % 50) - 25);
+    }
+    auto label = oSVM.Predict(vfFeature);
+    auto distance = oSVM.GetDistance(vfFeature);
+    std::cout << "Label: " << (label > 0 ? "+" : "-") << ", " << distance << std::endl;
+  }
   return 0;
 }

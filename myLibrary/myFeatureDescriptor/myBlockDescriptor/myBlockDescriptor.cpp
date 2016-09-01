@@ -32,12 +32,7 @@ namespace Descriptor {
 
     for (const auto& pExtractor : m_vpoUsedDescriptor) {
       std::vector<float> vfTemp;
-      if (auto extractor = dynamic_cast<myHOG*>(pExtractor.get())) {
-        extractor->Describe(Position, vfTemp);
-      } else if (auto extractor = dynamic_cast<myLBP*>(pExtractor.get())) {
-        extractor->Describe(Position, vfTemp);
-      }
-
+      pExtractor->Describe(Position, vfTemp);
       auto NormMethod = pExtractor->GetFeatureType();
       if (NormMethod & NORMALIZATION_FLAG) {
         Normalize(NormMethod & NORM_MASK, vfTemp);

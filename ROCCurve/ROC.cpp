@@ -1,6 +1,6 @@
-#include <opencv2/imgproc.hpp>
-#include <opencv2/highgui.hpp>
 #include "common.h"
+#include <iomanip>
+#include <opencv2/imgproc.hpp>
 #include "myImageSequence/myImageSequence.h"
 #include "myFeatureDescriptor/myBlockDescriptor/myBlockDescriptor.h"
 #include "myClassifier.h"
@@ -13,27 +13,26 @@ using std::string;
 
 // feature extractor setting
 Descriptor::myBlockDescriptor oMyDetector(cv::Mat(), cv::Size2i(8, 8));
-
 // vector for my method feature set
 const vector<int> viTwoLayerFeature = {
     Descriptor::myBlockDescriptor::Feature::HOG_SINGLE_CELL |
     Descriptor::myBlockDescriptor::Feature::L2_NORM,
     Descriptor::myBlockDescriptor::Feature::LBP_8_1_UNIFORM
 };
+
 Descriptor::myBlockDescriptor oDenseDetector(cv::Mat(), cv::Size2i(8, 8));
 const vector<int> viDenseFeature = {
     Descriptor::myBlockDescriptor::Feature::HOG_STANDARD |
     Descriptor::myBlockDescriptor::Feature::L2_NORM,
     Descriptor::myBlockDescriptor::Feature::LBP_8_1_UNIFORM
 };
-
-// classifier setting
-  
+// model constoller
 vector<myModelCollector> voCollector;
+// layer 2 classifer
 std::unique_ptr<Classifier::myAdaBoost> pL2Classifier = nullptr;
+// dense classifier
 std::unique_ptr<Classifier::mySVM> pDenseClassifier = nullptr;
-
-// the positions of feature extraction left-top points
+// the regions of feature extraction
 vector<cv::Rect2i> vrMine;
 vector<cv::Rect2i> vrDense;
 
@@ -41,18 +40,19 @@ float DetectByMine(const cv::Mat& mImg) {
   oMyDetector.SetImage(mImg);
   vector<float> vfResult(voCollector.size(), -1.0f);
   myLBPIndexer oIndexr;
-  for (size_t i = 0; i < vrMine.size(); ++i) {
+  static auto Indexes = pL2Classifier->GetIndicate();
+  for (auto idx : Indexes) {
     vector<float> vfFeature(68, -1.0f);
-    oMyDetector.Describe(vrMine.at(i), vfFeature);
-    auto iIndex = oIndexr.GetBinNumber(mImg, vrMine.at(i));
-    auto fResult = voCollector.at(i).Predict(iIndex, vfFeature);
-    vfResult.at(i) = fResult;
+    oMyDetector.Describe(vrMine.at(idx), vfFeature);
+    auto iIndex = oIndexr.GetBinNumber(mImg, vrMine.at(idx));
+    auto fResult = voCollector.at(idx).Predict(iIndex, vfFeature);
+    vfResult.at(idx) = fResult;
   }
 
-  return pL2Classifier->Predict(vfResult);
+  return pL2Classifier->GetWeightedSum(vfResult);
 }
 
-float DetectByDense(const cv::Mat& mImg) {
+float DetectByDense(const cv::Mat& mImg, float& label) {
   oDenseDetector.SetImage(mImg);
   vector<float> vfCascade;
   for (size_t i = 0; i < vrDense.size(); ++i) {
@@ -62,21 +62,36 @@ float DetectByDense(const cv::Mat& mImg) {
       vfCascade.push_back(f);
     }
   }
-  return pDenseClassifier->Predict(vfCascade);
-  
+  label = pDenseClassifier->Predict(vfCascade);
+  return pDenseClassifier->GetDistance(vfCascade);
 }
 
 int main(void) {
-  const string sTestingImgRoot = "C:/Users/youch/Desktop/02/";
-
+  // root path for testing samples
+  const string sTestingImgRoot = "D:/Database/Slice/02/";
+  // model's name
+  const string sModelName = "GENERAL_TEST_Model_1";
+  // later 2 model's name
+  const string sL2Model = "A_L2_GENERAL_100.xml";
+  // thresholds for my method
+  vector<float> vfThreshold;
+  for (float f = -10.0f; f <= 10.0f; f += 0.5f) {
+    vfThreshold.push_back(f);
+  }
+  // thresholds for dense method
+  vector<float> vfDenseThreshold;
+  for (float f = 2.0f; f <= 7.0f; f += 0.5f) {
+    vfDenseThreshold.push_back(f);
+  }
+  // folder name and first frame number pair
   struct NameNumber {
     string sFolderName;
     int iFirstNum;
   };
-
+  // vector of folder name and first frame number pair
   vector<NameNumber> vnnPairs = {
-    { "2015-1007_0900-0910_01", 0 },
-    { "2015-1007_0900-0910_02", 6614 },
+    { "2015-1007_0900-0910_01", 0 }
+    /*{ "2015-1007_0900-0910_02", 6614 },
     { "2015-1007_0900-0910_03", 9374 },
     { "2015-1007_0900-0910_04", 11953 },
     { "2015-1007_0900-0910_05", 14305 },
@@ -89,16 +104,10 @@ int main(void) {
     { "2015-1015_1715-1725_02", 6111 },
     { "2015-1015_1715-1725_03", 6669 },
     { "2015-1015_1715-1725_04", 12165 },
-    { "2015-1015_1715-1725_05", 13966 }
+    { "2015-1015_1715-1725_05", 13966 }*/
   };
-
-  // root path for testing samples
-  const string sL2Model = "A_L2_GENERAL_100.xml";
-  const string sModelName = "GENERAL_TEST_Model_1";
-  const string sDenseModel = "Dense.xml";
-
-  // claculate the rect for my extractor
   {
+    // claculate the rect for my extractor
     Plugin::myScanner scanner(cv::Point2i(8, 8), cv::Point2i(56, 120));
     for (int h = 8; h <= 32; h += 8) {
       for (int w = 8; w <= 16; w += 8) {
@@ -106,15 +115,43 @@ int main(void) {
       } // for w
     } // for h
   }
-  // claculate the rect for dense extractor
   {
+    // claculate the rect for dense extractor
     Plugin::myScanner scanner(cv::Point2i(0, 0), cv::Point2i(64, 128));
     scanner.CalRect(vrDense, cv::Size2i(8, 8), cv::Point2i(8, 8));
   }
-
-  cv::Scalar MineColor(0, 255, 0);
-  cv::Scalar DenseColor(0, 0, 255);
-
+  // read trained models
+  {
+    
+    // build mine classifier
+    std::cout << "Reading saved L1 models" << std::endl;
+    // model root path
+    const string sModelRoot = "../Models/";
+    std::ifstream ModelList(sModelRoot + sModelName + ".txt");
+    if (!ModelList.is_open()) {
+      std::cout << "model list error" << std::endl;
+      return 0;
+    }
+    int iModelsCount = 0;
+    ModelList >> iModelsCount;
+    voCollector = vector<myModelCollector>(vrMine.size());
+    for (std::size_t i = 0; i < iModelsCount; ++i) {
+      std::string sPath;
+      ModelList >> sPath;
+      voCollector.at(i).LoadModels(sModelRoot + sPath);
+      std::cout << "Reading models : " << i << " / " << iModelsCount - 1 << "\r";
+    }
+    std::cout << std::endl;
+    std::cout << "Reading saved L2 models" << std::endl;
+    pL2Classifier = std::make_unique<Classifier::myAdaBoost>(sModelRoot + sL2Model);
+    if (pL2Classifier->IsEmpty()) {
+      std::cout << "layer 2 classifier error" << std::endl;
+      return 0;
+    }
+    
+    // create dense model
+    //pDenseClassifier = std::make_unique<Classifier::mySVM>("../Models/Dense.xml");
+  }
   // setting feature extractor
   {
     // setting two layer dtector
@@ -126,47 +163,32 @@ int main(void) {
       oDenseDetector.EnableFeature(feature);
     }
   }
-  
-  // read trained models
-  {
-    // build mine classifier
-    std::cout << "Reading saved L1 models" << std::endl;
-    std::ifstream ModelList(sModelName + ".txt");
-    int iModelsCount = 0;
-    ModelList >> iModelsCount;
-    voCollector = vector<myModelCollector>(vrMine.size());
-    for (std::size_t i = 0; i < iModelsCount; ++i) {
-      std::string sPath;
-      ModelList >> sPath;
-      voCollector.at(i).LoadModels(sPath);
-      std::cout << "Reading models : " << i << " / " << iModelsCount - 1 << "\r";
-    }
-    std::cout << std::endl;
-    std::cout << "Reading saved L2 models" << std::endl;
-    pL2Classifier = std::make_unique<Classifier::myAdaBoost>(sL2Model);
-    
-    // build dense classifier
-    std::cout << "Reading dense models" << std::endl;
-    pDenseClassifier = std::make_unique<Classifier::mySVM>(sDenseModel);
-    
-  }
 
-  for (const auto nn : vnnPairs) {
+  for (const auto& nn : vnnPairs) {
+    std::cout << "Start ";
+    system("time /t");
+    // folder name
     string sFolder = nn.sFolderName;
-    cv::VideoWriter oWriter(sFolder + ".avi", CV_FOURCC('F', 'M', 'P', '4'), 10, cv::Size2i(1280, 480));
+    // sequence reader
     myImageSequence oReader(sTestingImgRoot + sFolder + "/", "", "bmp", false);
     oReader.SetAttribute(myImageSequence::Attribute::FIRST_NUMBER, nn.iFirstNum);
-    Plugin::myBBDumper oMineDumper;
-    Plugin::myBBDumper oDenseDumper;
+    // vector of dumper for saving diffirent threshold result with my method
+    vector<Plugin::myBBDumper> voMineDumper(vfThreshold.size());
+    // vector of dumper for saving diffirent threshold result with dense method
+    vector<Plugin::myBBDumper> voDenseDumper(vfDenseThreshold.size());
+    // loaded image
     cv::Mat mImg;
+    std::ofstream Out("AllValue.txt");
     while (oReader >> mImg) {
       std::cout << "\rProcessing...\t" << sFolder << "/" << oReader.GetSequenceNumberString();
-      oMineDumper.AddFrame(oReader.GetSequenceNumber());
-      oDenseDumper.AddFrame(oReader.GetSequenceNumber());
-      vector<cv::Mat> vImg(3, mImg);
-      cv::Mat mMineResult;
-      cv::merge(vImg, mMineResult);
-      cv::Mat mDenseResult = mMineResult.clone();
+      // add new frame to all dumpers
+      for (auto& o : voMineDumper) {
+        o.AddFrame(oReader.GetSequenceNumber());
+      }
+      for (auto& o : voDenseDumper) {
+        o.AddFrame(oReader.GetSequenceNumber());
+      }
+      
       // scaling the img
       for (float fRatio = 1.0f; fRatio <= 2.5f; fRatio *= 1.2f) {
         cv::Size2i NewSize;
@@ -198,30 +220,53 @@ int main(void) {
             OriginalRect = cv::Rect2i(NewX, NewY, NewWidth, NewHeight);
           }
           
+          // the weighted sum of my method
           auto fMineResult = DetectByMine(mRescale(r));
-          if (fMineResult >= 0) {
-            cv::rectangle(mMineResult, OriginalRect, MineColor);
-            oMineDumper.AddRectangle(OriginalRect);
+          for (size_t i = 0; i < vfThreshold.size(); ++i) {
+            if (fMineResult >= vfThreshold.at(i)) {
+              voMineDumper.at(i).AddRectangle(OriginalRect);
+            } // if fMineResult
+          } // for vfThreshold
+          
+          /*
+          float fLabel = 0.0f;
+          // raw distance of dense distance
+          auto fDenseResult = DetectByDense(mRescale(r), fLabel);
+          Out << fLabel << ", " << fDenseResult << std::endl;
+          for (size_t i = 0; i < vfDenseThreshold.size(); ++i) {
+            if (fDenseResult > vfDenseThreshold.at(i)) {
+              voDenseDumper.at(i).AddRectangle(OriginalRect);
+            }
           }
-          auto fDenseResult = DetectByDense(mRescale(r));
-          if (fDenseResult >= 0) {
-            cv::rectangle(mDenseResult, OriginalRect, DenseColor);
-            oDenseDumper.AddRectangle(OriginalRect);
-          }
-        }
+          */
+        } // for scanning window
       } // for fRatio
-      // draw the result
-      cv::Mat mResult = cv::Mat::zeros(480, 1280, CV_8UC3);
-      mDenseResult.copyTo(mResult(cv::Rect2i(0, 0, 640, 480)));
-      mMineResult.copyTo(mResult(cv::Rect2i(640, 0, 640, 480)));
-      cv::imshow("Result", mResult);
-      oWriter << mResult;
-      cv::waitKey(1);
     } // while
-    cv::destroyAllWindows();
-    std::cout << "\r" << sFolder << "\tFinish" << std::endl;
-    oMineDumper.Save(sFolder + "_Mine.xml");
-    oDenseDumper.Save(sFolder + "_Dense.xml");
+
+    
+    for (size_t i = 0; i < vfThreshold.size(); ++i) {
+      std::stringstream ss;
+      ss << sFolder << "_Mine_"
+         << std::fixed << std::setprecision(1) << vfThreshold.at(i)
+         << ".xml";
+      //voMineDumper.at(i).Save(ss.str());
+    }
+    
+    /*
+    for (size_t i = 0; i < vfDenseThreshold.size(); ++i) {
+      std::stringstream ss;
+      ss << sFolder << "_Dense_"
+         << std::fixed << std::setprecision(1) << vfDenseThreshold.at(i)
+         << ".xml";
+      voDenseDumper.at(i).Save(ss.str());
+    }
+    */
+    std::cout << "\r" << sFolder
+              << "\tFinish                             "
+              << std::endl;
+    std::cout << "End";
+    system("time /t");
   } // for vnnPairs
+
   return 0;
 }

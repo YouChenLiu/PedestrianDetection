@@ -6,7 +6,7 @@
 #ifndef _MY_BLOCK_DESCRIPTOR_BASE_H_
 #define _MY_BLOCK_DESCRIPTOR_BASE_H_
 
-#include "../../common.h"
+#include "common.h"
 #include "myDescriptorBase.h"
 
 namespace Descriptor {

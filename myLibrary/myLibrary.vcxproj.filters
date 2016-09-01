@@ -123,13 +123,10 @@
     <ClInclude Include="myVerifier\myVerifierBase.h">
       <Filter>Header Files\Verifier</Filter>
     </ClInclude>
-    <ClInclude Include="myVerifier\GY\GYVerifier.h">
-      <Filter>Header Files\Verifier</Filter>
-    </ClInclude>
-    <ClInclude Include="myVerifier\myFPPW\myFPPW.h">
-      <Filter>Header Files\Verifier</Filter>
-    </ClInclude>
     <ClInclude Include="myVerifier\BBComputation.h">
+      <Filter>Header Files\Verifier</Filter>
+    </ClInclude>
+    <ClInclude Include="myVerifier\myFPPI\myFPPI.h">
       <Filter>Header Files\Verifier</Filter>
     </ClInclude>
   </ItemGroup>
@@ -179,14 +176,11 @@
     <ClCompile Include="myPlugin\myBBReader\myBBReader.cpp">
       <Filter>Source Files\Plugin</Filter>
     </ClCompile>
-    <ClCompile Include="myVerifier\GY\GYVerifier.cpp">
+    <ClCompile Include="myVerifier\myVerifierBase.cpp">
       <Filter>Source Files\Verifier</Filter>
     </ClCompile>
-    <ClCompile Include="myVerifier\myVerifierBase.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="myVerifier\myFPPW\myFPPW.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="myVerifier\myFPPI\myFPPI.cpp">
+      <Filter>Source Files\Verifier</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -32,7 +32,7 @@ public:     // public method
   myLBPIndexer();
   virtual ~myLBPIndexer(void);
 
-  unsigned int GetNumOfBins(void) const override { return 59u; }
+  unsigned int GetNumOfBins(void) const override { return 30u; }
 
   unsigned int GetBinNumber(const cv::Mat& mImage,
                             const cv::Rect2i Region) const;
