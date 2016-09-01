@@ -1,9 +1,9 @@
 /**
- * @file myFPPW.h FPPW definition
+ * @file myFPPI.h FPPW definition
  */
 
-#ifndef _MY_FPPW_H_
-#define _MY_FPPW_H_
+#ifndef _MY_FPPI_H_
+#define _MY_FPPI_H_
 
 #include "common.h"
 #include "myPlugin/myBBReader/myBBReader.h"
@@ -14,13 +14,12 @@ namespace Verifier {
 /**
  * @brief compare result by false positive per window method
  */
-class myFPPW final : public myVerifierBase {
+class myFPPI final : public myVerifierBase {
 public:     // public attribute
 
 protected:  // protected attribute
 
 private:    // private attribute
-  int m_iWindowsPerFrame;
   int m_iFalsePositive;
   int m_iTotalWindow;
   int m_iFalseNegative;
@@ -32,7 +31,7 @@ public:     // public method
   /**
    * @brief default constructor
    */
-  myFPPW(void) { Init(); }
+  myFPPI(void) { Init(); }
 
   /**
    * @brief create object with window count and file pathes
@@ -41,8 +40,7 @@ public:     // public method
    * @param sGTPath XML file path for ground-truth
    * @param sDetectionPath XML file path for xml file want compared
    */
-  myFPPW(int iWindowsPerFrame,
-         const std::string& sGTPath,
+  myFPPI(const std::string& sGTPath,
          const std::string& sDetectionPath);
 
   virtual void CompareByFrame(int iFrameNum) override;
@@ -64,4 +62,4 @@ private:    // private method
 
 } // namespace
 
-#endif // !_MY_FPPW_H_
+#endif // !_MY_FPPI_H_

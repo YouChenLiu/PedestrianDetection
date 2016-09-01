@@ -3,25 +3,21 @@
 
 namespace Verifier {
 
-const float myFPPW::m_fTHRESHOLD = 0.5f;
+const float myFPPI::m_fTHRESHOLD = 0.5f;
 
-myFPPW::myFPPW(int iWindowsPerFrame,
-               const std::string & sGTPath,
+myFPPI::myFPPI(const std::string & sGTPath,
                const std::string & sDetectionPath)
     : myVerifierBase(sGTPath, sDetectionPath) {
   Init();
-  m_iWindowsPerFrame = iWindowsPerFrame;
 }
 
-void myFPPW::CompareByFrame(int iFrameNum) {
-  // increase total frame
-  m_iTotalWindow += m_iWindowsPerFrame;
+void myFPPI::CompareByFrame(int iFrameNum) {
   // vector for ground-gruth and detection result bounding boxes
   std::vector<cv::Rect2i> vrGT, vrDR;
   GetBB(iFrameNum, vrGT, vrDR);
+  m_iTotalWindow += vrDR.size();
   // saving groung-truth bounding box index for calculating false negative
   std::set<int> IndexSet;
-
   // check the number of bounding box
   if (vrGT.size() == 0 || vrDR.size() == 0) {
     if (vrGT.size() == 0) {
@@ -59,16 +55,15 @@ void myFPPW::CompareByFrame(int iFrameNum) {
   m_iFalseNegative += static_cast<int>(vrGT.size() - IndexSet.size());
 }
 
-float myFPPW::GetResult(void) const {
+float myFPPI::GetResult(void) const {
   return static_cast<float>(m_iFalsePositive) / m_iTotalWindow;
 }
 
-float myFPPW::GetMissRate(void) const {
+float myFPPI::GetMissRate(void) const {
   return static_cast<float>(m_iFalseNegative) / m_iTotalPositive;
 }
 
-void myFPPW::Init(void) {
-  m_iWindowsPerFrame = -1;
+void myFPPI::Init(void) {
   m_iFalseNegative = m_iFalsePositive = 0;
   m_iTotalPositive = m_iTotalWindow = 0;
 }
