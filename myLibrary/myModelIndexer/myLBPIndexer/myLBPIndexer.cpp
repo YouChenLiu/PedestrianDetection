@@ -7,7 +7,7 @@ myLBPIndexer::myLBPIndexer(void) : myLBP(), myModelIndexerBase() {
   unsigned int iMapping = 0;
   for (unsigned int i = 0; i < 256; ++i) {
     auto bUniform = IsUniform(Feature::LBP_8_1_UNIFORM, i);
-    m_aiMappingIndex.at(i) = bUniform ? iMapping++ : 58;
+    m_aiMappingIndex.at(i) = bUniform ? (i >= 128 ? m_aiMappingIndex.at(~i & 0xff) : iMapping++) : 29;
   }
 }
 

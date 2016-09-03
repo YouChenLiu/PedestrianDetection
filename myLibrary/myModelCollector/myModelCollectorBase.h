@@ -6,7 +6,7 @@
 #ifndef _MY_MODEL_COLLECTOR_BASE_H_
 #define _MY_MODEL_COLLECTOR_BASE_H_
 
-#include "../common.h"
+#include "common.h"
 
 /**
  * @brief Base class process classifiers behavior.
@@ -19,11 +19,11 @@ protected:  // protected attribute
 private:    // private attribute
 
 public:     // public method
-    /**
-     * @brief Deafult constructor.
-     */
-    myModelCollectorBase(void) {}
-    virtual ~myModelCollectorBase(void) {}
+  /**
+   * @brief Deafult constructor.
+   */
+  myModelCollectorBase(void) {}
+  virtual ~myModelCollectorBase(void) {}
 
 protected:  // protected method
 

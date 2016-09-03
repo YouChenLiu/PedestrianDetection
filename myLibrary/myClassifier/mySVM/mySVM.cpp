@@ -17,6 +17,12 @@ mySVM::mySVM(myFunctionParam FParam, myOptimalParam OParam) {
   SetFunctionParam(FParam);
 }
 
+mySVM::mySVM(myOptimalParam OParam) {
+  Init();
+  SetOptimalParam(OParam);
+  SetFunctionParam(myFunctionParam());
+}
+
 mySVM::~mySVM() {}
 
 bool mySVM::TrainAuto(int kFold, ParamGrid Cgrid, ParamGrid gammaGrid,
@@ -26,6 +32,10 @@ bool mySVM::TrainAuto(int kFold, ParamGrid Cgrid, ParamGrid gammaGrid,
   auto pSVM = m_poClassifier.dynamicCast<cv::ml::SVM>();
   return pSVM->trainAuto(MakeTrainingData(), kFold, Cgrid, gammaGrid, pGrid,
                          nuGrid, coeffGrid, degreeGrid, balanced);
+}
+
+float mySVM::GetDistance(const cv::Mat& mSample) const {
+  return m_poClassifier->predict(mSample, cv::noArray(), cv::ml::SVM::RAW_OUTPUT);
 }
 
 void mySVM::Init(void) {

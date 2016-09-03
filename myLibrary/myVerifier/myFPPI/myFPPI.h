@@ -1,9 +1,9 @@
 /**
- * @file myFPPW.h FPPW definition
+ * @file myFPPI.h FPPW definition
  */
 
-#ifndef _MY_FPPW_H_
-#define _MY_FPPW_H_
+#ifndef _MY_FPPI_H_
+#define _MY_FPPI_H_
 
 #include "common.h"
 #include "myPlugin/myBBReader/myBBReader.h"
@@ -14,15 +14,16 @@ namespace Verifier {
 /**
  * @brief compare result by false positive per window method
  */
-class myFPPW final : public myVerifierBase {
+class myFPPI final : public myVerifierBase {
 public:     // public attribute
 
 protected:  // protected attribute
 
 private:    // private attribute
-  int m_iWindowsPerFrame;
   int m_iFalsePositive;
   int m_iTotalWindow;
+  int m_iFalseNegative;
+  int m_iTotalPositive;
 
   static const float m_fTHRESHOLD;
 
@@ -30,7 +31,7 @@ public:     // public method
   /**
    * @brief default constructor
    */
-  myFPPW(void) { Init(); }
+  myFPPI(void) { Init(); }
 
   /**
    * @brief create object with window count and file pathes
@@ -39,13 +40,19 @@ public:     // public method
    * @param sGTPath XML file path for ground-truth
    * @param sDetectionPath XML file path for xml file want compared
    */
-  myFPPW(int iWindowsPerFrame,
-         const std::string& sGTPath,
+  myFPPI(const std::string& sGTPath,
          const std::string& sDetectionPath);
 
   virtual void CompareByFrame(int iFrameNum) override;
 
   virtual float GetResult(void) const override;
+
+  /**
+   * @brief Get the miss rate by calculating FPPW
+   *
+   * @return The miss rate: FN / TP
+   */
+  float GetMissRate(void) const;
 
 protected:  // protected method
 
@@ -55,4 +62,4 @@ private:    // private method
 
 } // namespace
 
-#endif // !_MY_FPPW_H_
+#endif // !_MY_FPPI_H_

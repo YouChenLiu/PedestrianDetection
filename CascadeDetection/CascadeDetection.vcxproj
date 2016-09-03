@@ -85,11 +85,6 @@
   <ItemGroup>
     <ClCompile Include="CascadeDetection.cpp" />
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\myLibrary\myLibrary.vcxproj">
-      <Project>{f0766d92-6b77-4d7f-bf4f-1b849c015b15}</Project>
-    </ProjectReference>
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

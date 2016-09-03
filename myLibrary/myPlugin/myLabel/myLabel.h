@@ -51,7 +51,7 @@ enum class Shapes {
 /**
  * @brief XML Tags
  */
-static std::map<Tags, std::string> m_sTagStrings = {
+static const std::map<Tags, std::string> m_sTagStrings = {
     { Tags::ROOT,                   "Root" },
     { Tags::FILE_DESC,              "FileDescription" },
     { Tags::CREATE_DATE,            "CreateDate" },
@@ -69,7 +69,7 @@ static std::map<Tags, std::string> m_sTagStrings = {
 /**
  * @brief XML shapes
  */
-static std::map<Shapes, std::string> m_sShapeStrings = {
+static const std::map<Shapes, std::string> m_sShapeStrings = {
     { Shapes::RECTANGLE,        "rectangle" },
     { Shapes::ELLIPSE,          "ellipse" },
     { Shapes::CIRCLE,           "circle" }
@@ -78,7 +78,7 @@ static std::map<Shapes, std::string> m_sShapeStrings = {
 /**
  * @brief XML attributes
  */
-static std::map<Attributes, std::string> m_sAttributeStrings = {
+static const std::map<Attributes, std::string> m_sAttributeStrings = {
     { Attributes::FRAME_NUMBER,     "frameNumber" },
     { Attributes::SERIAL_NUMBER,    "serialNumber" },
     { Attributes::TOTAL_RECORD,     "totalRecord" }
@@ -90,7 +90,7 @@ static std::map<Attributes, std::string> m_sAttributeStrings = {
  * @param Label Pre-defined label
  */
 template<typename T> inline
-std::string GetLabel(T Label);
+const std::string& GetLabel(T Label);
 
 /**
  * @brief Get attribute string
@@ -98,8 +98,8 @@ std::string GetLabel(T Label);
  * @param Attribute Pre-defined Attributes
  */
 template<> inline
-std::string GetLabel(Attributes Attribute) {
-  return m_sAttributeStrings[Attribute];
+const std::string& GetLabel(Attributes Attribute) {
+  return m_sAttributeStrings.at(Attribute);
 }
 
 /**
@@ -108,8 +108,8 @@ std::string GetLabel(Attributes Attribute) {
  * @param Shape Pre-defined Shapes
  */
 template<> inline
-std::string GetLabel(Shapes Shape) {
-  return m_sShapeStrings[Shape];
+const std::string& GetLabel(Shapes Shape) {
+  return m_sShapeStrings.at(Shape);
 }
 
 /**
@@ -118,8 +118,8 @@ std::string GetLabel(Shapes Shape) {
  * @param Tag Pre-defined Tags
  */
 template<> inline
-std::string GetLabel(Tags Tag) {
-  return m_sTagStrings[Tag];
+const std::string& GetLabel(Tags Tag) {
+  return m_sTagStrings.at(Tag);
 }
 
 } // namespace Plugin

@@ -13,12 +13,13 @@ int main(void) {
   using std::vector;
 
   // root path for training samples
-  const string sTrainingSamplesRoot = "D:/Database/01/";
+  const string sTrainingSamplesRoot = "D:/Database/Sample/01/";
   // root path for testing samples
-  const string sTestingSamplesRoot = "D:/Database/02/";
+  const string sTestingSamplesRoot = "D:/Database/Sample/02/";
+  const string sModelRoot = "../Models/";
   // determind do training or testing
   const bool bLoadingFeature = false;
-  const bool bTrainingL1 = false;
+  const bool bTrainingL1 = true;
   const bool bTrainingL2 = true;
   const bool bTesting = true;
   const bool bSaving = false;
@@ -33,16 +34,16 @@ int main(void) {
     } // for h
   }
 
-  const unsigned int uiWeakCount = 150;
-  Classifier::mySupervisedClassifier* oL2Classifier = new Classifier::myAdaBoost(uiWeakCount);
-  string sL2Model = "A_L2_GENERAL_";
+  const unsigned int uiWeakCount = 50;
+  Classifier::myAdaBoost* oL2Classifier = new Classifier::myAdaBoost(uiWeakCount);
+  const string sModelName = "SYM";
+  string sL2Model = sModelName;
   {
     std::stringstream ss;
-    ss << uiWeakCount;
-    string sWeakCount = ss.str();
-    sL2Model += sWeakCount + ".xml";
+    ss << sL2Model << "_" << uiWeakCount << ".xml";
+    sL2Model = ss.str();
   }
-  const string sModelName = "GENERAL_TEST_Model_1";
+  
 
   myLBPIndexer oIndexr;
   // vector of collectors
@@ -52,11 +53,12 @@ int main(void) {
   }
 
   // define time intervals strings
-  const vector<string> vsTimeInterval = { "Morning", "Noon", "Evening", "Night" };
+  const vector<string> vsTrainingTime = { /*"Morning", "Noon",*/ "Evening", "Night" };
+  const vector<string> vsTestingTime = { "Morning", "Noon"/*, "Evening", "Night"*/ };
   // array saves Pos and Neg string
   const std::array<string, 2> vsPosNeg = { "Positive", "Negative" };
   // array saves labels for pos and neg
-  const std::array<int, 2> viAnswer = { +1, -1 };
+  const std::map<string, int> Labels = { {"Positive", +1}, {"Negative", -1} };
   // vector for feature set
   const vector<int> viFeature = {
       Descriptor::myBlockDescriptor::Feature::HOG_SINGLE_CELL | Descriptor::myBlockDescriptor::Feature::L2_NORM,
@@ -99,13 +101,13 @@ int main(void) {
       }
       std::cout << std::endl;
     } else {
-      for (auto sTime : vsTimeInterval) {
-        for (size_t i = 0; i < vsPosNeg.size(); ++i) {
-          string sSamplePath = sTrainingSamplesRoot + sTime + "/" + vsPosNeg.at(i) + "/";
+      for (auto sTime : vsTrainingTime) {
+        for (const auto& sPN : vsPosNeg) {
+          string sSamplePath = sTrainingSamplesRoot + sTime + "/" + sPN + "/";
           myImageSequence oReader(sSamplePath, "", "bmp", false);
           cv::Mat mImg;
           while (oReader >> mImg) {
-            std::cout << "\rReading " + sTime + "-" + vsPosNeg.at(i) + ":" + oReader.GetSequenceNumberString();
+            std::cout << "\rReading " + sTime + "-" + sPN + ":" + oReader.GetSequenceNumberString();
             oExtractor.SetImage(mImg);
 
             for (size_t iPos = 0; iPos < vRect.size(); ++iPos) {
@@ -113,7 +115,7 @@ int main(void) {
               vfFeature.reserve(68);
               oExtractor.Describe(vRect.at(iPos), vfFeature);
               auto iIndex = oIndexr.GetBinNumber(mImg, vRect.at(iPos));
-              voCollector.at(iPos).AddSample(iIndex, viAnswer.at(i), vfFeature);
+              voCollector.at(iPos).AddSample(iIndex, Labels.at(sPN), vfFeature);
             } //for
           } // while
           std::cout << std::endl;
@@ -122,24 +124,24 @@ int main(void) {
     } // else
 
     // train and save all layer 1 models
-    std::ofstream ModelList(sModelName + ".txt");
+    std::ofstream ModelList(sModelRoot + sModelName + ".txt");
     ModelList << voCollector.size() << std::endl;
     for (std::size_t i = 0; i < voCollector.size(); ++i) {
       std::cout << "Training model collector : " << i << " / " << vRect.size() - 1 << std::endl;
       voCollector.at(i).TrainModels();
-      ModelList << voCollector.at(i).SaveModels(sModelName) << std::endl;
+      ModelList << voCollector.at(i).SaveModels(sModelName, sModelRoot) << std::endl;
       std::cout << std::endl;
       //voCollector.at(i).Clear();
     }
   } else {
     std::cout << "Reading saved layer 1 models" << std::endl;
-    std::ifstream ModelList(sModelName + ".txt");
+    std::ifstream ModelList(sModelRoot + sModelName + ".txt");
     int iModelsCount = 0;
     ModelList >> iModelsCount;
     for (std::size_t i = 0; i < iModelsCount; ++i) {
       std::string sPath;
       ModelList >> sPath;
-      voCollector.at(i).LoadModels(sPath);
+      voCollector.at(i).LoadModels(sModelRoot + sPath);
       std::cout << "\rReading models : " << i << " / " << iModelsCount - 1;
     }
     std::cout << std::endl;
@@ -147,13 +149,13 @@ int main(void) {
 
   if (bTrainingL2) {
     std::cout << std::endl << "Training Layer 2 Classifier" << std::endl;
-    for (auto sTime : vsTimeInterval) {
-      for (size_t i = 0; i < vsPosNeg.size(); ++i) {
-        std::string sSamplePath = sTrainingSamplesRoot + sTime + "/" + vsPosNeg.at(i) + "/";
+    for (auto sTime : vsTrainingTime) {
+      for (const auto& sPN : vsPosNeg) {
+        std::string sSamplePath = sTrainingSamplesRoot + sTime + "/" + sPN + "/";
         myImageSequence oReader(sSamplePath, "", "bmp", false);
         cv::Mat mImg;
         while (oReader >> mImg) {
-          std::cout << "\rReading " + sTime + "-" + vsPosNeg.at(i) + ":" + oReader.GetSequenceNumberString();
+          std::cout << "\rReading " + sTime + "-" + sPN + ":" + oReader.GetSequenceNumberString();
           oExtractor.SetImage(mImg);
           vector<float> vfResult(vRect.size(), 0.0f);
           for (size_t iPos = 0; iPos < vRect.size(); ++iPos) {
@@ -162,53 +164,56 @@ int main(void) {
             oExtractor.Describe(vRect.at(iPos), vfFeature);
             auto iIndex = oIndexr.GetBinNumber(mImg, vRect.at(iPos));
             auto fResult = voCollector.at(iPos).Predict(iIndex, vfFeature);
-            if (fResult == NAN) {
+            if (isnan(fResult)) {
               fResult = -1.0f;
             }
             vfResult.at(iPos) = fResult;
           }
-          oL2Classifier->AddSample(viAnswer.at(i), vfResult);
+          oL2Classifier->AddSample(Labels.at(sPN), vfResult);
           
         }
         std::cout << std::endl;
       }
     }
 
+    std::cout << "Find " << uiWeakCount << " weak classifiers" << std::endl;
     oL2Classifier->Train();
-    oL2Classifier->Save(sL2Model);
+    oL2Classifier->Save(sModelRoot + sL2Model);
     std::cout << "Training Finish" << std::endl;
   } else {
     std::cout << "Load L2 Classifier" << std::endl;
-    oL2Classifier->Load(sL2Model);
+    oL2Classifier->Load(sModelRoot + sL2Model);
   }
 
   if (bTesting) {
-    system("mkdir \"Wrong\"");
-    std::ofstream ListFile(sModelName + "_WRONG.txt");
-    for (auto sTime : vsTimeInterval) {
-      for (size_t i = 0; i < vsPosNeg.size(); ++i) {
-        string sSamplePath = sTestingSamplesRoot + sTime + "/" + vsPosNeg.at(i) + "/";
+    auto Indicates = oL2Classifier->GetIndicate();
+    for (auto sTime : vsTestingTime) {
+      for (const auto& sPN : vsPosNeg) {
+        string sSamplePath = sTestingSamplesRoot + sTime + "/" + sPN + "/";
         myImageSequence oReader(sSamplePath, "", "bmp", false);
         cv::Mat mImg;
         while (oReader >> mImg) {
-          std::cout << "\rReading " + sTime + "-" + vsPosNeg.at(i) + ":" + oReader.GetSequenceNumberString();
+          std::cout << "\rReading " + sTime + "-" + sPN + ":" + oReader.GetSequenceNumberString();
           oExtractor.SetImage(mImg);
           vector<float> vfResult(vRect.size(), 0.0f);
-          for (size_t i = 0; i < vRect.size(); ++i) {
+          for (auto i : Indicates) {
             vector<float> vfFeature;
             vfFeature.reserve(68);
             oExtractor.Describe(vRect.at(i), vfFeature);
             auto iIndex = oIndexr.GetBinNumber(mImg, vRect.at(i));
             auto fResult = voCollector.at(i).Predict(iIndex, vfFeature);
+            if (isnan(fResult)) {
+              fResult = -1.0f;
+            }
             vfResult.at(i) = fResult;
           }
           auto DetectingResult = oL2Classifier->Predict(vfResult);
           string sResult = "\n";
-          if (DetectingResult >= 0 && viAnswer.at(i) >= 0) {        // true positive
+          if (DetectingResult >= 0 && Labels.at(sPN) >= 0) {        // true positive
             ++score.TruePositive;
-          } else if (DetectingResult >= 0 && viAnswer.at(i) < 0) {  // false positive
+          } else if (DetectingResult >= 0 && Labels.at(sPN) < 0) {  // false positive
             ++score.FalsePositive;
-          } else if (DetectingResult < 0 && viAnswer.at(i) >= 0) {  // false negative
+          } else if (DetectingResult < 0 && Labels.at(sPN) >= 0) {  // false negative
             ++score.FalseNegative;
           } else {                                                  // true negative
             ++score.TrueNegative;

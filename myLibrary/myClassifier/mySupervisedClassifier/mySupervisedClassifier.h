@@ -59,15 +59,20 @@ public:     // public method
 
   virtual void Train(void) override;
 
-  float Predict(const cv::Mat& mSample) const override {
-    return m_poClassifier->empty() ? NAN : m_poClassifier->predict(mSample);
-  }
+  float Predict(const cv::Mat& mSample) const override;
 
     float Predict(const std::vector<float>& vfSample) const {
       return Predict(ConvertVecToMat(vfSample));
     }
 
   bool Save(const std::string& sDstPath) const override;
+
+  /**
+   * @brief Test the classifier is empty or not.
+   */
+  const bool IsEmpty(void) const {
+    return m_poClassifier->empty();
+  }
 
 protected:  // protected method
   /**
