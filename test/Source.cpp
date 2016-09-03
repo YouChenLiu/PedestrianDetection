@@ -9,7 +9,7 @@
 #include <opencv2/imgproc.hpp>
 #include <sstream>
 #include <iomanip>
-#include "myVerifier/myFPPW/myFPPW.h"
+#include "myVerifier/myFPPI/myFPPI.h"
 
 void DrawRect(std::vector<cv::Mat>& vmDrawing, const std::string& sFilePath) {
   std::vector<int> viResult;
@@ -149,31 +149,45 @@ int main(int argc, char* argv[]) {
     }
   }
   */
-  
+  /*
   // test the SVM
   srand(time(0));
   Classifier::mySVM oSVM;
-  for (int i = 0; i < 10000; ++i) {
+  std::cout << "+1\t-1" << std::endl;
+  for (int i = 0; i < 10; ++i) {
     std::vector<float> vfPos;
     std::vector<float> vfNeg;
-    for (int j = 0; j < 100; ++j) {
-      vfPos.push_back(+(rand() % 20) + 5);
-      vfNeg.push_back(-(rand() % 20) - 5);
+    for (int j = 0; j < 2; ++j) {
+      vfPos.push_back(+i + 1);
+      vfNeg.push_back(-i - 1);
     }
     oSVM.AddSample(+1, vfPos);
     oSVM.AddSample(-1, vfNeg);
+    std::cout << vfPos[0] << ", " << vfPos[1] << "\t" << vfNeg[0] << ", " << vfNeg[1] << std::endl;
   }
   
   oSVM.Train();
+  oSVM.Save("Model.xml");
 
-  for (int i = 0; i < 30; ++i) {
+  std::cout << "Val\tLabel\tDistance" << std::endl;
+  for (int i = 0; i < 10; ++i) {
     std::vector<float> vfFeature;
-    for (int j = 0; j < 100; ++j) {
+    for (int j = 0; j < 2; ++j) {
       vfFeature.push_back(+(rand() % 50) - 25);
     }
     auto label = oSVM.Predict(vfFeature);
     auto distance = oSVM.GetDistance(vfFeature);
-    std::cout << "Label: " << (label > 0 ? "+" : "-") << ", " << distance << std::endl;
+    std::cout << vfFeature[0] << ", " << vfFeature[1] << "\t" << (label > 0 ? "+" : "-") << "\t" << distance << std::endl;
   }
+  */
+  
+  Classifier::mySVM oSVM;
+  oSVM.Load("Model.xml");
+  auto vfFeature = std::vector<float>{-0.5, 0.5};
+  auto label = oSVM.Predict(vfFeature);
+  auto distance = oSVM.GetDistance(vfFeature);
+  std::cout << "Val\tLabel\tDistance" << std::endl;
+  std::cout << vfFeature[0] << ", " << vfFeature[1] << "\t" << (label > 0 ? "+" : "-") << "\t" << distance << std::endl;
+  
   return 0;
 }
