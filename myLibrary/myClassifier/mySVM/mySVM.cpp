@@ -35,11 +35,7 @@ bool mySVM::TrainAuto(int kFold, ParamGrid Cgrid, ParamGrid gammaGrid,
 }
 
 float mySVM::GetDistance(const cv::Mat& mSample) const {
-  using cv::ml::SVM;
-  const auto Model = GetClassifier().dynamicCast<SVM>();
-  const auto SupportVector = Model->getSupportVectors();
-  auto DotProduct = SupportVector.dot(mSample);
-  return DotProduct;
+  return m_poClassifier->predict(mSample, cv::noArray(), cv::ml::SVM::RAW_OUTPUT);
 }
 
 void mySVM::Init(void) {
